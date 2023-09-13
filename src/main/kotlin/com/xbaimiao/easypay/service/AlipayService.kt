@@ -1,4 +1,4 @@
-package com.xbaimiao.easypay.impl
+package com.xbaimiao.easypay.service
 
 import com.alipay.api.DefaultAlipayClient
 import com.alipay.api.domain.AlipayTradePrecreateModel
@@ -6,6 +6,8 @@ import com.alipay.api.domain.AlipayTradeQueryModel
 import com.alipay.api.internal.util.AlipayLogger
 import com.alipay.api.request.AlipayTradePrecreateRequest
 import com.alipay.api.request.AlipayTradeQueryRequest
+import com.xbaimiao.easylib.skedule.SchedulerController
+import com.xbaimiao.easylib.skedule.schedule
 import com.xbaimiao.easylib.util.debug
 import com.xbaimiao.easypay.api.Item
 import com.xbaimiao.easypay.entity.Order
@@ -33,8 +35,10 @@ class AlipayService(
         }
     }
 
-    override fun timeOut(timeout: Order.() -> Unit, order: Order) {
-        timeout.invoke(order)
+    override fun timeOut(timeout: suspend SchedulerController.(Order) -> Unit, order: Order) {
+        schedule {
+            timeout.invoke(this, order)
+        }
     }
 
     override val name: String = "alipay"

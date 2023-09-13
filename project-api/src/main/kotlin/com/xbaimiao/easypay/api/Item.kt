@@ -1,6 +1,7 @@
 package com.xbaimiao.easypay.api
 
 import org.bukkit.entity.Player
+import java.io.Serializable
 
 /**
  * Item
@@ -8,7 +9,7 @@ import org.bukkit.entity.Player
  * @author xbaimiao
  * @since 2023/9/12 23:01
  */
-interface Item {
+interface Item : Serializable {
 
     /**
      * 商品价格

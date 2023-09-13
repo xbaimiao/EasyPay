@@ -10,7 +10,7 @@ import org.bukkit.entity.Player
  * @author xbaimiao
  * @since 2023/9/13 10:43
  */
-class CommandItem(
+data class CommandItem(
     override val price: Double,
     override val name: String,
     private val command: List<String>
@@ -20,6 +20,10 @@ class CommandItem(
         val cmdList = command.toMutableList()
         cmdList.replaceAll { it.replace("%item_name%", name) }
         cmdList.parseECommand(player).exec(Bukkit.getConsoleSender())
+    }
+
+    companion object {
+        private const val serialVersionUID: Long = -8192333653275672125L
     }
 
 }

@@ -11,7 +11,7 @@ plugins {
 easylib {
     version = "3.0.5"
     nbt = false
-    hikariCP = false
+    hikariCP = true
     ormlite = false
     userMinecraftLib = true
     minecraftVersion = "1.12.2"

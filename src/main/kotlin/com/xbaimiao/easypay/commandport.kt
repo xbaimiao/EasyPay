@@ -6,6 +6,7 @@ import com.xbaimiao.easylib.command.command
 import com.xbaimiao.easylib.nms.sendMap
 import com.xbaimiao.easylib.util.plugin
 import com.xbaimiao.easypay.api.ItemProvider
+import com.xbaimiao.easypay.database.Database
 import com.xbaimiao.easypay.entity.PayServiceProvider
 import org.bukkit.command.CommandSender
 
@@ -50,17 +51,19 @@ private val create = command<CommandSender>("create") {
                         service.createOrderCall(
                             item = item,
                             call = {
+                                async {
+                                    Database.inst().addOrder(player.name, it)
+                                }
                                 player.updateInventory()
-                                this.item.sendTo(player)
+                                it.item.sendTo(player)
                             },
                             timeout = {
                                 player.updateInventory()
-                            },
-                            cancel = {
-                                player.sendLang("command-item-cancel")
-                                player.updateInventory()
                             }
-                        ).thenAccept {
+                        ) {
+                            player.sendLang("command-item-cancel")
+                            player.updateInventory()
+                        }.thenAccept {
                             if (it.isPresent) {
                                 player.sendLang("command-create-success")
                                 player.sendMap(ZxingUtil.generate(it.get().qrCode))
@@ -75,12 +78,28 @@ private val create = command<CommandSender>("create") {
     }
 }
 
+private val printAllOrder = command<CommandSender>("print") {
+    permission = "easypay.command.print"
+    description = "打印指定玩家所有订单"
+    onlinePlayers { playerArg ->
+        exec {
+            for (player in valueOf(playerArg)) {
+                sender.sendMessage(player.name)
+                for (order in Database.inst().getAllOrder(player.name)) {
+                    sender.sendMessage(order.toString())
+                }
+            }
+        }
+    }
+}
+
 private val reload = command<CommandSender>("reload") {
     permission = "easypay.command.reload"
     description = "重载插件"
     exec {
         val p = plugin as EasyPay
         p.reloadConfig()
+        p.loadDatabase()
         p.loadServices()
         p.loadItems()
         sender.sendLang("command-reload")
@@ -91,5 +110,6 @@ val rootCommand = command<CommandSender>("easypay") {
     description = "主要命令"
     permission = "easypay.command"
     sub(create)
+    sub(printAllOrder)
     sub(reload)
 }

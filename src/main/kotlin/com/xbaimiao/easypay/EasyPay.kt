@@ -1,13 +1,17 @@
 package com.xbaimiao.easypay
 
 import com.xbaimiao.easylib.EasyPlugin
+import com.xbaimiao.easylib.database.MysqlHikariDatabase
+import com.xbaimiao.easylib.database.SQLiteHikariDatabase
 import com.xbaimiao.easylib.util.warn
 import com.xbaimiao.easypay.api.CommandItem
 import com.xbaimiao.easypay.api.ItemProvider
+import com.xbaimiao.easypay.database.Database
+import com.xbaimiao.easypay.database.DefaultDatabase
 import com.xbaimiao.easypay.entity.PayServiceProvider
 import com.xbaimiao.easypay.functions.TitleFunction
-import com.xbaimiao.easypay.impl.AlipayService
-import com.xbaimiao.easypay.impl.WeChatService
+import com.xbaimiao.easypay.service.AlipayService
+import com.xbaimiao.easypay.service.WeChatService
 
 @Suppress("unused")
 class EasyPay : EasyPlugin() {
@@ -17,10 +21,20 @@ class EasyPay : EasyPlugin() {
 
         loadServices()
         loadItems()
+        loadDatabase()
 
         FunctionUtil.functionManager.functionManager.register(TitleFunction(), "标题")
 
         rootCommand.register()
+    }
+
+    fun loadDatabase() {
+        val hikariDatabase = if (config.getBoolean("database.mysql.enable")) {
+            MysqlHikariDatabase(config.getConfigurationSection("database.mysql"))
+        } else {
+            SQLiteHikariDatabase("database.db")
+        }
+        Database.setInst(DefaultDatabase(hikariDatabase))
     }
 
     fun loadServices() {

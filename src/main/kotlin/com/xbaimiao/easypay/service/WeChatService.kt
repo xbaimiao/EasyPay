@@ -1,5 +1,7 @@
-package com.xbaimiao.easypay.impl
+package com.xbaimiao.easypay.service
 
+import com.xbaimiao.easylib.skedule.SchedulerController
+import com.xbaimiao.easylib.skedule.schedule
 import com.xbaimiao.easylib.util.debug
 import com.xbaimiao.easypay.api.Item
 import com.xbaimiao.easypay.entity.Order
@@ -24,9 +26,13 @@ class WeChatService(
         walletConnector.connect(server)
     }
 
-    override fun timeOut(timeout: Order.() -> Unit, order: Order) {
-        walletConnector.orderTimeout(order.item.price)
-        timeout.invoke(order)
+    override fun timeOut(timeout: suspend SchedulerController.(Order) -> Unit, order: Order) {
+        schedule {
+            async {
+                walletConnector.orderTimeout(order.item.price)
+            }
+            timeout.invoke(this, order)
+        }
     }
 
     override val name: String = "wechat"

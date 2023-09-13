@@ -1,5 +1,6 @@
 package com.xbaimiao.easypay.entity
 
+import com.xbaimiao.easylib.skedule.SchedulerController
 import com.xbaimiao.easypay.api.Item
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -31,8 +32,8 @@ interface PayService {
      */
     fun createOrderCall(
         item: Item,
-        call: Order.() -> Unit,
-        timeout: Order.() -> Unit,
+        call: suspend SchedulerController.(Order) -> Unit,
+        timeout: suspend SchedulerController.(Order) -> Unit,
         cancel: () -> Unit
     ): CompletableFuture<Optional<Order>>
 

@@ -14,6 +14,15 @@ wechat:
   server: "127.0.0.1:42267"
   # 微信收款二维码内容
   qrcode: ""
+database:
+  mysql:
+    # 是否启用mysql 不启用使用sqlite
+    enable: false
+    host: 'localhost'
+    port: 3306
+    database: 'minecraft'
+    user: 'minecraft'
+    passwd: 'minecraft'
 items:
   测试命令商品:
     type: 'CommandItem'

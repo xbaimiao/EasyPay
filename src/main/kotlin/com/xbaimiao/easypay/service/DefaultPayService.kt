@@ -1,5 +1,6 @@
-package com.xbaimiao.easypay.impl
+package com.xbaimiao.easypay.service
 
+import com.xbaimiao.easylib.skedule.SchedulerController
 import com.xbaimiao.easylib.skedule.schedule
 import com.xbaimiao.easypay.api.Item
 import com.xbaimiao.easypay.entity.Order
@@ -12,8 +13,8 @@ interface DefaultPayService : PayService {
 
     override fun createOrderCall(
         item: Item,
-        call: Order.() -> Unit,
-        timeout: Order.() -> Unit,
+        call: suspend SchedulerController.(Order) -> Unit,
+        timeout: suspend SchedulerController.(Order) -> Unit,
         cancel: () -> Unit
     ): CompletableFuture<Optional<Order>> {
         val future = CompletableFuture<Optional<Order>>()
@@ -34,7 +35,7 @@ interface DefaultPayService : PayService {
                 }
                 // 如果已经支付跳出循环调用回调方法
                 if (status == OrderStatus.SUCCESS) {
-                    call.invoke(order)
+                    call.invoke(this, order)
                     return@schedule
                 }
                 // 等待1秒在查询
@@ -45,6 +46,6 @@ interface DefaultPayService : PayService {
         return future
     }
 
-    fun timeOut(timeout: Order.() -> Unit, order: Order)
+    fun timeOut(timeout: suspend SchedulerController.(Order) -> Unit, order: Order)
 
 }
