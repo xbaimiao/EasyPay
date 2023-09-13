@@ -1,0 +1,9 @@
+alipay:
+  api: 'https://openapi.alipay.com/gateway.do'
+  appid: 'appid'
+  private-key: 'private-key'
+  public-key: 'public-key'
+  # 回调url 无特殊需求无需更改
+  notify-url: 'https://www.baidu.com/'
+  # 店员识别id 随便填
+  store-id: 'easy_pay'
