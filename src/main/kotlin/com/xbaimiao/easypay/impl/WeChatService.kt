@@ -5,6 +5,7 @@ import com.xbaimiao.easypay.api.Item
 import com.xbaimiao.easypay.entity.Order
 import com.xbaimiao.easypay.entity.OrderStatus
 import dev.rgbmc.walletconnector.WalletConnector
+import java.util.*
 
 /**
  * WeChatService
@@ -30,18 +31,23 @@ class WeChatService(
 
     override val name: String = "alipay"
 
-    override fun createOrder(item: Item): Order {
+    override fun createOrder(item: Item): Optional<Order> {
+        if (list.contains(item.price)) {
+            // Cancel Order
+            return Optional.empty()
+        }
         val tradeNo = generateOrderId()
         // Join?
         val status = walletConnector.createOrder(item.price).join()
         if (!status) {
-            return Order("dupe", item, "dupe")
+            // Cancel Order [multi-servers]
+            return Optional.empty()
         }
         list.add(item.price)
         walletConnector.listenOrder(item.price) {
             list.remove(item.price)
         }
-        return Order(tradeNo, item, qrcodeContent)
+        return Optional.of(Order(tradeNo, item, qrcodeContent))
     }
 
     override fun queryOrder(order: Order): OrderStatus {

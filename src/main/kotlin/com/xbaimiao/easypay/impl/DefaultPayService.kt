@@ -5,24 +5,27 @@ import com.xbaimiao.easypay.api.Item
 import com.xbaimiao.easypay.entity.Order
 import com.xbaimiao.easypay.entity.OrderStatus
 import com.xbaimiao.easypay.entity.PayService
+import java.util.*
 import java.util.concurrent.CompletableFuture
 
 interface DefaultPayService : PayService {
     override fun createOrderCall(
         item: Item,
         call: Order.() -> Unit,
-        timeout: Order.() -> Unit
-    ): CompletableFuture<Order> {
-        val future = CompletableFuture<Order>()
+        timeout: Order.() -> Unit,
+        cancel: Order.() -> Unit
+    ): CompletableFuture<Optional<Order>> {
+        val future = CompletableFuture<Optional<Order>>()
         schedule {
-            val order = async {
+            val orderOptional = async {
                 createOrder(item)
             }
-            if (order.orderId.equals("dupe", ignoreCase = true)) {
-                timeOut(timeout, order)
+            if (!orderOptional.isPresent) {
+                cancel.invoke(orderOptional.get())
                 return@schedule
             }
-            future.complete(order)
+            val order = orderOptional.get()
+            future.complete(orderOptional)
             // 查询5分钟 查询一次等待1秒
             for (index in 0..(60 * 5)) {
                 val status = async {

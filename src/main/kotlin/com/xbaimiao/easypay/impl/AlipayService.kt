@@ -10,6 +10,7 @@ import com.xbaimiao.easylib.util.debug
 import com.xbaimiao.easypay.api.Item
 import com.xbaimiao.easypay.entity.Order
 import com.xbaimiao.easypay.entity.OrderStatus
+import java.util.*
 
 /**
  * AlipayService
@@ -38,7 +39,7 @@ class AlipayService(
 
     override val name: String = "alipay"
 
-    override fun createOrder(item: Item): Order {
+    override fun createOrder(item: Item): Optional<Order> {
         val request = AlipayTradePrecreateRequest()
         request.notifyUrl = notify
         val tradeNo = generateOrderId()
@@ -55,7 +56,7 @@ class AlipayService(
         val response = alipayClient.execute(request)
         if (response.isSuccess) {
             debug("create ${item.name} ${response.body}")
-            return Order(tradeNo, item, response.qrCode)
+            return Optional.of(Order(tradeNo, item, response.qrCode))
         }
         error("create order fail!")
     }

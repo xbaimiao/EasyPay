@@ -53,9 +53,17 @@ private val create = command<CommandSender>("create") {
                             },
                             timeout = {
                                 player.updateInventory()
+                            },
+                            cancel = {
+                                player.sendLang("command-item-cancel")
+                                player.updateInventory()
                             }
                         ).thenAccept {
-                            player.sendMap(ZxingUtil.generate(it.qrCode))
+                            if (it.isPresent) {
+                                player.sendMap(ZxingUtil.generate(it.get().qrCode))
+                            } else {
+                                error("failed to get present order")
+                            }
                         }
                     }
                 }
