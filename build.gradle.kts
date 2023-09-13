@@ -9,7 +9,7 @@ plugins {
 }
 
 easylib {
-    version = "3.0.4"
+    version = "3.0.5"
     nbt = false
     hikariCP = false
     ormlite = false
@@ -88,6 +88,7 @@ tasks {
         relocate("com.j256.ormlite", "${project.group}.shadow.ormlite")
         relocate("de.tr7zw", "${project.group}.shadow.itemnbtapi")
         relocate("kotlin", "${project.group}.shadow.kotlin")
+        relocate("kotlinx", "${project.group}.shadow.kotlinx")
         relocate("org.java_websocket", "${project.group}.shadow.websocket")
         relocate("com.google.gson", "${project.group}.shadow.gson")
         relocate("dev.rgbmc.walletconnector", "${project.group}.shadow.wechat")
