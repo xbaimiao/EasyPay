@@ -3,6 +3,7 @@ package com.xbaimiao.easypay
 import com.xbaimiao.easylib.chat.Lang.sendLang
 import com.xbaimiao.easylib.command.ArgNode
 import com.xbaimiao.easylib.command.command
+import com.xbaimiao.easylib.command.debugCommand
 import com.xbaimiao.easylib.nms.sendMap
 import com.xbaimiao.easylib.skedule.SynchronizationContext
 import com.xbaimiao.easylib.skedule.schedule
@@ -116,4 +117,5 @@ val rootCommand = command<CommandSender>("easypay") {
     sub(create)
     sub(printAllOrder)
     sub(reload)
+    sub(debugCommand)
 }
