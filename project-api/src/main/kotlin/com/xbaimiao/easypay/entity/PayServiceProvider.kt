@@ -19,4 +19,8 @@ object PayServiceProvider {
         return allService.toList()
     }
 
+    fun clear() {
+        allService.clear()
+    }
+
 }

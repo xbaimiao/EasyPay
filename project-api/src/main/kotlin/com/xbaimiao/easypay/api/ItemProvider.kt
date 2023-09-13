@@ -25,4 +25,8 @@ object ItemProvider {
         return allItem.toList()
     }
 
+    fun clear() {
+        allItem.clear()
+    }
+
 }

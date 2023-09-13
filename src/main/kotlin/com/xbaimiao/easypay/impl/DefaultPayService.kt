@@ -9,6 +9,7 @@ import java.util.*
 import java.util.concurrent.CompletableFuture
 
 interface DefaultPayService : PayService {
+
     override fun createOrderCall(
         item: Item,
         call: Order.() -> Unit,
@@ -45,4 +46,5 @@ interface DefaultPayService : PayService {
     }
 
     fun timeOut(timeout: Order.() -> Unit, order: Order)
+
 }

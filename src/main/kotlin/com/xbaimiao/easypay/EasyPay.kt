@@ -15,6 +15,16 @@ class EasyPay : EasyPlugin() {
     override fun enable() {
         saveDefaultConfig()
 
+        loadServices()
+        loadItems()
+
+        FunctionUtil.functionManager.functionManager.register(TitleFunction(), "标题")
+
+        rootCommand.register()
+    }
+
+    fun loadServices() {
+        PayServiceProvider.clear()
         if (config.getString("alipay.appid") == "appid") {
             warn("未配置支付宝Service 不加载")
         } else {
@@ -40,9 +50,10 @@ class EasyPay : EasyPlugin() {
                 )
             )
         }
+    }
 
-        FunctionUtil.functionManager.functionManager.register(TitleFunction(), "标题")
-
+    fun loadItems() {
+        ItemProvider.clear()
         config.getConfigurationSection("items")?.let { section ->
             for (name in section.getKeys(false)) {
                 val type = section.getString("$name.type")
@@ -57,8 +68,6 @@ class EasyPay : EasyPlugin() {
                 }
             }
         }
-
-        rootCommand.register()
     }
 
 }

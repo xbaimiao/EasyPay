@@ -4,6 +4,7 @@ import com.xbaimiao.easylib.chat.Lang.sendLang
 import com.xbaimiao.easylib.command.ArgNode
 import com.xbaimiao.easylib.command.command
 import com.xbaimiao.easylib.nms.sendMap
+import com.xbaimiao.easylib.util.plugin
 import com.xbaimiao.easypay.api.ItemProvider
 import com.xbaimiao.easypay.entity.PayServiceProvider
 import org.bukkit.command.CommandSender
@@ -27,6 +28,7 @@ private val itemArgNode = ArgNode("商品", exec = { token ->
 })
 
 private val create = command<CommandSender>("create") {
+    permission = "easypay.command.create"
     description = "创建一个订单"
     onlinePlayers { playerArg ->
         arg(payServiceArgNode) { serviceArg ->
@@ -60,6 +62,7 @@ private val create = command<CommandSender>("create") {
                             }
                         ).thenAccept {
                             if (it.isPresent) {
+                                player.sendLang("command-create-success")
                                 player.sendMap(ZxingUtil.generate(it.get().qrCode))
                             } else {
                                 error("failed to get present order")
@@ -72,8 +75,21 @@ private val create = command<CommandSender>("create") {
     }
 }
 
+private val reload = command<CommandSender>("reload") {
+    permission = "easypay.command.reload"
+    description = "重载插件"
+    exec {
+        val p = plugin as EasyPay
+        p.reloadConfig()
+        p.loadServices()
+        p.loadItems()
+        sender.sendLang("command-reload")
+    }
+}
+
 val rootCommand = command<CommandSender>("easypay") {
     description = "主要命令"
     permission = "easypay.command"
     sub(create)
+    sub(reload)
 }
