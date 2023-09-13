@@ -1,7 +1,7 @@
 package com.xbaimiao.easypay.entity
 
 import com.xbaimiao.easypay.api.Item
-import java.util.Optional
+import java.util.*
 import java.util.concurrent.CompletableFuture
 import kotlin.math.roundToInt
 
@@ -29,7 +29,12 @@ interface PayService {
      *
      * @return CompletableFuture<Order> 订单创建完成时 complete 而不是支付完成
      */
-    fun createOrderCall(item: Item, call: Order.() -> Unit, timeout: Order.() -> Unit, cancel: Order.() -> Unit): CompletableFuture<Optional<Order>>
+    fun createOrderCall(
+        item: Item,
+        call: Order.() -> Unit,
+        timeout: Order.() -> Unit,
+        cancel: () -> Unit
+    ): CompletableFuture<Optional<Order>>
 
     /**
      * 查询订单状态 此方法为同步查询 会占用主线程资源 推荐异步调用 或使用 [createOrderCall]

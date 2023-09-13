@@ -5,6 +5,7 @@ import com.xbaimiao.easylib.util.warn
 import com.xbaimiao.easypay.api.CommandItem
 import com.xbaimiao.easypay.api.ItemProvider
 import com.xbaimiao.easypay.entity.PayServiceProvider
+import com.xbaimiao.easypay.functions.TitleFunction
 import com.xbaimiao.easypay.impl.AlipayService
 import com.xbaimiao.easypay.impl.WeChatService
 
@@ -39,6 +40,8 @@ class EasyPay : EasyPlugin() {
                 )
             )
         }
+
+        FunctionUtil.functionManager.functionManager.register(TitleFunction(), "标题")
 
         config.getConfigurationSection("items")?.let { section ->
             for (name in section.getKeys(false)) {

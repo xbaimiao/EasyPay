@@ -13,7 +13,7 @@ interface DefaultPayService : PayService {
         item: Item,
         call: Order.() -> Unit,
         timeout: Order.() -> Unit,
-        cancel: Order.() -> Unit
+        cancel: () -> Unit
     ): CompletableFuture<Optional<Order>> {
         val future = CompletableFuture<Optional<Order>>()
         schedule {
@@ -21,7 +21,7 @@ interface DefaultPayService : PayService {
                 createOrder(item)
             }
             if (!orderOptional.isPresent) {
-                cancel.invoke(orderOptional.get())
+                cancel.invoke()
                 return@schedule
             }
             val order = orderOptional.get()

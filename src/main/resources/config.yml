@@ -19,6 +19,9 @@ items:
     type: 'CommandItem'
     # 价格
     price: 0.01
+    # 订单创建后发送给玩家的消息
+    actions:
+      - ''
     # 购买成功后执行命令
     commands:
       - 'say %player_name% 您购买成功了 %item_name%'

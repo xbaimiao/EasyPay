@@ -18,10 +18,10 @@ class WeChatService(
     private val qrcodeContent: String
 ) : DefaultPayService {
 
-    private val walletConnector by lazy {
-        val connector = WalletConnector()
-        connector.connect(server)
-        return@lazy connector
+    private val walletConnector: WalletConnector = WalletConnector()
+
+    init {
+        walletConnector.connect(server)
     }
 
     override fun timeOut(timeout: Order.() -> Unit, order: Order) {
