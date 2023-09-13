@@ -4,6 +4,8 @@ import com.xbaimiao.easylib.chat.Lang.sendLang
 import com.xbaimiao.easylib.command.ArgNode
 import com.xbaimiao.easylib.command.command
 import com.xbaimiao.easylib.nms.sendMap
+import com.xbaimiao.easylib.skedule.SynchronizationContext
+import com.xbaimiao.easylib.skedule.schedule
 import com.xbaimiao.easylib.util.plugin
 import com.xbaimiao.easypay.api.ItemProvider
 import com.xbaimiao.easypay.database.Database
@@ -83,10 +85,12 @@ private val printAllOrder = command<CommandSender>("print") {
     description = "打印指定玩家所有订单"
     onlinePlayers { playerArg ->
         exec {
-            for (player in valueOf(playerArg)) {
-                sender.sendMessage(player.name)
-                for (order in Database.inst().getAllOrder(player.name)) {
-                    sender.sendMessage(order.toString())
+            schedule(SynchronizationContext.ASYNC) {
+                for (player in valueOf(playerArg)) {
+                    sender.sendMessage(player.name)
+                    for (order in Database.inst().getAllOrder(player.name)) {
+                        sender.sendMessage(order.toString())
+                    }
                 }
             }
         }
