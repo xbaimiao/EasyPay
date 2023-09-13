@@ -24,6 +24,9 @@ version = "1.0.0"
 repositories {
     mavenLocal()
     mavenCentral()
+    maven {
+        url = uri("https://repo.fastmcmirror.org/content/repositories/releases/")
+    }
 }
 
 subprojects {
@@ -46,6 +49,7 @@ dependencies {
     implementation("com.alipay.sdk:alipay-sdk-java:4.38.72.ALL")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
     implementation("com.google.zxing:core:3.5.2")
+    implementation("dev.rgbmc:WalletConnector:1.0.0-0a852a9")
 }
 
 tasks {
@@ -82,6 +86,9 @@ tasks {
         relocate("com.j256.ormlite", "${project.group}.shadow.ormlite")
         relocate("de.tr7zw", "${project.group}.shadow.itemnbtapi")
         relocate("kotlin", "${project.group}.shadow.kotlin")
+        relocate("org.java_websocket", "${project.group}.shadow.websocket")
+        relocate("com.google.gson", "${project.group}.shadow.gson")
+        relocate("dev.rgbmc.walletconnector", "${project.group}.shadow.wechat")
         minimize()
     }
 }

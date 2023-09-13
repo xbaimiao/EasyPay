@@ -6,6 +6,7 @@ import com.xbaimiao.easypay.api.CommandItem
 import com.xbaimiao.easypay.api.ItemProvider
 import com.xbaimiao.easypay.entity.PayServiceProvider
 import com.xbaimiao.easypay.impl.AlipayService
+import com.xbaimiao.easypay.impl.WeChatService
 
 @Suppress("unused")
 class EasyPay : EasyPlugin() {
@@ -24,6 +25,17 @@ class EasyPay : EasyPlugin() {
                     config.getString("alipay.api"),
                     config.getString("alipay.notify-url"),
                     config.getString("alipay.store-id")
+                )
+            )
+        }
+
+        if (!config.getBoolean("wechat.enable")) {
+            warn("未配置微信支付服务(DLC) 跳过加载内容")
+        } else {
+            PayServiceProvider.registerService(
+                WeChatService(
+                    config.getString("wechat.server"),
+                    config.getString("wechat.qrcode")
                 )
             )
         }

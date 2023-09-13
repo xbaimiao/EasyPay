@@ -7,6 +7,13 @@ alipay:
   notify-url: 'https://www.baidu.com/'
   # 店员识别id 随便填
   store-id: 'easy_pay'
+wechat:
+  # 启用微信DLC功能
+  enable: false
+  # 微信DLC通信服务器地址
+  server: "127.0.0.1:42267"
+  # 微信收款二维码内容
+  qrcode: ""
 items:
   测试命令商品:
     type: 'CommandItem'
