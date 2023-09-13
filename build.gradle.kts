@@ -50,6 +50,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
     implementation("com.google.zxing:core:3.5.2")
     implementation("dev.rgbmc:WalletConnector:1.0.0-0a852a9")
+    //implementation("com.google.code.gson:gson:2.10.1")
 }
 
 tasks {
@@ -72,7 +73,7 @@ tasks {
         dependencies {
             exclude(dependency("org.slf4j:"))
             exclude(dependency("org.jetbrains:annotations:"))
-            exclude(dependency("com.google.code.gson:gson:"))
+            exclude(dependency("com.google.code.gson:gson:2.8.0"))
 //            exclude(dependency("org.jetbrains.kotlin:"))
 //            exclude(dependency("org.jetbrains:"))
         }

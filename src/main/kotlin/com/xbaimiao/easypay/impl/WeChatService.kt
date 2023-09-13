@@ -29,7 +29,7 @@ class WeChatService(
         timeout.invoke(order)
     }
 
-    override val name: String = "alipay"
+    override val name: String = "wechat"
 
     override fun createOrder(item: Item): Optional<Order> {
         if (list.contains(item.price)) {
