@@ -30,7 +30,7 @@ interface PayService {
     fun createOrderCall(item: Item, call: Order.() -> Unit, timeout: Order.() -> Unit): CompletableFuture<Order>
 
     /**
-     * 查询订单状态 此方法为同步查询 会占用主线程资源 推荐异步调用
+     * 查询订单状态 此方法为同步查询 会占用主线程资源 推荐异步调用 或使用 [createOrderCall]
      */
     fun queryOrder(order: Order): OrderStatus
 

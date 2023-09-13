@@ -17,7 +17,9 @@ class CommandItem(
 ) : Item {
 
     override fun sendTo(player: Player) {
-        command.parseECommand(player).exec(Bukkit.getConsoleSender())
+        val cmdList = command.toMutableList()
+        cmdList.replaceAll { it.replace("%item_name%", name) }
+        cmdList.parseECommand(player).exec(Bukkit.getConsoleSender())
     }
 
 }

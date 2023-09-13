@@ -44,6 +44,7 @@ private val create = command<CommandSender>("create") {
                         return@exec
                     }
                     players.forEach { player ->
+                        player.sendLang("command-create-start")
                         service.createOrderCall(
                             item = item,
                             call = {

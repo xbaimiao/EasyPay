@@ -1,2 +1,3 @@
 command-service-null: '&c 未找到支付服务 {0}'
 command-item-null: '&c 未找到商品 {0}'
+command-create-start: '&7 正在为你创建订单，请等待...'
