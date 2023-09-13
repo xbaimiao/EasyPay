@@ -3,9 +3,11 @@ package com.xbaimiao.easypay.impl
 import com.alipay.api.DefaultAlipayClient
 import com.alipay.api.domain.AlipayTradePrecreateModel
 import com.alipay.api.domain.AlipayTradeQueryModel
+import com.alipay.api.internal.util.AlipayLogger
 import com.alipay.api.request.AlipayTradePrecreateRequest
 import com.alipay.api.request.AlipayTradeQueryRequest
 import com.xbaimiao.easylib.skedule.schedule
+import com.xbaimiao.easylib.util.debug
 import com.xbaimiao.easypay.api.Item
 import com.xbaimiao.easypay.entity.Order
 import com.xbaimiao.easypay.entity.OrderStatus
@@ -27,7 +29,11 @@ class AlipayService(
     private val storeId: String
 ) : PayService {
 
-    private val alipayClient by lazy { DefaultAlipayClient(api, appid, privateKey, "json", "UTF-8", publicKey, "RSA2") }
+    private val alipayClient by lazy {
+        DefaultAlipayClient(api, appid, privateKey, "json", "UTF-8", publicKey, "RSA2").also {
+            AlipayLogger.setNeedEnableLogger(false)
+        }
+    }
 
     override val name: String = "alipay"
 
@@ -47,12 +53,17 @@ class AlipayService(
 
         val response = alipayClient.execute(request)
         if (response.isSuccess) {
+            debug("create ${item.name} ${response.body}")
             return Order(tradeNo, item, response.qrCode)
         }
         error("create order fail!")
     }
 
-    override fun createOrderCall(item: Item, call: Order.() -> Unit): CompletableFuture<Order> {
+    override fun createOrderCall(
+        item: Item,
+        call: Order.() -> Unit,
+        timeout: Order.() -> Unit
+    ): CompletableFuture<Order> {
         val future = CompletableFuture<Order>()
         schedule {
             val order = async {
@@ -67,11 +78,12 @@ class AlipayService(
                 // 如果已经支付跳出循环调用回调方法
                 if (status == OrderStatus.SUCCESS) {
                     call.invoke(order)
-                    break
+                    return@schedule
                 }
                 // 等待1秒在查询
                 waitFor(20)
             }
+            timeout.invoke(order)
         }
         return future
     }
@@ -85,6 +97,7 @@ class AlipayService(
         query.bizModel = model
 
         val result = alipayClient.execute(query)
+        debug("query $order ${result.body}")
         return when (result.tradeStatus) {
             // 支付成功
             "TRADE_SUCCESS" -> OrderStatus.SUCCESS

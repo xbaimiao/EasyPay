@@ -7,3 +7,11 @@ alipay:
   notify-url: 'https://www.baidu.com/'
   # 店员识别id 随便填
   store-id: 'easy_pay'
+items:
+  测试命令商品:
+    type: 'CommandItem'
+    # 价格
+    price: 0.01
+    # 购买成功后执行命令
+    commands:
+      - 'say %player_name% 您购买成功了 %item_name%'

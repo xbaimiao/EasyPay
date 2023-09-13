@@ -1,1 +1,2 @@
-command-service-null: '&c not found service {0}'
+command-service-null: '&c 未找到支付服务 {0}'
+command-item-null: '&c 未找到商品 {0}'
