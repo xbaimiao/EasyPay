@@ -1,6 +1,7 @@
 command-service-null: '&7[&e&l!&7]&c 未找到支付服务 {0}'
 command-item-null: '&7[&e&l!&7]&c 未找到商品 {0}'
-command-create-start: '&7[&e&l!&7]&7 正在为你创建订单，请等待...'
+command-create-start: '&7[&e&l!&7]&7 正在为你创建订单, 请等待...'
 command-item-cancel: '&7[&e&l!&7]&e 订单金额已跟其他订单冲突, 已自动取消 &7(&b请稍后再尝试创建订单...&7)'
-command-create-success: '&7[&e&l!&7]&7 订单插件成功，请支付'
+command-wechat-dynamic-cost: "&7[&e&l!&7]&e 当前订单金额已被锁定, 将为您自动匹配范围内可用的金额..."
+command-create-success: '&7[&e&l!&7]&7 订单创建成功, 请支付 {0} 元'
 command-reload: '&7[&e&l!&7]&7 重载成功'

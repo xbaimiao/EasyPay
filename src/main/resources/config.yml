@@ -14,6 +14,10 @@ wechat:
   server: "127.0.0.1:42267"
   # 微信收款二维码内容
   qrcode: ""
+  # 是否在订单被锁定时启用价格浮动(增加价格直到能够付款-最小加价单位0.01)
+  dynamic-cost: false
+  # 订单等待时长 (单位: 秒) 超时取消订单
+  wait-time: 60
 database:
   mysql:
     # 是否启用mysql 不启用使用sqlite
@@ -30,7 +34,8 @@ items:
     price: 0.01
     # 订单创建后发送给玩家的消息
     actions:
-      - ''
+      - 'if("$service" == "wechat") title(&a请使用微信扫码支付 &f$price 元, &e填写金额务必与上方一致, 10, 40, 10) return()'
+      - 'if("$service" == "alipay") title(&a请支付 &f$price 元, &7使用支付宝扫码付款, 10, 40, 10) return()'
     # 购买成功后执行命令
     commands:
       - 'say %player_name% 您购买成功了 %item_name%'

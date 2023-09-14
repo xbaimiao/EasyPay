@@ -12,6 +12,7 @@ import com.xbaimiao.easylib.util.debug
 import com.xbaimiao.easypay.api.Item
 import com.xbaimiao.easypay.entity.Order
 import com.xbaimiao.easypay.entity.OrderStatus
+import org.bukkit.entity.Player
 import java.util.*
 
 /**
@@ -43,7 +44,7 @@ class AlipayService(
 
     override val name: String = "alipay"
 
-    override fun createOrder(item: Item): Optional<Order> {
+    override fun createOrder(player: Player, item: Item): Optional<Order> {
         val request = AlipayTradePrecreateRequest()
         request.notifyUrl = notify
         val tradeNo = generateOrderId()

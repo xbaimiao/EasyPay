@@ -2,6 +2,7 @@ package com.xbaimiao.easypay.entity
 
 import com.xbaimiao.easylib.skedule.SchedulerController
 import com.xbaimiao.easypay.api.Item
+import org.bukkit.entity.Player
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import kotlin.math.roundToInt
@@ -19,10 +20,11 @@ interface PayService {
     /**
      * 创建一个订单 此方法为同步创建 会占用主线程资源 推荐使用 [createOrderCall]
      */
-    fun createOrder(item: Item): Optional<Order>
+    fun createOrder(player: Player, item: Item): Optional<Order>
 
     /**
      * 创建一个订单并在支付完成后回调
+     * @param player 玩家
      * @param item 订单商品
      * @param call 支付完成的回调
      * @param timeout 支付超时后回调
@@ -31,6 +33,7 @@ interface PayService {
      * @return CompletableFuture<Order> 订单创建完成时 complete 而不是支付完成
      */
     fun createOrderCall(
+        player: Player,
         item: Item,
         call: suspend SchedulerController.(Order) -> Unit,
         timeout: suspend SchedulerController.(Order) -> Unit,

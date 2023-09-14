@@ -3,10 +3,10 @@ package com.xbaimiao.easypay.functions
 import com.xbaimiao.easylib.chat.colored
 import com.xbaimiao.easypay.FunctionUtil.argumentArray
 import com.xbaimiao.easypay.parameters.PlayerParameter
+import com.xbaimiao.easypay.results.CancellableResult
 import dev.rgbmc.expression.functions.FastFunction
 import dev.rgbmc.expression.functions.FunctionParameter
 import dev.rgbmc.expression.functions.FunctionResult
-import dev.rgbmc.expression.functions.FunctionResult.DefaultResult
 
 @Suppress("DEPRECATION")
 class TitleFunction : FastFunction {
@@ -24,9 +24,9 @@ class TitleFunction : FastFunction {
                 arguments[4].toInt()
             )
 
-            else -> return DefaultResult(FunctionResult.Status.FAILURE)
+            else -> return CancellableResult(false)
         }
-        return DefaultResult(FunctionResult.Status.SUCCESS)
+        return CancellableResult(true)
     }
 
     override fun getName(): String {

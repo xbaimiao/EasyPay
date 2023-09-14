@@ -1,13 +1,17 @@
 package com.xbaimiao.easypay.service
 
+import com.xbaimiao.easylib.chat.Lang.sendLang
 import com.xbaimiao.easylib.skedule.SchedulerController
 import com.xbaimiao.easylib.skedule.schedule
 import com.xbaimiao.easylib.util.debug
+import com.xbaimiao.easylib.util.plugin
 import com.xbaimiao.easypay.api.Item
 import com.xbaimiao.easypay.entity.Order
 import com.xbaimiao.easypay.entity.OrderStatus
 import dev.rgbmc.walletconnector.WalletConnector
+import org.bukkit.entity.Player
 import java.util.*
+import java.util.concurrent.CompletableFuture
 
 /**
  * WeChatService
@@ -37,10 +41,30 @@ class WeChatService(
 
     override val name: String = "wechat"
 
-    override fun createOrder(item: Item): Optional<Order> {
+    override fun createOrderCall(
+        player: Player,
+        item: Item,
+        call: suspend SchedulerController.(Order) -> Unit,
+        timeout: suspend SchedulerController.(Order) -> Unit,
+        cancel: () -> Unit
+    ): CompletableFuture<Optional<Order>> {
+        return super.createOrderCall(player, item, call, timeout, cancel, plugin.config.getInt("wechat.wait-time"))
+    }
+
+    override fun createOrder(player: Player, item: Item): Optional<Order> {
         if (list.contains(item.price)) {
-            // Cancel Order
-            return Optional.empty()
+            if (plugin.config.getBoolean("wechat.dynamic-cost")) {
+                // Dynamic Cost
+                player.sendLang("command-wechat-dynamic-cost")
+                var newCost = item.price + 0.01;
+                while (!list.contains(newCost)) {
+                    newCost += 0.01
+                }
+                item.price = newCost
+            } else {
+                // Cancel Order
+                return Optional.empty()
+            }
         }
         val tradeNo = generateOrderId()
         // Join?

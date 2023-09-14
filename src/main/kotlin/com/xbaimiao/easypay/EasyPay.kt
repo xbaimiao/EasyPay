@@ -9,6 +9,9 @@ import com.xbaimiao.easypay.api.ItemProvider
 import com.xbaimiao.easypay.database.Database
 import com.xbaimiao.easypay.database.DefaultDatabase
 import com.xbaimiao.easypay.entity.PayServiceProvider
+import com.xbaimiao.easypay.functions.ConditionFunction
+import com.xbaimiao.easypay.functions.MessageFunction
+import com.xbaimiao.easypay.functions.ReturnFunction
 import com.xbaimiao.easypay.functions.TitleFunction
 import com.xbaimiao.easypay.service.AlipayService
 import com.xbaimiao.easypay.service.WeChatService
@@ -23,7 +26,11 @@ class EasyPay : EasyPlugin() {
         loadItems()
         loadDatabase()
 
-        FunctionUtil.functionManager.functionManager.register(TitleFunction(), "标题")
+        val functionManager = FunctionUtil.functionManager.functionManager
+        functionManager.register(TitleFunction(), "标题")
+        functionManager.register(MessageFunction(), "消息", "msg")
+        functionManager.register(ConditionFunction(), "条件", "如果")
+        functionManager.register(ReturnFunction(), "返回", "取消", "结束")
 
         rootCommand.register()
     }
@@ -75,7 +82,8 @@ class EasyPay : EasyPlugin() {
                 when (type) {
                     "CommandItem" -> {
                         val commands = section.getStringList("$name.commands")
-                        ItemProvider.register(CommandItem(price, name, commands))
+                        val actions = section.getStringList("$name.actions")
+                        ItemProvider.register(CommandItem(price, name, commands, actions))
                     }
 
                     else -> warn("未知商品类型 $type")

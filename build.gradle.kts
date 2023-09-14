@@ -51,6 +51,7 @@ dependencies {
     implementation("com.google.zxing:core:3.5.2")
     implementation("dev.rgbmc:WalletConnector:1.0.0-0a852a9")
     implementation("dev.rgbmc:FastExpression:1.0.0-a0aa2c1")
+    implementation("com.ezylang:EvalEx:3.0.5")
     //implementation("com.google.code.gson:gson:2.10.1")
 }
 

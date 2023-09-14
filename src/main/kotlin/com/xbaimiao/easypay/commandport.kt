@@ -52,6 +52,7 @@ private val create = command<CommandSender>("create") {
                     players.forEach { player ->
                         player.sendLang("command-create-start")
                         service.createOrderCall(
+                            player = player,
                             item = item,
                             call = {
                                 async {
@@ -68,7 +69,8 @@ private val create = command<CommandSender>("create") {
                             player.updateInventory()
                         }.thenAccept {
                             if (it.isPresent) {
-                                player.sendLang("command-create-success")
+                                FunctionUtil.parseActions(player, it.get().item, service)
+                                player.sendLang("command-create-success", it.get().item.price.toString())
                                 player.sendMap(ZxingUtil.generate(it.get().qrCode))
                             } else {
                                 error("failed to get present order")
