@@ -69,7 +69,9 @@ tasks {
         props.add("version" to "${LocalDate.now().format(DateTimeFormatter.ofPattern("y.M.d"))}-${rootProject.version}")
         props.add("main" to "${project.rootProject.group}.${project.rootProject.name}")
         props.add("name" to project.rootProject.name)
-        expand(*props.toTypedArray())
+        filesMatching("plugin.yml") {
+            expand(*props.toTypedArray())
+        }
     }
     shadowJar {
         dependencies {
@@ -93,6 +95,8 @@ tasks {
         relocate("org.java_websocket", "${project.group}.shadow.websocket")
         relocate("com.google.gson", "${project.group}.shadow.gson")
         relocate("dev.rgbmc.walletconnector", "${project.group}.shadow.wechat")
+        relocate("dev.rgbmc.expression", "${project.group}.shadow.expression")
+        relocate("com.ezylang.evalex", "${project.group}.shadow.evalex")
         minimize()
     }
 }
