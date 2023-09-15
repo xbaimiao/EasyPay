@@ -19,7 +19,7 @@ easylib {
 }
 
 group = "com.xbaimiao.easypay"
-version = "1.0.0"
+version = "1.0.1"
 
 repositories {
     mavenLocal()
@@ -52,6 +52,7 @@ dependencies {
     implementation("dev.rgbmc:WalletConnector:1.0.0-0a852a9")
     implementation("dev.rgbmc:FastExpression:1.0.0-a0aa2c1")
     implementation("com.ezylang:EvalEx:3.0.5")
+    implementation("com.xbaimiao.ktor:ktor-plugins-bukkit:1.0.8")
     //implementation("com.google.code.gson:gson:2.10.1")
 }
 
@@ -97,6 +98,17 @@ tasks {
         relocate("dev.rgbmc.walletconnector", "${project.group}.shadow.wechat")
         relocate("dev.rgbmc.expression", "${project.group}.shadow.expression")
         relocate("com.ezylang.evalex", "${project.group}.shadow.evalex")
+        relocate("com.xbaimiao.ktor", "${project.group}.shadow.ktor")
+        relocate("javax.xml", "${project.group}.shadow.javax.xml")
+        relocate("okhttp3", "${project.group}.shadow.okhttp3")
+        relocate("okio", "${project.group}.shadow.okio")
+        relocate("taboolib.common.env", "${project.group}.shadow.env")
+        relocate("org.xml.sax", "${project.group}.shadow.org.xml.sax")
+        relocate("org.w3c.dom", "${project.group}.shadow.org.w3c.dom")
+        relocate("org.bouncycastle", "${project.group}.shadow.org.bouncycastle")
+        relocate("com.alipay.api", "${project.group}.shadow.com.alipay.api")
+        relocate("com.google.zxing", "${project.group}.shadow.zxing")
+        relocate("_COROUTINE", "${project.group}.shadow.COROUTINE")
         minimize()
     }
 }

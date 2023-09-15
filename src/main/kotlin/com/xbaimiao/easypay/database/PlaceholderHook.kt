@@ -48,8 +48,7 @@ object PlaceholderHook : PlaceholderExpansion() {
      * %easypay_top_name_{1-10}% 排行榜用户名
      * %easypay_top_price_{1-10}% 排行榜金额
      */
-    override fun onUUIDRequest(uuid: UUID, params: String): String? {
-        if (!params.contains("_")) return "error"
+    override fun onUUIDRequest(uuid: UUID, params: String): String {
         val paramsArgs = params.split("_")
         val type = paramsArgs[0]
         return when (type.lowercase()) {

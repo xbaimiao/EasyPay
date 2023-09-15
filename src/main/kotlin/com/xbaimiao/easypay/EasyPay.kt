@@ -3,6 +3,8 @@ package com.xbaimiao.easypay
 import com.xbaimiao.easylib.EasyPlugin
 import com.xbaimiao.easylib.database.MysqlHikariDatabase
 import com.xbaimiao.easylib.database.SQLiteHikariDatabase
+import com.xbaimiao.easylib.skedule.schedule
+import com.xbaimiao.easylib.util.info
 import com.xbaimiao.easylib.util.warn
 import com.xbaimiao.easypay.api.CommandItem
 import com.xbaimiao.easypay.api.ItemProvider
@@ -16,25 +18,41 @@ import com.xbaimiao.easypay.functions.ReturnFunction
 import com.xbaimiao.easypay.functions.TitleFunction
 import com.xbaimiao.easypay.service.AlipayService
 import com.xbaimiao.easypay.service.WeChatService
+import com.xbaimiao.ktor.KtorPluginsBukkit
+import com.xbaimiao.ktor.KtorStat
 
 @Suppress("unused")
-class EasyPay : EasyPlugin() {
+class EasyPay : EasyPlugin(), KtorStat {
 
     override fun enable() {
-        saveDefaultConfig()
+        schedule {
+            // 初始化统计
+            KtorPluginsBukkit.init(this@EasyPay, this@EasyPay)
+            // userId 是用户Id 如果获取的时候报错 代表没有注入用户ID
+            info("$userId 感谢您的支持!")
+            val has = async {
+                hasPlugin("EasyPay")
+            }
+            if (!has) {
+                error("$userId 未从您的购买列表 未找到EasyPay插件 无法使用")
+            }
+            // 统计服务器在线的方法
+            stat()
+            saveDefaultConfig()
 
-        loadServices()
-        loadItems()
-        loadDatabase()
+            loadServices()
+            loadItems()
+            loadDatabase()
 
-        val functionManager = FunctionUtil.functionManager.functionManager
-        functionManager.register(TitleFunction(), "标题")
-        functionManager.register(MessageFunction(), "消息", "msg")
-        functionManager.register(ConditionFunction(), "条件", "如果")
-        functionManager.register(ReturnFunction(), "返回", "取消", "结束")
+            val functionManager = FunctionUtil.functionManager.functionManager
+            functionManager.register(TitleFunction(), "标题")
+            functionManager.register(MessageFunction(), "消息", "msg")
+            functionManager.register(ConditionFunction(), "条件", "如果")
+            functionManager.register(ReturnFunction(), "返回", "取消", "结束")
 
-        PlaceholderHook.init()
-        rootCommand.register()
+            PlaceholderHook.init()
+            rootCommand.register()
+        }
     }
 
     fun loadDatabase() {
