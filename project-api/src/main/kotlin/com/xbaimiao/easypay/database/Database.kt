@@ -10,6 +10,8 @@ import com.xbaimiao.easypay.entity.Order
  */
 interface Database {
 
+    fun getAllOrder(): Collection<Order>
+
     /**
      * 获取玩家支付的所有订单
      */

@@ -61,7 +61,7 @@ class AlipayService(
         val response = alipayClient.execute(request)
         if (response.isSuccess) {
             debug("create ${item.name} ${response.body}")
-            return Optional.of(Order(tradeNo, item, response.qrCode))
+            return Optional.of(Order(tradeNo, item, response.qrCode, this@AlipayService.name))
         }
         error("create order fail!")
     }

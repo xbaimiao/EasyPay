@@ -11,5 +11,13 @@ import com.xbaimiao.easypay.api.Item
 data class Order(
     val orderId: String,
     val item: Item,
-    val qrCode: String
-)
+    val qrCode: String,
+    val service: String
+) {
+
+    /**
+     * 从数据库获取的Order player不会为空
+     */
+    var player: String? = null
+
+}

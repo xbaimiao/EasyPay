@@ -14,7 +14,7 @@ interface Item : Serializable {
     /**
      * 商品价格
      */
-    var price: Double
+    val price: Double
 
     /**
      * 商品名称

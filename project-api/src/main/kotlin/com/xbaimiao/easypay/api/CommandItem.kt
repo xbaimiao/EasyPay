@@ -11,7 +11,7 @@ import org.bukkit.entity.Player
  * @since 2023/9/13 10:43
  */
 data class CommandItem(
-    override var price: Double,
+    override val price: Double,
     override val name: String,
     private val command: List<String>,
     val actions: List<String>

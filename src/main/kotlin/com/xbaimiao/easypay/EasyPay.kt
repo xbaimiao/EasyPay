@@ -8,6 +8,7 @@ import com.xbaimiao.easypay.api.CommandItem
 import com.xbaimiao.easypay.api.ItemProvider
 import com.xbaimiao.easypay.database.Database
 import com.xbaimiao.easypay.database.DefaultDatabase
+import com.xbaimiao.easypay.database.PlaceholderHook
 import com.xbaimiao.easypay.entity.PayServiceProvider
 import com.xbaimiao.easypay.functions.ConditionFunction
 import com.xbaimiao.easypay.functions.MessageFunction
@@ -32,6 +33,7 @@ class EasyPay : EasyPlugin() {
         functionManager.register(ConditionFunction(), "条件", "如果")
         functionManager.register(ReturnFunction(), "返回", "取消", "结束")
 
+        PlaceholderHook.init()
         rootCommand.register()
     }
 

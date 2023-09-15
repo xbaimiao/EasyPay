@@ -52,15 +52,14 @@ class WeChatService(
     }
 
     override fun createOrder(player: Player, item: Item): Optional<Order> {
-        if (list.contains(item.price)) {
+        var newPrice = item.price
+        if (list.contains(newPrice)) {
             if (plugin.config.getBoolean("wechat.dynamic-cost")) {
                 // Dynamic Cost
                 player.sendLang("command-wechat-dynamic-cost")
-                var newCost = item.price + 0.01;
-                while (!list.contains(newCost)) {
-                    newCost += 0.01
+                while (list.contains(newPrice)) {
+                    newPrice += 0.01
                 }
-                item.price = newCost
             } else {
                 // Cancel Order
                 return Optional.empty()
@@ -73,11 +72,11 @@ class WeChatService(
             // Cancel Order [multi-servers]
             return Optional.empty()
         }
-        list.add(item.price)
-        walletConnector.listenOrder(item.price) {
-            list.remove(item.price)
+        list.add(newPrice)
+        walletConnector.listenOrder(newPrice) {
+            list.remove(newPrice)
         }
-        return Optional.of(Order(tradeNo, item, qrcodeContent))
+        return Optional.of(Order(tradeNo, item, qrcodeContent, name))
     }
 
     override fun queryOrder(order: Order): OrderStatus {
