@@ -1,3 +1,11 @@
+# %easypay_count% 订单数量
+# %easypay_count_{player}% 指定玩家订单数量
+# %easypay_count_{player}_{service}% 指定玩家指定服务订单数量
+# %easypay_price_{player}% 指定玩家订单数量金额
+# %easypay_price_{player}_{service}% 指定玩家指定服务订单数量金额
+# %easypay_top_name_{1-10}% 排行榜用户名
+# %easypay_top_price_{1-10}% 排行榜金额
+# 注意 为节约性能 以上PAPI变量 有15秒的刷新缓存时间
 alipay:
   api: 'https://openapi.alipay.com/gateway.do'
   appid: 'appid'

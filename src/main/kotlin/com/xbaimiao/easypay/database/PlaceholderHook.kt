@@ -17,6 +17,8 @@ object PlaceholderHook : PlaceholderExpansion() {
     override val identifier: String = "easypay"
     override val version: String get() = plugin.description.version
 
+    private val allCacheKey = UUID.randomUUID().toString()
+
     private val topNameCache = CacheBuilder
         .newBuilder()
         .expireAfterWrite(15, TimeUnit.SECONDS)
@@ -26,6 +28,16 @@ object PlaceholderHook : PlaceholderExpansion() {
         .newBuilder()
         .expireAfterWrite(15, TimeUnit.SECONDS)
         .build<Int, String>()
+
+    private val priceCache = CacheBuilder
+        .newBuilder()
+        .expireAfterWrite(15, TimeUnit.SECONDS)
+        .build<String, String>()
+
+    private val countCache = CacheBuilder
+        .newBuilder()
+        .expireAfterWrite(15, TimeUnit.SECONDS)
+        .build<String, String>()
 
     /**
      * %easypay_count% 订单数量
@@ -43,16 +55,24 @@ object PlaceholderHook : PlaceholderExpansion() {
         return when (type.lowercase()) {
             "count" -> {
                 when (paramsArgs.size) {
-                    1 -> Database.inst().getAllOrder().size.toString()
+                    1 -> {
+                        countCache.getIfPresent(allCacheKey)?.let { return it }
+                        Database.inst().getAllOrder().size.toString().also { countCache.put(allCacheKey, it) }
+                    }
+
                     2 -> {
                         val player = paramsArgs[1]
-                        Database.inst().getAllOrder(player).size.toString()
+                        countCache.getIfPresent(player)?.let { return it }
+                        Database.inst().getAllOrder(player).size.toString().also { countCache.put(player, it) }
                     }
 
                     3 -> {
                         val player = paramsArgs[1]
                         val service = paramsArgs[2]
-                        Database.inst().getAllOrder(player).filter { it.service == service }.size.toString()
+                        countCache.getIfPresent("$player-$service")?.let { return it }
+                        Database.inst().getAllOrder(player).filter { it.service == service }.size.toString().also {
+                            countCache.put("$player-$service", it)
+                        }
                     }
 
                     else -> "error"
@@ -63,14 +83,22 @@ object PlaceholderHook : PlaceholderExpansion() {
                 when (paramsArgs.size) {
                     2 -> {
                         val player = paramsArgs[1]
-                        Database.inst().getAllOrder(player).sumOf { it.item.price }.toString()
+                        priceCache.getIfPresent(player)?.let { return it }
+                        Database.inst().getAllOrder(player)
+                            .sumOf { it.item.price }.toString()
+                            .also { priceCache.put(player, it) }
                     }
 
                     3 -> {
                         val player = paramsArgs[1]
                         val service = paramsArgs[2]
-                        Database.inst().getAllOrder(player).filter { it.service == service }.sumOf { it.item.price }
-                            .toString()
+                        priceCache.getIfPresent("$player-$service")?.let { return it }
+                        Database.inst().getAllOrder(player)
+                            .filter { it.service == service }
+                            .sumOf { it.item.price }
+                            .toString().also {
+                                priceCache.put("$player-$service", it)
+                            }
                     }
 
                     else -> "error"
