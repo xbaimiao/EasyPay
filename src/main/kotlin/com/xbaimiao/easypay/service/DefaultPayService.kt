@@ -4,11 +4,11 @@ import com.xbaimiao.easylib.skedule.SchedulerController
 import com.xbaimiao.easylib.skedule.schedule
 import com.xbaimiao.easylib.util.debug
 import com.xbaimiao.easypay.FunctionUtil
-import com.xbaimiao.easypay.api.CommandItem
 import com.xbaimiao.easypay.api.Item
 import com.xbaimiao.easypay.entity.Order
 import com.xbaimiao.easypay.entity.OrderStatus
 import com.xbaimiao.easypay.entity.PayService
+import com.xbaimiao.easypay.item.CommandItem
 import org.bukkit.entity.Player
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -68,12 +68,5 @@ interface DefaultPayService : PayService {
     }
 
     fun timeOut(timeout: suspend SchedulerController.(Order) -> Unit, order: Order)
-
-    fun parsePreCreateActions(item: Item, player: Player): Boolean {
-        if (item is CommandItem) {
-            return FunctionUtil.parseActions(player, item, this, item.preActions)
-        }
-        return true
-    }
 
 }

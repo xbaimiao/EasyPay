@@ -6,7 +6,7 @@ import com.xbaimiao.easylib.database.SQLiteHikariDatabase
 import com.xbaimiao.easylib.skedule.schedule
 import com.xbaimiao.easylib.util.info
 import com.xbaimiao.easylib.util.warn
-import com.xbaimiao.easypay.api.CommandItem
+import com.xbaimiao.easypay.item.CommandItem
 import com.xbaimiao.easypay.api.ItemProvider
 import com.xbaimiao.easypay.database.Database
 import com.xbaimiao.easypay.database.DefaultDatabase

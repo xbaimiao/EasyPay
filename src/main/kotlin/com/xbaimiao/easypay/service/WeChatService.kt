@@ -52,7 +52,7 @@ class WeChatService(
     }
 
     override fun createOrder(player: Player, item: Item): Optional<Order> {
-        if (!parsePreCreateActions(item, player)) {
+        if (!item.preCreate(player, this)) {
             return Optional.empty()
         }
         var newPrice = item.price
