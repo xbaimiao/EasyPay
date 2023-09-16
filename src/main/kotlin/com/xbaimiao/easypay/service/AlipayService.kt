@@ -45,6 +45,9 @@ class AlipayService(
     override val name: String = "alipay"
 
     override fun createOrder(player: Player, item: Item): Optional<Order> {
+        if (!parsePreCreateActions(item, player)) {
+            return Optional.empty()
+        }
         val request = AlipayTradePrecreateRequest()
         request.notifyUrl = notify
         val tradeNo = generateOrderId()

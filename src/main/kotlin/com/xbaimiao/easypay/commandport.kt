@@ -8,6 +8,7 @@ import com.xbaimiao.easylib.nms.sendMap
 import com.xbaimiao.easylib.skedule.SynchronizationContext
 import com.xbaimiao.easylib.skedule.schedule
 import com.xbaimiao.easylib.util.plugin
+import com.xbaimiao.easypay.api.CommandItem
 import com.xbaimiao.easypay.api.ItemProvider
 import com.xbaimiao.easypay.database.Database
 import com.xbaimiao.easypay.entity.PayServiceProvider
@@ -59,6 +60,7 @@ private val create = command<CommandSender>("create") {
                                     Database.inst().addOrder(player.name, it)
                                 }
                                 player.updateInventory()
+                                if (item is CommandItem) FunctionUtil.parseActions(player, item, service, item.rewards)
                                 it.item.sendTo(player)
                             },
                             timeout = {
@@ -69,7 +71,12 @@ private val create = command<CommandSender>("create") {
                             player.updateInventory()
                         }.thenAccept {
                             if (it.isPresent) {
-                                FunctionUtil.parseActions(player, it.get().item, service)
+                                if (item is CommandItem) FunctionUtil.parseActions(
+                                    player,
+                                    it.get().item,
+                                    service,
+                                    item.actions
+                                )
                                 player.sendLang("command-create-success", it.get().item.price.toString())
                                 player.sendMap(ZxingUtil.generate(it.get().qrCode))
                             } else {

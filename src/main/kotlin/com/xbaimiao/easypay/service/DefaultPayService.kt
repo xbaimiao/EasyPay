@@ -3,6 +3,8 @@ package com.xbaimiao.easypay.service
 import com.xbaimiao.easylib.skedule.SchedulerController
 import com.xbaimiao.easylib.skedule.schedule
 import com.xbaimiao.easylib.util.debug
+import com.xbaimiao.easypay.FunctionUtil
+import com.xbaimiao.easypay.api.CommandItem
 import com.xbaimiao.easypay.api.Item
 import com.xbaimiao.easypay.entity.Order
 import com.xbaimiao.easypay.entity.OrderStatus
@@ -66,5 +68,12 @@ interface DefaultPayService : PayService {
     }
 
     fun timeOut(timeout: suspend SchedulerController.(Order) -> Unit, order: Order)
+
+    fun parsePreCreateActions(item: Item, player: Player): Boolean {
+        if (item is CommandItem) {
+            return FunctionUtil.parseActions(player, item, this, item.preActions)
+        }
+        return true
+    }
 
 }

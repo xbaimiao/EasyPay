@@ -11,10 +11,12 @@ import org.bukkit.entity.Player
  * @since 2023/9/13 10:43
  */
 data class CommandItem(
-    override val price: Double,
+    override var price: Double,
     override val name: String,
     private val command: List<String>,
-    val actions: List<String>
+    val actions: List<String>,
+    val preActions: List<String>,
+    val rewards: List<String>
 ) : Item {
 
     override fun sendTo(player: Player) {

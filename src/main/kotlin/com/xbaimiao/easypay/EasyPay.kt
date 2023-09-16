@@ -12,10 +12,7 @@ import com.xbaimiao.easypay.database.Database
 import com.xbaimiao.easypay.database.DefaultDatabase
 import com.xbaimiao.easypay.database.PlaceholderHook
 import com.xbaimiao.easypay.entity.PayServiceProvider
-import com.xbaimiao.easypay.functions.ConditionFunction
-import com.xbaimiao.easypay.functions.MessageFunction
-import com.xbaimiao.easypay.functions.ReturnFunction
-import com.xbaimiao.easypay.functions.TitleFunction
+import com.xbaimiao.easypay.functions.*
 import com.xbaimiao.easypay.service.AlipayService
 import com.xbaimiao.easypay.service.WeChatService
 import com.xbaimiao.ktor.KtorPluginsBukkit
@@ -49,6 +46,19 @@ class EasyPay : EasyPlugin(), KtorStat {
             functionManager.register(MessageFunction(), "消息", "msg")
             functionManager.register(ConditionFunction(), "条件", "如果")
             functionManager.register(ReturnFunction(), "返回", "取消", "结束")
+            functionManager.register(HasPermissionFunction(), "perm", "权限", "permission")
+            functionManager.register(ExecuteFunction(), "执行命令", "执行", "cmd", "exec", "command")
+            functionManager.register(
+                PlayerExecuteFunction(),
+                "玩家命令",
+                "玩家执行",
+                "cmdPlayer",
+                "commandPlayer",
+                "execPlayer",
+                "player"
+            )
+            functionManager.register(CancelOrderFunction(), "取消订单", "取消", "c")
+            functionManager.register(ChangePriceFunction(), "更改价格", "价格", "cost", "amount")
 
             PlaceholderHook.init()
             rootCommand.register()
@@ -103,7 +113,9 @@ class EasyPay : EasyPlugin(), KtorStat {
                     "CommandItem" -> {
                         val commands = section.getStringList("$name.commands")
                         val actions = section.getStringList("$name.actions")
-                        ItemProvider.register(CommandItem(price, name, commands, actions))
+                        val preActions = section.getStringList("$name.pre-actions")
+                        val rewards = section.getStringList("$name.rewards")
+                        ItemProvider.register(CommandItem(price, name, commands, actions, preActions, rewards))
                     }
 
                     else -> warn("未知商品类型 $type")
