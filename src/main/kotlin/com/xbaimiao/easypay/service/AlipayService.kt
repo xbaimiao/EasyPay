@@ -45,9 +45,6 @@ class AlipayService(
     override val name: String = "alipay"
 
     override fun createOrder(player: Player, item: Item): Optional<Order> {
-        if (!item.preCreate(player, this)) {
-            return Optional.empty()
-        }
         val request = AlipayTradePrecreateRequest()
         request.notifyUrl = notify
         val tradeNo = generateOrderId()
@@ -62,9 +59,14 @@ class AlipayService(
         request.bizModel = model
 
         val response = alipayClient.execute(request)
+        val order = Order(tradeNo, item, response.qrCode, this@AlipayService.name, item.price)
+        if (!item.preCreate(player, this, order)) {
+            return Optional.empty()
+        }
+
         if (response.isSuccess) {
             debug("create ${item.name} ${response.body}")
-            return Optional.of(Order(tradeNo, item, response.qrCode, this@AlipayService.name))
+            return Optional.of(order)
         }
         error("create order fail!")
     }

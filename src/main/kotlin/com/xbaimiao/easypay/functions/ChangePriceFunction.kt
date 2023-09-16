@@ -9,7 +9,7 @@ import dev.rgbmc.expression.functions.FunctionResult
 class ChangePriceFunction : FastFunction {
     override fun call(parameter: FunctionParameter?): FunctionResult {
         val playerParameter = parameter!! as PlayerParameter
-        playerParameter.item.price = playerParameter.string.toDouble()
+        playerParameter.order.price = playerParameter.string.toDouble()
         return CancellableResult(true)
     }
 

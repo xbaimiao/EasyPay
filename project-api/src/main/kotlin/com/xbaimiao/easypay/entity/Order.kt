@@ -12,7 +12,8 @@ data class Order(
     val orderId: String,
     val item: Item,
     val qrCode: String,
-    val service: String
+    val service: String,
+    var price: Double
 ) {
 
     /**

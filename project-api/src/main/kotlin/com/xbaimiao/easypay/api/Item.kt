@@ -1,5 +1,6 @@
 package com.xbaimiao.easypay.api
 
+import com.xbaimiao.easypay.entity.Order
 import com.xbaimiao.easypay.entity.PayService
 import org.bukkit.entity.Player
 import java.io.Serializable
@@ -15,7 +16,7 @@ interface Item : Serializable {
     /**
      * 商品价格
      */
-    var price: Double
+    val price: Double
 
     /**
      * 商品名称
@@ -25,16 +26,16 @@ interface Item : Serializable {
     /**
      * 预创建判断
      */
-    fun preCreate(player: Player, service: PayService): Boolean
+    fun preCreate(player: Player, service: PayService, order: Order): Boolean
 
     /**
      * 创建订单成功后执行
      */
-    fun onCreate(player: Player, service: PayService)
+    fun onCreate(player: Player, service: PayService, order: Order)
 
     /**
      * 发货
      */
-    fun sendTo(player: Player, service: PayService)
+    fun sendTo(player: Player, service: PayService, order: Order)
 
 }

@@ -1,7 +1,7 @@
 package com.xbaimiao.easypay
 
 import com.xbaimiao.easylib.bridge.replacePlaceholder
-import com.xbaimiao.easypay.api.Item
+import com.xbaimiao.easypay.entity.Order
 import com.xbaimiao.easypay.entity.PayService
 import com.xbaimiao.easypay.parameters.PlayerParameter
 import com.xbaimiao.easypay.results.CancellableResult
@@ -18,20 +18,20 @@ object FunctionUtil {
         manager: FastExpression,
         player: Player,
         expression: String,
-        item: Item
+        order: Order
     ): List<CallableFunction> {
         val callableFunctions = manager.functionManager.parseExpression(expression)
         for (function in callableFunctions) {
-            function.parameter = PlayerParameter((function.parameter as StringParameter), player, item)
+            function.parameter = PlayerParameter((function.parameter as StringParameter), player, order.item, order)
         }
         return callableFunctions
     }
 
-    fun parseActions(player: Player, item: Item, service: PayService, expressions: List<String>): Boolean {
+    fun parseActions(player: Player, order: Order, service: PayService, expressions: List<String>): Boolean {
         for (line in expressions) {
-            val newLine = line.formatVariables("service", service.name, "player", player.name, "price", item.price)
+            val newLine = line.formatVariables("service", service.name, "player", player.name, "price", order.price)
                 .replacePlaceholder(player)
-            for (function in parseFunctions(functionManager, player, newLine, item)) {
+            for (function in parseFunctions(functionManager, player, newLine, order)) {
                 val cancelableResult = function.callFunction() as CancellableResult
                 if (!cancelableResult.status) break
                 if (cancelableResult.isCancelled) return true

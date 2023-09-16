@@ -59,7 +59,7 @@ private val create = command<CommandSender>("create") {
                                     Database.inst().addOrder(player.name, it)
                                 }
                                 player.updateInventory()
-                                it.item.sendTo(player, service)
+                                it.item.sendTo(player, service, it)
                             },
                             timeout = {
                                 player.updateInventory()
@@ -70,7 +70,7 @@ private val create = command<CommandSender>("create") {
                         }.thenAccept {
                             if (it.isPresent) {
                                 val order = it.get()
-                                order.item.onCreate(player, service)
+                                order.item.onCreate(player, service, order)
                                 player.sendLang("command-create-success", order.item.price.toString())
                                 player.sendMap(ZxingUtil.generate(order.qrCode))
                             } else {

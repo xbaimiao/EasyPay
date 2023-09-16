@@ -52,7 +52,7 @@ class DefaultDatabase(private val sqlDatabase: SQLDatabase) : Database {
         ObjectInputStream(ByteArrayInputStream(getBytes("item_entity"))).use {
             itemEntity = it.readObject() as Item
         }
-        return Order(orderId, itemEntity, getString("qr_code"), getString("service")).also {
+        return Order(orderId, itemEntity, getString("qr_code"), getString("service"), getDouble("price")).also {
             it.player = getString("player")
         }
     }

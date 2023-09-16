@@ -52,9 +52,6 @@ class WeChatService(
     }
 
     override fun createOrder(player: Player, item: Item): Optional<Order> {
-        if (!item.preCreate(player, this)) {
-            return Optional.empty()
-        }
         var newPrice = item.price
         if (list.contains(newPrice)) {
             if (plugin.config.getBoolean("wechat.dynamic-cost")) {
@@ -63,14 +60,16 @@ class WeChatService(
                 while (list.contains(newPrice)) {
                     newPrice += 0.01
                 }
-                // 需要将价格同步到Item中 否则向玩家提示的价格将出现错误 会造成付款金额不正确
-                item.price = newPrice
             } else {
                 // Cancel Order
                 return Optional.empty()
             }
         }
         val tradeNo = generateOrderId()
+        val order = Order(tradeNo, item, qrcodeContent, name, newPrice)
+        if (!item.preCreate(player, this, order)) {
+            return Optional.empty()
+        }
         // Join?
         // 监听已浮动的价格
         val status = walletConnector.createOrder(newPrice).join()
@@ -82,7 +81,7 @@ class WeChatService(
         walletConnector.listenOrder(newPrice) {
             list.remove(newPrice)
         }
-        return Optional.of(Order(tradeNo, item, qrcodeContent, name))
+        return Optional.of(order)
     }
 
     override fun queryOrder(order: Order): OrderStatus {
