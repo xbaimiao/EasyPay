@@ -62,6 +62,7 @@ private val create = command<CommandSender>("create") {
                                 it.item.sendTo(player, service, it)
                             },
                             timeout = {
+                                player.sendLang("command-order-timeout")
                                 player.updateInventory()
                             }
                         ) {
