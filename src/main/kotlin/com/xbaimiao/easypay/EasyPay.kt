@@ -65,6 +65,17 @@ class EasyPay : EasyPlugin(), KtorStat {
         }
     }
 
+    override fun disable() {
+        val weChatService = PayServiceProvider.getService("wechat")
+        if (weChatService != null && (weChatService is WeChatService)) {
+            info("正在断开与WalletMonitor的连接")
+            for (orderPrice in WeChatService.list) {
+                weChatService.walletConnector.orderTimeout(orderPrice)
+            }
+            weChatService.walletConnector.close()
+        }
+    }
+
     fun loadDatabase() {
         val hikariDatabase = if (config.getBoolean("database.mysql.enable")) {
             MysqlHikariDatabase(config.getConfigurationSection("database.mysql"))

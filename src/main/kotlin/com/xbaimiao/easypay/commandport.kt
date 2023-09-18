@@ -73,7 +73,7 @@ private val create = command<CommandSender>("create") {
                             if (it.isPresent) {
                                 val order = it.get()
                                 order.item.onCreate(player, service, order)
-                                player.sendLang("command-create-success", order.item.price.toString())
+                                player.sendLang("command-create-success", order.price.toString())
                                 player.sendMap(ZxingUtil.generate(order.qrCode))
                             } else {
                                 error("failed to get present order")

@@ -24,7 +24,7 @@ class WeChatService(
     private val qrcodeContent: String
 ) : DefaultPayService {
 
-    private val walletConnector: WalletConnector = WalletConnector()
+    val walletConnector: WalletConnector = WalletConnector()
 
     init {
         walletConnector.connect(server)
@@ -94,6 +94,6 @@ class WeChatService(
     }
 
     companion object {
-        private val list: MutableList<Double> = ArrayList()
+        val list: MutableList<Double> = ArrayList()
     }
 }
