@@ -15,6 +15,10 @@ object PayServiceProvider {
         return getAllService().find { it.name == name }
     }
 
+    inline fun <reified T> getService(clazz: Class<out T>): T? {
+        return getAllService().find { it.javaClass.name == clazz.name } as? T
+    }
+
     fun getAllService(): Collection<PayService> {
         return allService.toList()
     }

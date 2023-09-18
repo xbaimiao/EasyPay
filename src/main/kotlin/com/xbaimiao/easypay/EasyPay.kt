@@ -66,8 +66,8 @@ class EasyPay : EasyPlugin(), KtorStat {
     }
 
     override fun disable() {
-        val weChatService = PayServiceProvider.getService("wechat")
-        if (weChatService != null && (weChatService is WeChatService)) {
+        val weChatService = PayServiceProvider.getService(WeChatService::class.java)
+        if (weChatService != null) {
             info("正在断开与WalletMonitor的连接")
             for (orderPrice in WeChatService.list) {
                 weChatService.walletConnector.orderTimeout(orderPrice)
