@@ -84,7 +84,7 @@ object PlaceholderHook : PlaceholderExpansion() {
                         val player = paramsArgs[1]
                         priceCache.getIfPresent(player)?.let { return it }
                         Database.inst().getAllOrder(player)
-                            .sumOf { it.item.price }.toString()
+                            .sumOf { it.price }.toString()
                             .also { priceCache.put(player, it) }
                     }
 
@@ -94,7 +94,7 @@ object PlaceholderHook : PlaceholderExpansion() {
                         priceCache.getIfPresent("$player-$service")?.let { return it }
                         Database.inst().getAllOrder(player)
                             .filter { it.service == service }
-                            .sumOf { it.item.price }
+                            .sumOf { it.price }
                             .toString().also {
                                 priceCache.put("$player-$service", it)
                             }
@@ -114,10 +114,10 @@ object PlaceholderHook : PlaceholderExpansion() {
                             if (orders.isEmpty()) return emptyMap()
                             return orders
                                 // 通过player分组
-                                .groupBy { it.player!! }
+                                .groupBy { it.playName }
                                 // 计算每个player的订单总金额
                                 .map { entry ->
-                                    entry.key to entry.value.sumOf { it.item.price }
+                                    entry.key to entry.value.sumOf { it.price }
                                 }
                                 // 通过金额排序
                                 .sortedByDescending { it.second }

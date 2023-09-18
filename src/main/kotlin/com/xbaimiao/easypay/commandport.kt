@@ -10,6 +10,7 @@ import com.xbaimiao.easylib.skedule.schedule
 import com.xbaimiao.easylib.util.plugin
 import com.xbaimiao.easypay.api.ItemProvider
 import com.xbaimiao.easypay.database.Database
+import com.xbaimiao.easypay.database.OrderData
 import com.xbaimiao.easypay.entity.PayServiceProvider
 import org.bukkit.command.CommandSender
 
@@ -56,7 +57,7 @@ private val create = command<CommandSender>("create") {
                             item = item,
                             call = {
                                 async {
-                                    Database.inst().addOrder(player.name, it)
+                                    Database.inst().addOrder(player.name, OrderData.fromOrder(it, player.name))
                                 }
                                 player.updateInventory()
                                 it.item.sendTo(player, service, it)

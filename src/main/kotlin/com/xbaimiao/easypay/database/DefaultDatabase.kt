@@ -2,12 +2,6 @@ package com.xbaimiao.easypay.database
 
 import com.google.common.cache.CacheBuilder
 import com.xbaimiao.easylib.database.SQLDatabase
-import com.xbaimiao.easypay.api.Item
-import com.xbaimiao.easypay.entity.Order
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.io.ObjectInputStream
-import java.io.ObjectOutputStream
 import java.sql.ResultSet
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -27,7 +21,7 @@ class DefaultDatabase(private val sqlDatabase: SQLDatabase) : Database {
     private val orderCache = CacheBuilder
         .newBuilder()
         .expireAfterWrite(3, TimeUnit.SECONDS)
-        .build<String, Collection<Order>>()
+        .build<String, Collection<OrderData>>()
 
     init {
         sqlDatabase.useConnection { connection ->
@@ -46,27 +40,29 @@ class DefaultDatabase(private val sqlDatabase: SQLDatabase) : Database {
         }
     }
 
-    private fun ResultSet.toOrder(): Order {
+    private fun ResultSet.toOrderData(): OrderData {
         val orderId = getString("order_id")
-        val itemEntity: Item
-        ObjectInputStream(ByteArrayInputStream(getBytes("item_entity"))).use {
-            itemEntity = it.readObject() as Item
-        }
-        return Order(orderId, itemEntity, getString("qr_code"), getString("service"), getDouble("price")).also {
-            it.player = getString("player")
-        }
+        val item = runCatching { String(getBytes("item_entity")) }.getOrElse { "Legacy" }
+        return OrderData(
+            orderId,
+            item,
+            getString("qr_code"),
+            getString("service"),
+            getDouble("price"),
+            getString("player")
+        )
     }
 
-    override fun getAllOrder(): Collection<Order> {
+    override fun getAllOrder(): Collection<OrderData> {
         orderCache.getIfPresent(allCacheKey)?.let { return it }
 
         return sqlDatabase.useConnection { connection ->
-            val allOrder = ArrayList<Order>()
+            val allOrder = ArrayList<OrderData>()
 
             val statement = connection.prepareStatement("SELECT * FROM $table;")
             statement.executeQuery().use { resultSet ->
                 while (resultSet.next()) {
-                    allOrder.add(resultSet.toOrder())
+                    allOrder.add(resultSet.toOrderData())
                 }
             }
             statement.close()
@@ -75,17 +71,17 @@ class DefaultDatabase(private val sqlDatabase: SQLDatabase) : Database {
         }
     }
 
-    override fun getAllOrder(playerName: String): Collection<Order> {
+    override fun getAllOrder(playerName: String): Collection<OrderData> {
         orderCache.getIfPresent(playerName)?.let { return it }
 
         return sqlDatabase.useConnection { connection ->
-            val allOrder = ArrayList<Order>()
+            val allOrder = ArrayList<OrderData>()
 
-            val statement = connection.prepareStatement("SELECT * FROM $table WHERE player=?;")
+            val statement = connection.prepareStatement("SELECT * FROM `$table` WHERE `player`=?;")
             statement.setString(1, playerName)
             statement.executeQuery().use { resultSet ->
                 while (resultSet.next()) {
-                    allOrder.add(resultSet.toOrder())
+                    allOrder.add(resultSet.toOrderData())
                 }
             }
             statement.close()
@@ -94,19 +90,14 @@ class DefaultDatabase(private val sqlDatabase: SQLDatabase) : Database {
         }
     }
 
-    override fun addOrder(playerName: String, order: Order) {
-        val out = ByteArrayOutputStream()
-        ObjectOutputStream(out).use {
-            it.writeObject(order.item)
-        }
-
+    override fun addOrder(playerName: String, order: OrderData) {
         sqlDatabase.useConnection { connection ->
             val statement = connection.prepareStatement("INSERT INTO `$table` VALUES (?,?,?,?,?,?,?);")
             statement.setString(1, playerName)
             statement.setString(2, order.orderId)
-            statement.setString(3, order.item.name)
-            statement.setBytes(4, out.toByteArray())
-            statement.setDouble(5, order.item.price)
+            statement.setString(3, order.item)
+            statement.setBytes(4, order.item.toByteArray())
+            statement.setDouble(5, order.price)
             statement.setString(6, order.qrCode)
             statement.setString(7, order.service)
             statement.use { it.executeUpdate() }

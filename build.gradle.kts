@@ -1,6 +1,3 @@
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-
 plugins {
     java
     id("com.github.johnrengelman.shadow") version ("7.1.2")
@@ -19,7 +16,7 @@ easylib {
 }
 
 group = "com.xbaimiao.easypay"
-version = "1.0.1"
+version = "1.0.3"
 
 repositories {
     mavenLocal()
@@ -67,7 +64,7 @@ tasks {
     }
     processResources {
         val props = ArrayList<Pair<String, Any>>()
-        props.add("version" to "${LocalDate.now().format(DateTimeFormatter.ofPattern("y.M.d"))}-${rootProject.version}")
+        props.add("version" to "${rootProject.version}")
         props.add("main" to "${project.rootProject.group}.${project.rootProject.name}")
         props.add("name" to project.rootProject.name)
         filesMatching("plugin.yml") {

@@ -14,11 +14,4 @@ data class Order(
     val qrCode: String,
     val service: String,
     var price: Double
-) {
-
-    /**
-     * 从数据库获取的Order player不会为空
-     */
-    var player: String? = null
-
-}
+)
