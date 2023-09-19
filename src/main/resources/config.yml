@@ -65,7 +65,7 @@ builtin:
       - 'return()'
     # 订单完成后执行 (解析式)
     rewards:
-      - 'if("%easypay_price_$player%" == "0") msg(&a您是第一次充值)'
+      - 'if(%easypay_price_$player% == 0) msg(&a您是第一次充值)'
     # 执行的命令
     commands:
       - 'say %player_name% 您充值了 %custom_amount% 点券'
@@ -82,6 +82,6 @@ items:
     pre-actions:
       - 'return()'
     rewards:
-      - 'if("%easypay_price_$player%" == "0") msg(&a您是第一次充值)'
+      - 'if(%easypay_price_$player% == 0) msg(&a您是第一次充值)'
     commands:
       - 'say %player_name% 您购买成功了 %item_name%'

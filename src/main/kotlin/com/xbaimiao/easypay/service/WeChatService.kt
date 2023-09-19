@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture
  * @since 2023/9/13 14:38
  */
 class WeChatService(
-    private val server: String,
+    server: String,
     private val qrcodeContent: String
 ) : DefaultPayService {
 
@@ -31,8 +31,9 @@ class WeChatService(
 
     override fun timeOut(timeout: suspend SchedulerController.(Order) -> Unit, order: Order) {
         schedule {
+            list.remove(order.price)
             async {
-                walletConnector.orderTimeout(order.item.price)
+                walletConnector.orderTimeout(order.price)
             }
             timeout.invoke(this, order)
         }
@@ -89,8 +90,8 @@ class WeChatService(
     }
 
     override fun queryOrder(order: Order): OrderStatus {
-        debug("queryWechat $order Price: ${order.item.price}")
-        return when (list.contains(order.item.price)) {
+        debug("queryWechat $order Price: ${order.price}")
+        return when (list.contains(order.price)) {
             // 支付成功
             false -> OrderStatus.SUCCESS
             else -> OrderStatus.WAIT_SCAN
