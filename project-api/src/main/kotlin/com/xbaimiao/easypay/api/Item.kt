@@ -3,7 +3,6 @@ package com.xbaimiao.easypay.api
 import com.xbaimiao.easypay.entity.Order
 import com.xbaimiao.easypay.entity.PayService
 import org.bukkit.entity.Player
-import java.io.Serializable
 
 /**
  * Item
@@ -11,7 +10,7 @@ import java.io.Serializable
  * @author xbaimiao
  * @since 2023/9/12 23:01
  */
-interface Item : Serializable {
+interface Item {
 
     /**
      * 商品价格

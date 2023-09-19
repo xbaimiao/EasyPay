@@ -15,10 +15,13 @@ import com.xbaimiao.easypay.database.PlaceholderHook
 import com.xbaimiao.easypay.entity.PayServiceProvider
 import com.xbaimiao.easypay.functions.*
 import com.xbaimiao.easypay.item.CommandItem
+import com.xbaimiao.easypay.item.CustomConfiguration
+import com.xbaimiao.easypay.item.CustomPriceItemConfig
 import com.xbaimiao.easypay.map.MapUtilProvider
 import com.xbaimiao.easypay.map.VirtualMap
 import com.xbaimiao.easypay.service.AlipayService
 import com.xbaimiao.easypay.service.WeChatService
+import com.xbaimiao.easypay.util.FunctionUtil
 import com.xbaimiao.ktor.KtorPluginsBukkit
 import com.xbaimiao.ktor.KtorStat
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder
@@ -54,6 +57,7 @@ class EasyPay : EasyPlugin(), KtorStat {
             stat()
             saveDefaultConfig()
 
+            loadCustomConfig()
             loadMap()
             loadServices()
             loadItems()
@@ -93,6 +97,21 @@ class EasyPay : EasyPlugin(), KtorStat {
             weChatService.walletConnector.close()
         }
         PacketEvents.getAPI().terminate()
+    }
+
+    fun loadCustomConfig() {
+        val section = config.getConfigurationSection("builtin.CustomPriceItem")
+        val customPriceItemConfig = CustomPriceItemConfig(
+            section.getInt("min"),
+            section.getInt("max"),
+            section.getInt("ratio"),
+            section.getStringList("actions"),
+            section.getStringList("pre-actions"),
+            section.getStringList("rewards"),
+            section.getStringList("commands"),
+            section.getString("name")
+        )
+        CustomConfiguration.setCustomPriceItemConfig(customPriceItemConfig)
     }
 
     fun loadMap() {

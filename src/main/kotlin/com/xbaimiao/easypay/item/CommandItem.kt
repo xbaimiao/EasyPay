@@ -1,10 +1,9 @@
 package com.xbaimiao.easypay.item
 
 import com.xbaimiao.easylib.util.eu.parseECommand
-import com.xbaimiao.easypay.FunctionUtil
-import com.xbaimiao.easypay.api.Item
 import com.xbaimiao.easypay.entity.Order
 import com.xbaimiao.easypay.entity.PayService
+import com.xbaimiao.easypay.util.FunctionUtil
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
@@ -21,15 +20,7 @@ data class CommandItem(
     private val actions: List<String>,
     private val preActions: List<String>,
     private val rewards: List<String>
-) : Item {
-
-    override fun preCreate(player: Player, service: PayService, order: Order): Boolean {
-        return FunctionUtil.parseActions(player, order, service, preActions)
-    }
-
-    override fun onCreate(player: Player, service: PayService, order: Order) {
-        FunctionUtil.parseActions(player, order, service, actions)
-    }
+) : AbstractItem(actions, preActions) {
 
     override fun sendTo(player: Player, service: PayService, order: Order) {
         val cmdList = command.toMutableList()
@@ -37,10 +28,6 @@ data class CommandItem(
         cmdList.parseECommand(player).exec(Bukkit.getConsoleSender())
 
         FunctionUtil.parseActions(player, order, service, rewards)
-    }
-
-    companion object {
-        private const val serialVersionUID: Long = -8192333653275672125L
     }
 
 }

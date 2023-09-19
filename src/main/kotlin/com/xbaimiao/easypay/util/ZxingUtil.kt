@@ -1,4 +1,4 @@
-package com.xbaimiao.easypay
+package com.xbaimiao.easypay.util
 
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType

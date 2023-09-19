@@ -1,4 +1,4 @@
-package com.xbaimiao.easypay
+package com.xbaimiao.easypay.util
 
 import com.xbaimiao.easylib.bridge.replacePlaceholder
 import com.xbaimiao.easypay.entity.Order

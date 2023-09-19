@@ -7,12 +7,17 @@ import com.xbaimiao.easylib.command.debugCommand
 import com.xbaimiao.easylib.skedule.SynchronizationContext
 import com.xbaimiao.easylib.skedule.schedule
 import com.xbaimiao.easylib.util.plugin
+import com.xbaimiao.easypay.api.Item
 import com.xbaimiao.easypay.api.ItemProvider
 import com.xbaimiao.easypay.database.Database
 import com.xbaimiao.easypay.database.OrderData
+import com.xbaimiao.easypay.entity.PayService
 import com.xbaimiao.easypay.entity.PayServiceProvider
+import com.xbaimiao.easypay.item.CustomConfiguration
 import com.xbaimiao.easypay.map.MapUtilProvider
+import com.xbaimiao.easypay.util.ZxingUtil
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
 
 /**
  * commandport
@@ -20,6 +25,47 @@ import org.bukkit.command.CommandSender
  * @author xbaimiao
  * @since 2023/9/13 10:27
  */
+private fun handle(player: Player, item: Item, service: PayService) {
+    player.sendLang("command-create-start")
+    service.createOrderCall(
+        player = player,
+        item = item,
+        call = {
+            async {
+                Database.inst().addOrder(player.name, OrderData.fromOrder(it, player.name))
+            }
+            player.updateInventory()
+            it.item.sendTo(player, service, it)
+        },
+        timeout = {
+            player.sendLang("command-order-timeout")
+            player.updateInventory()
+        }
+    ) {
+        player.sendLang("command-item-cancel")
+        player.updateInventory()
+    }.thenAccept { order ->
+        if (order != null) {
+            schedule {
+                val qr = async {
+                    ZxingUtil.generate(order.qrCode)
+                }
+                order.item.onCreate(player, service, order)
+                player.sendLang("command-create-success", order.price.toString())
+                MapUtilProvider.getMapUtil().sendMap(player, qr) {
+                    if (MapUtilProvider.getMapUtil().cancelOnDrop) {
+                        order.close()
+                    }
+                    player.sendLang("command-close-order")
+                    player.updateInventory()
+                }
+            }
+        } else {
+            player.sendLang("command-create-fail")
+        }
+    }
+}
+
 private val payServiceArgNode = ArgNode("支付服务", exec = { token ->
     PayServiceProvider.getAllService().map { it.name }.filter { it.lowercase().startsWith(token.lowercase()) }
 }, parse = {
@@ -51,44 +97,34 @@ private val create = command<CommandSender>("create") {
                         return@exec
                     }
                     players.forEach { player ->
-                        player.sendLang("command-create-start")
-                        service.createOrderCall(
-                            player = player,
-                            item = item,
-                            call = {
-                                async {
-                                    Database.inst().addOrder(player.name, OrderData.fromOrder(it, player.name))
-                                }
-                                player.updateInventory()
-                                it.item.sendTo(player, service, it)
-                            },
-                            timeout = {
-                                player.sendLang("command-order-timeout")
-                                player.updateInventory()
-                            }
-                        ) {
-                            player.sendLang("command-item-cancel")
-                            player.updateInventory()
-                        }.thenAccept { order ->
-                            if (order != null) {
-                                schedule {
-                                    val qr = async {
-                                        ZxingUtil.generate(order.qrCode)
-                                    }
-                                    order.item.onCreate(player, service, order)
-                                    player.sendLang("command-create-success", order.price.toString())
-                                    MapUtilProvider.getMapUtil().sendMap(player, qr) {
-                                        if (MapUtilProvider.getMapUtil().cancelOnDrop) {
-                                            order.close()
-                                        }
-                                        player.sendLang("command-close-order")
-                                        player.updateInventory()
-                                    }
-                                }
-                            } else {
-                                player.sendLang("command-create-fail")
-                            }
-                        }
+                        handle(player, item, service)
+                    }
+                }
+            }
+        }
+    }
+}
+
+private val custom = command<CommandSender>("custom") {
+    permission = "easypay.command.custom"
+    description = "自定义金额充值"
+    onlinePlayers { playerArg ->
+        arg(payServiceArgNode) { serviceArg ->
+            number { numberArg ->
+                exec {
+                    val players = valueOf(playerArg)
+                    val service = valueOf(serviceArg)
+                    if (service == null) {
+                        sender.sendLang("command-service-null", valueToString(serviceArg))
+                        return@exec
+                    }
+                    val price = valueOf(numberArg)
+                    for (player in players) {
+                        handle(
+                            player,
+                            CustomConfiguration.getCustomPriceItemConfig().createItem(price),
+                            service
+                        )
                     }
                 }
             }
@@ -118,6 +154,7 @@ private val reload = command<CommandSender>("reload") {
     exec {
         val p = plugin as EasyPay
         p.reloadConfig()
+        p.loadCustomConfig()
         p.loadMap()
         p.loadDatabase()
         p.loadServices()
@@ -130,6 +167,7 @@ val rootCommand = command<CommandSender>("easypay") {
     description = "主要命令"
     permission = "easypay.command"
     sub(create)
+    sub(custom)
     sub(printAllOrder)
     sub(reload)
     sub(debugCommand)

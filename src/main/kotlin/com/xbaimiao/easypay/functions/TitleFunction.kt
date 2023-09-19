@@ -1,7 +1,7 @@
 package com.xbaimiao.easypay.functions
 
 import com.xbaimiao.easylib.chat.colored
-import com.xbaimiao.easypay.FunctionUtil.argumentArray
+import com.xbaimiao.easypay.util.FunctionUtil.argumentArray
 import com.xbaimiao.easypay.parameters.PlayerParameter
 import com.xbaimiao.easypay.results.CancellableResult
 import dev.rgbmc.expression.functions.FastFunction
