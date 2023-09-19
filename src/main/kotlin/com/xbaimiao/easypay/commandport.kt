@@ -78,11 +78,10 @@ private val create = command<CommandSender>("create") {
                                     order.item.onCreate(player, service, order)
                                     player.sendLang("command-create-success", order.price.toString())
                                     MapUtilProvider.getMapUtil().sendMap(player, qr) {
-                                        // onDrop Map
                                         if (MapUtilProvider.getMapUtil().cancelOnDrop) {
                                             order.close()
-                                            player.sendLang("command-close-order")
                                         }
+                                        player.sendLang("command-close-order")
                                         player.updateInventory()
                                     }
                                 }
