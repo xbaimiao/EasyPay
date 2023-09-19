@@ -1,8 +1,10 @@
 package com.xbaimiao.easypay
 
+import com.github.retrooper.packetevents.PacketEvents
 import com.xbaimiao.easylib.EasyPlugin
 import com.xbaimiao.easylib.database.MysqlHikariDatabase
 import com.xbaimiao.easylib.database.SQLiteHikariDatabase
+import com.xbaimiao.easylib.nms.NMSMap
 import com.xbaimiao.easylib.skedule.schedule
 import com.xbaimiao.easylib.util.info
 import com.xbaimiao.easylib.util.warn
@@ -13,30 +15,46 @@ import com.xbaimiao.easypay.database.PlaceholderHook
 import com.xbaimiao.easypay.entity.PayServiceProvider
 import com.xbaimiao.easypay.functions.*
 import com.xbaimiao.easypay.item.CommandItem
+import com.xbaimiao.easypay.map.MapUtilProvider
+import com.xbaimiao.easypay.map.VirtualMap
 import com.xbaimiao.easypay.service.AlipayService
 import com.xbaimiao.easypay.service.WeChatService
 import com.xbaimiao.ktor.KtorPluginsBukkit
 import com.xbaimiao.ktor.KtorStat
+import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder
 
 @Suppress("unused")
 class EasyPay : EasyPlugin(), KtorStat {
 
+    override fun load() {
+        info("Loading PacketEvents...")
+
+        PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this))
+        PacketEvents.getAPI().settings.bStats(true).checkForUpdates(false).debug(false)
+        PacketEvents.getAPI().load()
+    }
+
     override fun enable() {
+        PacketEvents.getAPI().init()
         schedule {
             // 初始化统计
             KtorPluginsBukkit.init(this@EasyPay, this@EasyPay)
             // userId 是用户Id 如果获取的时候报错 代表没有注入用户ID
-            info("$userId 感谢您的支持!")
-            val has = async {
-                hasPlugin("EasyPay")
-            }
-            if (!has) {
-                error("$userId 未从您的购买列表 未找到EasyPay插件 无法使用")
+            val userId = runCatching { userId }.getOrNull()
+            if (userId != null) {
+                info("$userId 感谢您的支持!")
+                val has = async {
+                    hasPlugin("EasyPay")
+                }
+                if (!has) {
+                    error("$userId 未从您的购买列表 未找到EasyPay插件 无法使用")
+                }
             }
             // 统计服务器在线的方法
             stat()
             saveDefaultConfig()
 
+            loadMap()
             loadServices()
             loadItems()
             loadDatabase()
@@ -74,6 +92,17 @@ class EasyPay : EasyPlugin(), KtorStat {
             }
             weChatService.walletConnector.close()
         }
+        PacketEvents.getAPI().terminate()
+    }
+
+    fun loadMap() {
+        val cancelOnDrop = config.getBoolean("map.cancel-on-drop")
+        MapUtilProvider.setMapUtil(
+            VirtualMap(
+                NMSMap.Hand.valueOf(config.getString("map.hand").uppercase()),
+                cancelOnDrop
+            )
+        )
     }
 
     fun loadDatabase() {

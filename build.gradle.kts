@@ -6,7 +6,7 @@ plugins {
 }
 
 easylib {
-    version = "3.0.5"
+    version = "3.0.7"
     nbt = false
     hikariCP = true
     ormlite = false
@@ -16,13 +16,16 @@ easylib {
 }
 
 group = "com.xbaimiao.easypay"
-version = "1.0.3"
+version = "1.0.4"
 
 repositories {
     mavenLocal()
     mavenCentral()
     maven {
         url = uri("https://repo.fastmcmirror.org/content/repositories/releases/")
+    }
+    maven {
+        url = uri("https://repo.codemc.io/repository/maven-releases/")
     }
 }
 
@@ -50,6 +53,8 @@ dependencies {
     implementation("dev.rgbmc:FastExpression:1.0.0-a0aa2c1")
     implementation("com.ezylang:EvalEx:3.0.5")
     implementation("com.xbaimiao.ktor:ktor-plugins-bukkit:1.0.8")
+    implementation("com.github.retrooper.packetevents:spigot:2.0.2")
+
     //implementation("com.google.code.gson:gson:2.10.1")
 }
 
@@ -106,6 +111,8 @@ tasks {
         relocate("com.alipay.api", "${project.group}.shadow.com.alipay.api")
         relocate("com.google.zxing", "${project.group}.shadow.zxing")
         relocate("_COROUTINE", "${project.group}.shadow.COROUTINE")
+        relocate("com.github.retrooper", "${project.group}.shadow.retrooper")
+        relocate("io.github.retrooper", "${project.group}.shadow.retrooper")
         minimize()
     }
 }

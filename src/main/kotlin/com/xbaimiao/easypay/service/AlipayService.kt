@@ -13,7 +13,6 @@ import com.xbaimiao.easypay.api.Item
 import com.xbaimiao.easypay.entity.Order
 import com.xbaimiao.easypay.entity.OrderStatus
 import org.bukkit.entity.Player
-import java.util.*
 
 /**
  * AlipayService
@@ -44,7 +43,7 @@ class AlipayService(
 
     override val name: String = "alipay"
 
-    override fun createOrder(player: Player, item: Item): Optional<Order> {
+    override fun createOrder(player: Player, item: Item): Order? {
         val request = AlipayTradePrecreateRequest()
         request.notifyUrl = notify
         val tradeNo = generateOrderId()
@@ -59,16 +58,16 @@ class AlipayService(
         request.bizModel = model
 
         val response = alipayClient.execute(request)
-        val order = Order(tradeNo, item, response.qrCode, this@AlipayService.name, item.price)
+        val order = Order(tradeNo, item, response.qrCode, this, item.price)
         if (!item.preCreate(player, this, order)) {
-            return Optional.empty()
+            return null
         }
 
         if (response.isSuccess) {
             debug("create ${item.name} ${response.body}")
-            return Optional.of(order)
+            return order
         }
-        error("create order fail!")
+        return null
     }
 
     override fun queryOrder(order: Order): OrderStatus {

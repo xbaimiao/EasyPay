@@ -6,3 +6,5 @@ command-wechat-dynamic-cost: "&7[&e&l!&7]&e 当前订单金额已被锁定, 将�
 command-create-success: '&7[&e&l!&7]&7 订单创建成功, 请支付 {0} 元'
 command-order-timeout: "&7[&e&l!&7]&c 订单超时已被取消!"
 command-reload: '&7[&e&l!&7]&7 重载成功'
+command-close-order: '&7[&e&l!&7]&7 您丢弃了地图,订单已关闭'
+command-create-fail: '&7[&e&l!&7]&c 订单创建失败, 请稍后再试'

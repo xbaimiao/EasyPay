@@ -4,7 +4,6 @@ import com.xbaimiao.easylib.chat.Lang.sendLang
 import com.xbaimiao.easylib.command.ArgNode
 import com.xbaimiao.easylib.command.command
 import com.xbaimiao.easylib.command.debugCommand
-import com.xbaimiao.easylib.nms.sendMap
 import com.xbaimiao.easylib.skedule.SynchronizationContext
 import com.xbaimiao.easylib.skedule.schedule
 import com.xbaimiao.easylib.util.plugin
@@ -12,6 +11,7 @@ import com.xbaimiao.easypay.api.ItemProvider
 import com.xbaimiao.easypay.database.Database
 import com.xbaimiao.easypay.database.OrderData
 import com.xbaimiao.easypay.entity.PayServiceProvider
+import com.xbaimiao.easypay.map.MapUtilProvider
 import org.bukkit.command.CommandSender
 
 /**
@@ -69,14 +69,25 @@ private val create = command<CommandSender>("create") {
                         ) {
                             player.sendLang("command-item-cancel")
                             player.updateInventory()
-                        }.thenAccept {
-                            if (it.isPresent) {
-                                val order = it.get()
-                                order.item.onCreate(player, service, order)
-                                player.sendLang("command-create-success", order.price.toString())
-                                player.sendMap(ZxingUtil.generate(order.qrCode))
+                        }.thenAccept { order ->
+                            if (order != null) {
+                                schedule {
+                                    val qr = async {
+                                        ZxingUtil.generate(order.qrCode)
+                                    }
+                                    order.item.onCreate(player, service, order)
+                                    player.sendLang("command-create-success", order.price.toString())
+                                    MapUtilProvider.getMapUtil().sendMap(player, qr) {
+                                        // onDrop Map
+                                        if (MapUtilProvider.getMapUtil().cancelOnDrop) {
+                                            order.close()
+                                            player.sendLang("command-close-order")
+                                        }
+                                        player.updateInventory()
+                                    }
+                                }
                             } else {
-                                error("failed to get present order")
+                                player.sendLang("command-create-fail")
                             }
                         }
                     }
@@ -89,14 +100,13 @@ private val create = command<CommandSender>("create") {
 private val printAllOrder = command<CommandSender>("print") {
     permission = "easypay.command.print"
     description = "打印指定玩家所有订单"
-    onlinePlayers { playerArg ->
+    offlinePlayers { playerArg ->
         exec {
             schedule(SynchronizationContext.ASYNC) {
-                for (player in valueOf(playerArg)) {
-                    sender.sendMessage(player.name)
-                    for (order in Database.inst().getAllOrder(player.name)) {
-                        sender.sendMessage(order.toString())
-                    }
+                val player = valueOf(playerArg)
+                sender.sendMessage(player)
+                for (order in Database.inst().getAllOrder(player)) {
+                    sender.sendMessage(order.toString())
                 }
             }
         }
@@ -109,6 +119,7 @@ private val reload = command<CommandSender>("reload") {
     exec {
         val p = plugin as EasyPay
         p.reloadConfig()
+        p.loadMap()
         p.loadDatabase()
         p.loadServices()
         p.loadItems()

@@ -3,7 +3,6 @@ package com.xbaimiao.easypay.entity
 import com.xbaimiao.easylib.skedule.SchedulerController
 import com.xbaimiao.easypay.api.Item
 import org.bukkit.entity.Player
-import java.util.*
 import java.util.concurrent.CompletableFuture
 import kotlin.math.roundToInt
 
@@ -20,7 +19,12 @@ interface PayService {
     /**
      * 创建一个订单 此方法为同步创建 会占用主线程资源 推荐使用 [createOrderCall]
      */
-    fun createOrder(player: Player, item: Item): Optional<Order>
+    fun createOrder(player: Player, item: Item): Order?
+
+    /**
+     * 查询订单状态 此方法为同步查询 会占用主线程资源 推荐异步调用 或使用 [createOrderCall]
+     */
+    fun queryOrder(order: Order): OrderStatus
 
     /**
      * 创建一个订单并在支付完成后回调
@@ -38,13 +42,16 @@ interface PayService {
         call: suspend SchedulerController.(Order) -> Unit,
         timeout: suspend SchedulerController.(Order) -> Unit,
         cancel: () -> Unit
-    ): CompletableFuture<Optional<Order>>
+    ): CompletableFuture<Order?>
 
     /**
-     * 查询订单状态 此方法为同步查询 会占用主线程资源 推荐异步调用 或使用 [createOrderCall]
+     * 关闭一个订单
      */
-    fun queryOrder(order: Order): OrderStatus
+    fun close(order: Order)
 
+    /**
+     * 生成一个订单号
+     */
     fun generateOrderId(): String {
         return (System.currentTimeMillis() + (Math.random() * 10000000L).roundToInt()).toString()
     }

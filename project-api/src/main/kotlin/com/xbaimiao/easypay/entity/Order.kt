@@ -12,6 +12,12 @@ data class Order(
     val orderId: String,
     val item: Item,
     val qrCode: String,
-    val service: String,
+    val service: PayService,
     var price: Double
-)
+) {
+
+    fun close() {
+        service.close(this)
+    }
+
+}

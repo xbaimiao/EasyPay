@@ -8,10 +8,14 @@ import com.xbaimiao.easypay.entity.Order
 import com.xbaimiao.easypay.entity.OrderStatus
 import com.xbaimiao.easypay.entity.PayService
 import org.bukkit.entity.Player
-import java.util.*
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ConcurrentLinkedQueue
 
 interface DefaultPayService : PayService {
+
+    companion object {
+        private val closeOrderList = ConcurrentLinkedQueue<String>()
+    }
 
     override fun createOrderCall(
         player: Player,
@@ -19,8 +23,12 @@ interface DefaultPayService : PayService {
         call: suspend SchedulerController.(Order) -> Unit,
         timeout: suspend SchedulerController.(Order) -> Unit,
         cancel: () -> Unit
-    ): CompletableFuture<Optional<Order>> {
+    ): CompletableFuture<Order?> {
         return createOrderCall(player, item, call, timeout, cancel, 60 * 5)
+    }
+
+    override fun close(order: Order) {
+        closeOrderList.add(order.orderId)
     }
 
     fun createOrderCall(
@@ -30,21 +38,27 @@ interface DefaultPayService : PayService {
         timeout: suspend SchedulerController.(Order) -> Unit,
         cancel: () -> Unit,
         waitTime: Int
-    ): CompletableFuture<Optional<Order>> {
-        val future = CompletableFuture<Optional<Order>>()
+    ): CompletableFuture<Order?> {
+        val future = CompletableFuture<Order?>()
         schedule {
-            val orderOptional = async {
+            val order = async {
                 createOrder(player, item)
             }
-            if (!orderOptional.isPresent) {
+            if (order == null) {
                 debug("订单创建失败 ${this@DefaultPayService::class.java.simpleName}")
                 cancel.invoke()
                 return@schedule
             }
-            val order = orderOptional.get()
-            future.complete(orderOptional)
+            future.complete(order)
             // 查询5分钟 查询一次等待1秒
             for (index in 0..(waitTime)) {
+                val close = async {
+                    closeOrderList.remove(order.orderId)
+                }
+                if (close) {
+                    debug("订单被关闭 ${order.orderId}")
+                    return@schedule
+                }
                 val status = async {
                     debug("查询订单 ${order.orderId}")
                     queryOrder(order)

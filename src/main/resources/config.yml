@@ -26,6 +26,13 @@ wechat:
   dynamic-cost: false
   # 订单等待时长 (单位: 秒) 超时取消订单
   wait-time: 60
+map:
+  # virtual 为虚拟 real 为真实的物品 real尚未实现
+  type: 'virtual'
+  # 地图放置位置 MAIN 为主手 OFF 为副手
+  hand: 'MAIN'
+  # 是否在地图丢弃时取消订单
+  cancel-on-drop: false
 database:
   mysql:
     # 是否启用mysql 不启用使用sqlite

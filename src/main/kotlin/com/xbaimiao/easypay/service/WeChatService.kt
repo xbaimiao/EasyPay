@@ -10,7 +10,6 @@ import com.xbaimiao.easypay.entity.Order
 import com.xbaimiao.easypay.entity.OrderStatus
 import dev.rgbmc.walletconnector.WalletConnector
 import org.bukkit.entity.Player
-import java.util.*
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -47,11 +46,16 @@ class WeChatService(
         call: suspend SchedulerController.(Order) -> Unit,
         timeout: suspend SchedulerController.(Order) -> Unit,
         cancel: () -> Unit
-    ): CompletableFuture<Optional<Order>> {
+    ): CompletableFuture<Order?> {
         return super.createOrderCall(player, item, call, timeout, cancel, plugin.config.getInt("wechat.wait-time"))
     }
 
-    override fun createOrder(player: Player, item: Item): Optional<Order> {
+    override fun close(order: Order) {
+        super.close(order)
+        walletConnector.orderTimeout(order.item.price)
+    }
+
+    override fun createOrder(player: Player, item: Item): Order? {
         var newPrice = item.price
         if (list.contains(newPrice)) {
             if (plugin.config.getBoolean("wechat.dynamic-cost")) {
@@ -62,26 +66,26 @@ class WeChatService(
                 }
             } else {
                 // Cancel Order
-                return Optional.empty()
+                return null
             }
         }
         val tradeNo = generateOrderId()
-        val order = Order(tradeNo, item, qrcodeContent, name, newPrice)
+        val order = Order(tradeNo, item, qrcodeContent, this, newPrice)
         if (!item.preCreate(player, this, order)) {
-            return Optional.empty()
+            return null
         }
         // Join?
         // 监听已浮动的价格
         val status = walletConnector.createOrder(newPrice).join()
         if (!status) {
             // Cancel Order [multi-servers]
-            return Optional.empty()
+            return null
         }
         list.add(newPrice)
         walletConnector.listenOrder(newPrice) {
             list.remove(newPrice)
         }
-        return Optional.of(order)
+        return order
     }
 
     override fun queryOrder(order: Order): OrderStatus {

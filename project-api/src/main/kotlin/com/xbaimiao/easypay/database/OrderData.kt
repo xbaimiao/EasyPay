@@ -22,7 +22,7 @@ data class OrderData(
             order.orderId,
             order.item.name,
             order.qrCode,
-            order.service,
+            order.service.name,
             order.price,
             playName
         )
