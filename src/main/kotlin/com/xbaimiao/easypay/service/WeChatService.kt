@@ -26,6 +26,7 @@ class WeChatService(
     val walletConnector: WalletConnector = WalletConnector()
 
     init {
+        WalletConnector.setReconnect(true)
         walletConnector.connect(server)
     }
 

@@ -49,7 +49,7 @@ dependencies {
     implementation("com.alipay.sdk:alipay-sdk-java:4.38.72.ALL")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
     implementation("com.google.zxing:core:3.5.2")
-    implementation("dev.rgbmc:WalletConnector:1.0.0-0a852a9")
+    implementation("dev.rgbmc:WalletConnector:1.0.0-cc9b05d")
     implementation("dev.rgbmc:FastExpression:1.0.0-a0aa2c1")
     implementation("com.ezylang:EvalEx:3.0.5")
     implementation("com.xbaimiao.ktor:ktor-plugins-bukkit:1.0.8")
