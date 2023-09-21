@@ -54,6 +54,7 @@ class WeChatService(
 
     override fun close(order: Order) {
         super.close(order)
+        list.remove(order.price)
         walletConnector.orderTimeout(order.item.price)
     }
 
