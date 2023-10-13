@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit
 class DefaultDatabase(private val sqlDatabase: SQLDatabase) : Database {
 
     private val table = "easy_pay_order"
+    private val rewardTable = "easy_pay_reward"
     private val allCacheKey = UUID.randomUUID().toString()
 
     // 一个用于缓存所有订单的缓存
@@ -25,7 +26,7 @@ class DefaultDatabase(private val sqlDatabase: SQLDatabase) : Database {
 
     init {
         sqlDatabase.useConnection { connection ->
-            val statement = connection.prepareStatement(
+            val createOrderTable = connection.prepareStatement(
                 """CREATE TABLE IF NOT EXISTS `$table`(
                 |player VARCHAR(16),
                 |order_id VARCHAR(64),
@@ -36,7 +37,15 @@ class DefaultDatabase(private val sqlDatabase: SQLDatabase) : Database {
                 |service VARCHAR(32)
                 |);""".trimMargin()
             )
-            statement.use { it.executeUpdate() }
+            createOrderTable.use { it.executeUpdate() }
+
+            val createRewardTable = connection.prepareStatement(
+                """CREATE TABLE IF NOT EXISTS `rewardTable`(
+                |player VARCHAR(16),
+                |reward VARCHAR(64)
+                |)""".trimMargin()
+            )
+            createRewardTable.use { it.executeUpdate() }
         }
     }
 
@@ -100,6 +109,35 @@ class DefaultDatabase(private val sqlDatabase: SQLDatabase) : Database {
             statement.setDouble(5, order.price)
             statement.setString(6, order.qrCode)
             statement.setString(7, order.service)
+            statement.use { it.executeUpdate() }
+        }
+    }
+
+    override fun addRewardPrice(playerName: String, num: Double) {
+        addOrder(playerName, OrderData(System.currentTimeMillis().toString(), "手动修改累充金额", "null", "null", num, playerName))
+    }
+
+    override fun canGetReward(playerName: String, reward: String): Boolean {
+        return sqlDatabase.useConnection { connection ->
+            val statement =
+                connection.prepareStatement("SELECT * FROM `$rewardTable` WHERE `player` = ? AND `reward`=?;")
+            statement.setString(1, playerName)
+            statement.setString(2, reward)
+            statement.use {
+                val resultSet = it.executeQuery()
+                resultSet.next()
+            }
+        }
+    }
+
+    override fun setGetReward(playerName: String, reward: String) {
+        if (!canGetReward(playerName, reward)) {
+            error("it has been set to claim rewards")
+        }
+        sqlDatabase.useConnection { connection ->
+            val statement = connection.prepareStatement("INSERT INTO `$rewardTable` VALUES (?,?);")
+            statement.setString(1, playerName)
+            statement.setString(2, reward)
             statement.use { it.executeUpdate() }
         }
     }

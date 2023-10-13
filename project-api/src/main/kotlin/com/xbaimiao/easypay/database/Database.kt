@@ -20,6 +20,21 @@ interface Database {
      */
     fun addOrder(playerName: String, order: OrderData)
 
+    /**
+     * 添加累充金额
+     */
+    fun addRewardPrice(playerName: String, num: Double)
+
+    /**
+     * 能否领取这个奖励
+     */
+    fun canGetReward(playerName: String, reward: String): Boolean
+
+    /**
+     * 设置这个奖励为已领取
+     */
+    fun setGetReward(playerName: String, reward: String)
+
     companion object {
 
         private var INST: Database? = null

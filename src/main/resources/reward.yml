@@ -1,0 +1,27 @@
+# 累计充值奖励
+title: '累充奖励'
+sort:
+  - 'A        '
+  - '         '
+  - '         '
+items:
+  A:
+    internal-name: '测试奖励1'
+    # 菜单显示物品
+    material: PAPER
+    name: '累计充值6元领取'
+    lore:
+      - '&7奖励:'
+      - '  &f石头 &cX &f64'
+      - ' '
+      - '&7目前状态 &f%state%'
+      - '&f左击 &7领取此奖励'
+    custom_model_data: 0
+    # 玩家充值金额达到多少才能领取
+    price: 6
+    # 玩家拥有此权限才可领取 不写不需要权限
+    # permission: 'vip'
+    # 领取后执行此命令
+    commands:
+      - 'give %player_name% stone 64'
+      - 'say %player_name% 领取了测试奖励1'

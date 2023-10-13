@@ -15,6 +15,7 @@ import com.xbaimiao.easypay.entity.PayService
 import com.xbaimiao.easypay.entity.PayServiceProvider
 import com.xbaimiao.easypay.item.CustomConfiguration
 import com.xbaimiao.easypay.map.MapUtilProvider
+import com.xbaimiao.easypay.reward.RewardHandle
 import com.xbaimiao.easypay.util.ZxingUtil
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -159,8 +160,39 @@ private val reload = command<CommandSender>("reload") {
         p.loadDatabase()
         p.loadServices()
         p.loadItems()
+        RewardHandle.loadConfiguration()
         sender.sendLang("command-reload")
     }
+}
+
+private val rewardOpen = command<CommandSender>("open") {
+    description = "打开累充界面"
+    players {
+        exec {
+            valueOf(it)?.let { it1 -> RewardHandle.open(it1) }
+        }
+    }
+}
+
+private val rewardAdd = command<CommandSender>("add") {
+    description = "添加累充金额,减少请用负数,无法直接设置玩家累充金额"
+    number {
+        offlinePlayers { p ->
+            exec {
+                val player = valueOf(p)
+                val num = valueOf(it)
+                Database.inst().addRewardPrice(player, num)
+                sender.sendLang("reward-add-success", player, num)
+            }
+        }
+    }
+}
+
+private val reward = command<CommandSender>("reward") {
+    permission = "easypay.command.reward"
+    description = "累充相关命令"
+    sub(rewardOpen)
+    sub(rewardAdd)
 }
 
 val rootCommand = command<CommandSender>("easypay") {
@@ -170,5 +202,6 @@ val rootCommand = command<CommandSender>("easypay") {
     sub(custom)
     sub(printAllOrder)
     sub(reload)
+    sub(reward)
     sub(debugCommand)
 }

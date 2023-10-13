@@ -18,6 +18,7 @@ import com.xbaimiao.easypay.item.CustomConfiguration
 import com.xbaimiao.easypay.item.CustomPriceItemConfig
 import com.xbaimiao.easypay.map.MapUtilProvider
 import com.xbaimiao.easypay.map.VirtualMap
+import com.xbaimiao.easypay.reward.RewardHandle
 import com.xbaimiao.easypay.service.AlipayService
 import com.xbaimiao.easypay.service.DLCWeChatService
 import com.xbaimiao.easypay.service.OfficialWeChatService
@@ -62,6 +63,7 @@ class EasyPay : EasyPlugin(), KtorStat {
             loadServices()
             loadItems()
             loadDatabase()
+            RewardHandle.loadConfiguration()
 
             val functionManager = FunctionUtil.functionManager.functionManager
             functionManager.register(TitleFunction(), "标题")
