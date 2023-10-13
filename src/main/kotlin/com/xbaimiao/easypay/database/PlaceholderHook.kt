@@ -2,6 +2,7 @@ package com.xbaimiao.easypay.database
 
 import com.google.common.cache.CacheBuilder
 import com.xbaimiao.easylib.bridge.PlaceholderExpansion
+import com.xbaimiao.easylib.util.EPlaceholderExpansion
 import com.xbaimiao.easylib.util.plugin
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -12,6 +13,7 @@ import java.util.concurrent.TimeUnit
  * @author xbaimiao
  * @since 2023/9/14 17:19
  */
+@EPlaceholderExpansion
 object PlaceholderHook : PlaceholderExpansion() {
 
     override val identifier: String = "easypay"

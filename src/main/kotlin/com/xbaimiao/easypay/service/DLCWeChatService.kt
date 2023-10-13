@@ -18,7 +18,7 @@ import java.util.concurrent.CompletableFuture
  * @author FlyProject
  * @since 2023/9/13 14:38
  */
-class WeChatService(
+class DLCWeChatService(
     server: String,
     private val qrcodeContent: String
 ) : DefaultPayService {

@@ -79,6 +79,10 @@ interface DefaultPayService : PayService {
         return future
     }
 
-    fun timeOut(timeout: suspend SchedulerController.(Order) -> Unit, order: Order)
+    fun timeOut(timeout: suspend SchedulerController.(Order) -> Unit, order: Order) {
+        schedule {
+            timeout.invoke(this, order)
+        }
+    }
 
 }

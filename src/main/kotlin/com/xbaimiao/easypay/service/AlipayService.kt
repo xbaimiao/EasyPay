@@ -6,8 +6,6 @@ import com.alipay.api.domain.AlipayTradeQueryModel
 import com.alipay.api.internal.util.AlipayLogger
 import com.alipay.api.request.AlipayTradePrecreateRequest
 import com.alipay.api.request.AlipayTradeQueryRequest
-import com.xbaimiao.easylib.skedule.SchedulerController
-import com.xbaimiao.easylib.skedule.schedule
 import com.xbaimiao.easylib.util.debug
 import com.xbaimiao.easypay.api.Item
 import com.xbaimiao.easypay.entity.Order
@@ -32,12 +30,6 @@ class AlipayService(
     private val alipayClient by lazy {
         DefaultAlipayClient(api, appid, privateKey, "json", "UTF-8", publicKey, "RSA2").also {
             AlipayLogger.setNeedEnableLogger(false)
-        }
-    }
-
-    override fun timeOut(timeout: suspend SchedulerController.(Order) -> Unit, order: Order) {
-        schedule {
-            timeout.invoke(this, order)
         }
     }
 

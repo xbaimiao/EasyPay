@@ -6,6 +6,9 @@
 # %easypay_top_name_{1-10}% 排行榜用户名
 # %easypay_top_price_{1-10}% 排行榜金额
 # 注意 为节约性能 以上PAPI变量 有15秒的刷新缓存时间
+
+# 内置 service "wechat-official" 为微信官方 "wechat" 为微信dlc（监听消息的） alipay 为支付宝官方
+
 alipay:
   api: 'https://openapi.alipay.com/gateway.do'
   appid: 'appid'
@@ -15,6 +18,17 @@ alipay:
   notify-url: 'https://www.baidu.com/'
   # 店员识别id 随便填
   store-id: 'easy_pay'
+wechat-official:
+  # 微信appid
+  appid: "wx5exxxxxxxxx"
+  # 商户号
+  mchid: "12453452"
+  # 证书序列号
+  merchantSerialNumber: 'merchantSerialNumber'
+  # 私有证书
+  privateKeyPath: 'pem/apiclient_key.pem'
+  # 微信支付平台证书
+  wechatPayCertificatePath: 'pem/weixing.pem'
 wechat:
   # 启用微信DLC功能
   enable: false

@@ -11,7 +11,6 @@ import com.xbaimiao.easylib.util.warn
 import com.xbaimiao.easypay.api.ItemProvider
 import com.xbaimiao.easypay.database.Database
 import com.xbaimiao.easypay.database.DefaultDatabase
-import com.xbaimiao.easypay.database.PlaceholderHook
 import com.xbaimiao.easypay.entity.PayServiceProvider
 import com.xbaimiao.easypay.functions.*
 import com.xbaimiao.easypay.item.CommandItem
@@ -20,7 +19,8 @@ import com.xbaimiao.easypay.item.CustomPriceItemConfig
 import com.xbaimiao.easypay.map.MapUtilProvider
 import com.xbaimiao.easypay.map.VirtualMap
 import com.xbaimiao.easypay.service.AlipayService
-import com.xbaimiao.easypay.service.WeChatService
+import com.xbaimiao.easypay.service.DLCWeChatService
+import com.xbaimiao.easypay.service.OfficialWeChatService
 import com.xbaimiao.easypay.util.FunctionUtil
 import com.xbaimiao.ktor.KtorPluginsBukkit
 import com.xbaimiao.ktor.KtorStat
@@ -52,9 +52,9 @@ class EasyPay : EasyPlugin(), KtorStat {
                 if (!has) {
                     error("$userId 未从您的购买列表 未找到EasyPay插件 无法使用")
                 }
+                // 统计服务器在线的方法
+                stat()
             }
-            // 统计服务器在线的方法
-            stat()
             saveDefaultConfig()
 
             loadCustomConfig()
@@ -82,19 +82,18 @@ class EasyPay : EasyPlugin(), KtorStat {
             functionManager.register(CancelOrderFunction(), "取消订单", "取消", "c")
             functionManager.register(ChangePriceFunction(), "更改价格", "价格", "cost", "amount")
 
-            PlaceholderHook.init()
             rootCommand.register()
         }
     }
 
     override fun disable() {
-        val weChatService = PayServiceProvider.getService(WeChatService::class.java)
-        if (weChatService != null) {
+        val dlcWeChatService = PayServiceProvider.getService(DLCWeChatService::class.java)
+        if (dlcWeChatService != null) {
             info("正在断开与WalletMonitor的连接")
-            for (orderPrice in WeChatService.list) {
-                weChatService.walletConnector.orderTimeout(orderPrice)
+            for (orderPrice in DLCWeChatService.list) {
+                dlcWeChatService.walletConnector.orderTimeout(orderPrice)
             }
-            weChatService.walletConnector.close()
+            dlcWeChatService.walletConnector.close()
         }
         PacketEvents.getAPI().terminate()
     }
@@ -136,7 +135,7 @@ class EasyPay : EasyPlugin(), KtorStat {
     fun loadServices() {
         PayServiceProvider.clear()
         if (config.getString("alipay.appid") == "appid") {
-            warn("未配置支付宝Service 不加载")
+            warn("未配置支付宝Service 跳过加载")
         } else {
             PayServiceProvider.registerService(
                 AlipayService(
@@ -151,13 +150,21 @@ class EasyPay : EasyPlugin(), KtorStat {
         }
 
         if (!config.getBoolean("wechat.enable")) {
-            warn("未配置微信支付服务(DLC) 跳过加载内容")
+            warn("未配置微信支付服务(DLC,监听消息) 跳过加载内容")
         } else {
             PayServiceProvider.registerService(
-                WeChatService(
+                DLCWeChatService(
                     config.getString("wechat.server"),
                     config.getString("wechat.qrcode")
                 )
+            )
+        }
+
+        if (config.getString("wechat-official.appid") == "wx5exxxxxxxxx") {
+            warn("未配置微信支付官方Service 跳过加载")
+        } else {
+            PayServiceProvider.registerService(
+                OfficialWeChatService(config.getConfigurationSection("wechat-official.appid"))
             )
         }
     }
