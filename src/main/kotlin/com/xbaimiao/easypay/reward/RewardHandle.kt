@@ -34,22 +34,19 @@ object RewardHandle {
                     warn("buildMenu: $key is not a char")
                     continue
                 }
-                val internalName = section.getString("internal-name")
-                val price = section.getDouble("price", 0.0)
-                val commands = section.getStringList("commands")
+                val internalName = section.getString("$key.internal-name")
+                val price = section.getDouble("$key.price", 0.0)
+                val commands = section.getStringList("$key.commands")
                 val reward = internalName?.let { Reward(it, price, commands) }
                 if (reward != null) {
                     basic.onClick(key[0]) {
-                        reward.sendTo(player)
+                        if (reward.sendTo(player)) {
+                            open(player)
+                        }
                     }
                 }
-                basic.set(
-                    key[0], section.convertItem(
-                        player,
-                        key,
-                        if (reward != null) listOf(Variable("%state%", reward.preSendState(player))) else emptyList()
-                    )
-                )
+                val vars = if (reward != null) listOf(Variable("%state%", reward.preSendState(player))) else emptyList()
+                basic.set(key[0], section.convertItem(player, key, vars))
             }
         }
 

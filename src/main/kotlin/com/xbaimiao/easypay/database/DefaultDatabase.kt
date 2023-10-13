@@ -40,10 +40,10 @@ class DefaultDatabase(private val sqlDatabase: SQLDatabase) : Database {
             createOrderTable.use { it.executeUpdate() }
 
             val createRewardTable = connection.prepareStatement(
-                """CREATE TABLE IF NOT EXISTS `rewardTable`(
+                """CREATE TABLE IF NOT EXISTS `$rewardTable`(
                 |player VARCHAR(16),
                 |reward VARCHAR(64)
-                |)""".trimMargin()
+                |);""".trimMargin()
             )
             createRewardTable.use { it.executeUpdate() }
         }
@@ -125,7 +125,7 @@ class DefaultDatabase(private val sqlDatabase: SQLDatabase) : Database {
             statement.setString(2, reward)
             statement.use {
                 val resultSet = it.executeQuery()
-                resultSet.next()
+                !resultSet.next()
             }
         }
     }

@@ -30,18 +30,19 @@ class Reward(
         return Lang.asLangText("reward-can-be-claimed")
     }
 
-    fun sendTo(player: Player) {
+    fun sendTo(player: Player): Boolean {
         val allPrice = Database.inst().getAllOrder(player.name).sumOf { it.price }
         if (allPrice < price) {
-            player.sendLang("this-amount-has-not-been-reached")
-            return
+            player.sendLang("reward-this-amount-has-not-been-reached")
+            return false
         }
         if (!Database.inst().canGetReward(player.name, internalName)) {
-            player.sendLang("already-received-it")
-            return
+            player.sendLang("reward-already-received-it")
+            return false
         }
         Database.inst().setGetReward(player.name, internalName)
         commands.parseECommand(player).exec(Bukkit.getConsoleSender())
+        return true
     }
 
 }
