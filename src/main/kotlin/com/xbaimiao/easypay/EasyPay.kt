@@ -40,6 +40,7 @@ class EasyPay : EasyPlugin(), KtorStat {
 
     override fun enable() {
         PacketEvents.getAPI().init()
+
         schedule {
             // 初始化统计
             KtorPluginsBukkit.init(this@EasyPay, this@EasyPay)

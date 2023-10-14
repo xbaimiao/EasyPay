@@ -1,11 +1,12 @@
 package com.xbaimiao.easypay.reward
 
 import com.xbaimiao.easylib.chat.Lang
-import com.xbaimiao.easylib.chat.Lang.sendLang
-import com.xbaimiao.easylib.util.eu.parseECommand
+import com.xbaimiao.easylib.skedule.SynchronizationContext
+import com.xbaimiao.easylib.skedule.schedule
 import com.xbaimiao.easypay.database.Database
-import org.bukkit.Bukkit
 import org.bukkit.entity.Player
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * Reward
@@ -14,35 +15,29 @@ import org.bukkit.entity.Player
  * @since 2023/10/13 23:52
  */
 class Reward(
-    private val internalName: String,
-    private val price: Double,
-    private val commands: List<String>
+    val internalName: String,
+    val price: Double,
+    val commands: List<String>,
+    val permission: String?
 ) {
 
-    fun preSendState(player: Player): String {
-        val allPrice = Database.inst().getAllOrder(player.name).sumOf { it.price }
-        if (allPrice < price) {
-            return Lang.asLangText("reward-amount-not-reached")
+    suspend fun preSendState(player: Player): String = suspendCoroutine {
+        if (permission != null && !player.hasPermission(permission)) {
+            it.resume(Lang.asLangText("reward-not-permission"))
+            return@suspendCoroutine
         }
-        if (!Database.inst().canGetReward(player.name, internalName)) {
-            return Lang.asLangText("reward-have-already-received-it")
+        schedule(SynchronizationContext.ASYNC) {
+            val allPrice = Database.inst().getAllOrder(player.name).sumOf { it.price }
+            if (allPrice < price) {
+                it.resume(Lang.asLangText("reward-amount-not-reached"))
+                return@schedule
+            }
+            if (!Database.inst().canGetReward(player.name, internalName)) {
+                it.resume(Lang.asLangText("reward-have-already-received-it"))
+                return@schedule
+            }
+            it.resume(Lang.asLangText("reward-can-be-claimed"))
         }
-        return Lang.asLangText("reward-can-be-claimed")
-    }
-
-    fun sendTo(player: Player): Boolean {
-        val allPrice = Database.inst().getAllOrder(player.name).sumOf { it.price }
-        if (allPrice < price) {
-            player.sendLang("reward-this-amount-has-not-been-reached")
-            return false
-        }
-        if (!Database.inst().canGetReward(player.name, internalName)) {
-            player.sendLang("reward-already-received-it")
-            return false
-        }
-        Database.inst().setGetReward(player.name, internalName)
-        commands.parseECommand(player).exec(Bukkit.getConsoleSender())
-        return true
     }
 
 }

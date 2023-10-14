@@ -117,6 +117,7 @@ class DefaultDatabase(private val sqlDatabase: SQLDatabase) : Database {
         addOrder(playerName, OrderData(System.currentTimeMillis().toString(), "手动修改累充金额", "null", "null", num, playerName))
     }
 
+    @Synchronized
     override fun canGetReward(playerName: String, reward: String): Boolean {
         return sqlDatabase.useConnection { connection ->
             val statement =
@@ -130,6 +131,7 @@ class DefaultDatabase(private val sqlDatabase: SQLDatabase) : Database {
         }
     }
 
+    @Synchronized
     override fun setGetReward(playerName: String, reward: String) {
         if (!canGetReward(playerName, reward)) {
             error("it has been set to claim rewards")
