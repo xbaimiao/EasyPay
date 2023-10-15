@@ -38,8 +38,11 @@ class OfficialWeChatService(
 
     private val service: NativePayService by lazy {
         // 初始化商户配置
-        val config = RSAConfig.Builder().merchantId(mchid).privateKeyFromPath(privateKeyPath)
-            .merchantSerialNumber(merchantSerialNumber).wechatPayCertificatesFromPath(wechatPayCertificatePath).build()
+        val config = RSAConfig.Builder().merchantId(mchid)
+            .privateKeyFromPath(privateKeyPath)
+            .merchantSerialNumber(merchantSerialNumber)
+            .wechatPayCertificatesFromPath(wechatPayCertificatePath)
+            .build()
 
         // 初始化服务
         NativePayService.Builder().config(config).build()
