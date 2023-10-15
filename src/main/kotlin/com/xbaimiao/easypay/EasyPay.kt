@@ -167,7 +167,7 @@ class EasyPay : EasyPlugin(), KtorStat {
             warn("未配置微信支付官方Service 跳过加载")
         } else {
             PayServiceProvider.registerService(
-                OfficialWeChatService(config.getConfigurationSection("wechat-official.appid"))
+                OfficialWeChatService(config.getConfigurationSection("wechat-official"))
             )
         }
     }
