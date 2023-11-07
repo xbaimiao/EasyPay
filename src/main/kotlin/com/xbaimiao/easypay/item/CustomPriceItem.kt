@@ -1,6 +1,6 @@
 package com.xbaimiao.easypay.item
 
-import com.xbaimiao.easylib.util.eu.parseECommand
+import com.xbaimiao.easylib.bridge.player.parseECommand
 import com.xbaimiao.easypay.entity.Order
 import com.xbaimiao.easypay.entity.PayService
 import com.xbaimiao.easypay.util.FunctionUtil

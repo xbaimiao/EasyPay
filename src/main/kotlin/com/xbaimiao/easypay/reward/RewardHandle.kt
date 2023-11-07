@@ -1,35 +1,36 @@
 package com.xbaimiao.easypay.reward
 
+import com.xbaimiao.easylib.bridge.player.parseECommand
 import com.xbaimiao.easylib.chat.BuiltInConfiguration
 import com.xbaimiao.easylib.chat.Lang.sendLang
 import com.xbaimiao.easylib.chat.colored
 import com.xbaimiao.easylib.skedule.SynchronizationContext
-import com.xbaimiao.easylib.skedule.schedule
-import com.xbaimiao.easylib.ui.Basic
+import com.xbaimiao.easylib.skedule.launchCoroutine
+import com.xbaimiao.easylib.ui.SpigotBasic
 import com.xbaimiao.easylib.ui.Variable
 import com.xbaimiao.easylib.ui.convertItem
-import com.xbaimiao.easylib.util.eu.parseECommand
-import com.xbaimiao.easylib.util.lock.buildDistributedLock
 import com.xbaimiao.easylib.util.warn
 import com.xbaimiao.easypay.database.Database
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
 object RewardHandle {
 
     private lateinit var configuration: BuiltInConfiguration
-    private val distributedLock = buildDistributedLock()
+    private val mutex: Mutex = Mutex()
 
     fun loadConfiguration() {
         configuration = BuiltInConfiguration("reward.yml")
     }
 
     fun open(player: Player) {
-        schedule {
+        launchCoroutine {
             val title = configuration.getString("title", " ")!!.colored()
             val sort = configuration.getStringList("sort").map { it.toCharArray().toList() }
 
-            val basic = Basic(player, title)
+            val basic = SpigotBasic(player, title)
             basic.rows(sort.size)
             basic.slots.addAll(sort)
             basic.onDrag { it.isCancelled = true }
@@ -58,8 +59,8 @@ object RewardHandle {
                                 player.sendLang("reward-not-permission-tips")
                                 return@onClick
                             }
-                            schedule(SynchronizationContext.ASYNC) {
-                                val result = distributedLock.withLock("get-reward-${player.name}") {
+                            launchCoroutine(SynchronizationContext.ASYNC) {
+                                val result = mutex.withLock {
                                     val allPrice = Database.inst().getAllOrder(player.name).sumOf { it.price }
                                     if (allPrice < price) {
                                         player.sendLang("reward-this-amount-has-not-been-reached")

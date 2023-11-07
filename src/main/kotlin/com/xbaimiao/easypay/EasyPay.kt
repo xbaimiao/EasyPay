@@ -5,7 +5,7 @@ import com.xbaimiao.easylib.EasyPlugin
 import com.xbaimiao.easylib.database.MysqlHikariDatabase
 import com.xbaimiao.easylib.database.SQLiteHikariDatabase
 import com.xbaimiao.easylib.nms.NMSMap
-import com.xbaimiao.easylib.skedule.schedule
+import com.xbaimiao.easylib.skedule.launchCoroutine
 import com.xbaimiao.easylib.util.info
 import com.xbaimiao.easylib.util.warn
 import com.xbaimiao.easypay.api.ItemProvider
@@ -31,17 +31,23 @@ import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder
 class EasyPay : EasyPlugin(), KtorStat {
 
     override fun load() {
-        info("Loading PacketEvents...")
+        runCatching {
+            info("Loading PacketEvents...")
 
-        PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this))
-        PacketEvents.getAPI().settings.bStats(true).checkForUpdates(false).debug(false)
-        PacketEvents.getAPI().load()
+            PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this))
+            PacketEvents.getAPI().settings.bStats(false).checkForUpdates(false).debug(false)
+            PacketEvents.getAPI().load()
+        }.onFailure {
+            warn("Load Packet Error")
+        }
     }
 
     override fun enable() {
-        PacketEvents.getAPI().init()
+        runCatching {
+            PacketEvents.getAPI().init()
+        }
 
-        schedule {
+        launchCoroutine {
             // 初始化统计
             KtorPluginsBukkit.init(this@EasyPay, this@EasyPay)
             // userId 是用户Id 如果获取的时候报错 代表没有注入用户ID
@@ -98,7 +104,7 @@ class EasyPay : EasyPlugin(), KtorStat {
             }
             dlcWeChatService.walletConnector.close()
         }
-        PacketEvents.getAPI().terminate()
+        runCatching { PacketEvents.getAPI().terminate() }
     }
 
     fun loadCustomConfig() {

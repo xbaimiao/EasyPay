@@ -1,7 +1,7 @@
 package com.xbaimiao.easypay.service
 
 import com.xbaimiao.easylib.skedule.SchedulerController
-import com.xbaimiao.easylib.skedule.schedule
+import com.xbaimiao.easylib.skedule.launchCoroutine
 import com.xbaimiao.easylib.util.debug
 import com.xbaimiao.easypay.api.Item
 import com.xbaimiao.easypay.entity.Order
@@ -40,14 +40,14 @@ interface DefaultPayService : PayService {
         waitTime: Int
     ): CompletableFuture<Order?> {
         val future = CompletableFuture<Order?>()
-        schedule {
+        launchCoroutine {
             val order = async {
                 createOrder(player, item)
             }
             if (order == null) {
                 debug("订单创建失败 ${this@DefaultPayService::class.java.simpleName}")
                 cancel.invoke()
-                return@schedule
+                return@launchCoroutine
             }
             future.complete(order)
             // 查询5分钟 查询一次等待1秒
@@ -57,7 +57,7 @@ interface DefaultPayService : PayService {
                 }
                 if (close) {
                     debug("订单被关闭 ${order.orderId}")
-                    return@schedule
+                    return@launchCoroutine
                 }
                 val status = async {
                     debug("查询订单 ${order.orderId}")
@@ -68,7 +68,7 @@ interface DefaultPayService : PayService {
                 if (status == OrderStatus.SUCCESS) {
                     debug("支付成功 ${order.orderId}")
                     call.invoke(this, order)
-                    return@schedule
+                    return@launchCoroutine
                 }
                 // 等待1秒在查询
                 waitFor(20)
@@ -80,7 +80,7 @@ interface DefaultPayService : PayService {
     }
 
     fun timeOut(timeout: suspend SchedulerController.(Order) -> Unit, order: Order) {
-        schedule {
+        launchCoroutine {
             timeout.invoke(this, order)
         }
     }

@@ -5,7 +5,7 @@ import com.xbaimiao.easylib.command.ArgNode
 import com.xbaimiao.easylib.command.command
 import com.xbaimiao.easylib.command.debugCommand
 import com.xbaimiao.easylib.skedule.SynchronizationContext
-import com.xbaimiao.easylib.skedule.schedule
+import com.xbaimiao.easylib.skedule.launchCoroutine
 import com.xbaimiao.easylib.util.plugin
 import com.xbaimiao.easypay.api.Item
 import com.xbaimiao.easypay.api.ItemProvider
@@ -47,7 +47,7 @@ private fun handle(player: Player, item: Item, service: PayService) {
         player.updateInventory()
     }.thenAccept { order ->
         if (order != null) {
-            schedule {
+            launchCoroutine {
                 val qr = async {
                     ZxingUtil.generate(order.qrCode)
                 }
@@ -138,7 +138,7 @@ private val printAllOrder = command<CommandSender>("print") {
     description = "打印指定玩家所有订单"
     offlinePlayers { playerArg ->
         exec {
-            schedule(SynchronizationContext.ASYNC) {
+            launchCoroutine(SynchronizationContext.ASYNC) {
                 val player = valueOf(playerArg)
                 sender.sendMessage(player)
                 for (order in Database.inst().getAllOrder(player)) {

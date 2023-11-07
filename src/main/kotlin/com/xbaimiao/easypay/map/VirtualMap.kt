@@ -9,6 +9,7 @@ import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPl
 import com.xbaimiao.easylib.nms.NMSMap
 import com.xbaimiao.easylib.nms.sendMap
 import com.xbaimiao.easylib.util.info
+import com.xbaimiao.easylib.util.warn
 import org.bukkit.entity.Player
 import java.awt.image.BufferedImage
 
@@ -47,7 +48,11 @@ class VirtualMap(private val hand: NMSMap.Hand, override val cancelOnDrop: Boole
     }
 
     init {
-        info("注册虚拟地图监听 $listener")
+        runCatching {
+            info("注册虚拟地图监听 $listener")
+        }.onFailure {
+            warn("注册虚拟地图监听失败 丢弃地图取消订单功能将无法使用")
+        }
     }
 
     override fun sendMap(player: Player, bufferedImage: BufferedImage, onDrop: () -> Unit) {

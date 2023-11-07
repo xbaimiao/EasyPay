@@ -6,7 +6,7 @@ plugins {
 }
 
 easylib {
-    version = "3.1.4"
+    version = "3.2.9"
     nbt = false
     hikariCP = true
     ormlite = false
@@ -16,7 +16,7 @@ easylib {
 }
 
 group = "com.xbaimiao.easypay"
-version = "1.0.8"
+version = "1.0.9"
 
 repositories {
     mavenLocal()

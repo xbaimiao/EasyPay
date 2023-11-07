@@ -1,6 +1,6 @@
 package com.xbaimiao.easypay.functions
 
-import com.xbaimiao.easylib.util.eu.parseECommand
+import com.xbaimiao.easylib.bridge.player.parseECommand
 import com.xbaimiao.easypay.parameters.PlayerParameter
 import com.xbaimiao.easypay.results.CancellableResult
 import dev.rgbmc.expression.functions.FastFunction

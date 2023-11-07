@@ -2,7 +2,7 @@ package com.xbaimiao.easypay.service
 
 import com.xbaimiao.easylib.chat.Lang.sendLang
 import com.xbaimiao.easylib.skedule.SchedulerController
-import com.xbaimiao.easylib.skedule.schedule
+import com.xbaimiao.easylib.skedule.launchCoroutine
 import com.xbaimiao.easylib.util.debug
 import com.xbaimiao.easylib.util.plugin
 import com.xbaimiao.easypay.api.Item
@@ -31,7 +31,7 @@ class DLCWeChatService(
     }
 
     override fun timeOut(timeout: suspend SchedulerController.(Order) -> Unit, order: Order) {
-        schedule {
+        launchCoroutine {
             list.remove(order.price)
             async {
                 walletConnector.orderTimeout(order.price)
