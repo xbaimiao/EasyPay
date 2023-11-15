@@ -6,10 +6,10 @@ import com.github.retrooper.packetevents.event.PacketListenerPriority
 import com.github.retrooper.packetevents.event.PacketReceiveEvent
 import com.github.retrooper.packetevents.protocol.packettype.PacketType
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerDigging
+import com.xbaimiao.easylib.nms.MinecraftVersion
 import com.xbaimiao.easylib.nms.NMSMap
 import com.xbaimiao.easylib.nms.sendMap
 import com.xbaimiao.easylib.util.info
-import com.xbaimiao.easylib.util.warn
 import org.bukkit.entity.Player
 import java.awt.image.BufferedImage
 
@@ -48,10 +48,8 @@ class VirtualMap(private val hand: NMSMap.Hand, override val cancelOnDrop: Boole
     }
 
     init {
-        runCatching {
+        if (MinecraftVersion.currentVersion != MinecraftVersion.Version.V1_20_2) {
             info("注册虚拟地图监听 $listener")
-        }.onFailure {
-            warn("注册虚拟地图监听失败 丢弃地图取消订单功能将无法使用")
         }
     }
 

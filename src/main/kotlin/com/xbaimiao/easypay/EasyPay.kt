@@ -4,6 +4,7 @@ import com.github.retrooper.packetevents.PacketEvents
 import com.xbaimiao.easylib.EasyPlugin
 import com.xbaimiao.easylib.database.MysqlHikariDatabase
 import com.xbaimiao.easylib.database.SQLiteHikariDatabase
+import com.xbaimiao.easylib.nms.MinecraftVersion
 import com.xbaimiao.easylib.nms.NMSMap
 import com.xbaimiao.easylib.skedule.launchCoroutine
 import com.xbaimiao.easylib.util.info
@@ -17,6 +18,7 @@ import com.xbaimiao.easypay.item.CommandItem
 import com.xbaimiao.easypay.item.CustomConfiguration
 import com.xbaimiao.easypay.item.CustomPriceItemConfig
 import com.xbaimiao.easypay.map.MapUtilProvider
+import com.xbaimiao.easypay.map.RealMap
 import com.xbaimiao.easypay.map.VirtualMap
 import com.xbaimiao.easypay.reward.RewardHandle
 import com.xbaimiao.easypay.service.AlipayService
@@ -31,22 +33,22 @@ import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder
 class EasyPay : EasyPlugin(), KtorStat {
 
     override fun load() {
-        runCatching {
+        de.tr7zw.changeme.nbtapi.utils.MinecraftVersion.disableUpdateCheck()
+        de.tr7zw.changeme.nbtapi.utils.MinecraftVersion.disableBStats()
+        de.tr7zw.changeme.nbtapi.utils.MinecraftVersion.disablePackageWarning()
+        if (MinecraftVersion.currentVersion != MinecraftVersion.Version.V1_20_2) {
             info("Loading PacketEvents...")
 
             PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this))
             PacketEvents.getAPI().settings.bStats(false).checkForUpdates(false).debug(false)
             PacketEvents.getAPI().load()
-        }.onFailure {
-            warn("Load Packet Error")
         }
     }
 
     override fun enable() {
-        runCatching {
+        if (MinecraftVersion.currentVersion != MinecraftVersion.Version.V1_20_2) {
             PacketEvents.getAPI().init()
         }
-
         launchCoroutine {
             // 初始化统计
             KtorPluginsBukkit.init(this@EasyPay, this@EasyPay)
@@ -104,7 +106,9 @@ class EasyPay : EasyPlugin(), KtorStat {
             }
             dlcWeChatService.walletConnector.close()
         }
-        runCatching { PacketEvents.getAPI().terminate() }
+        if (MinecraftVersion.currentVersion != MinecraftVersion.Version.V1_20_2) {
+            runCatching { PacketEvents.getAPI().terminate() }
+        }
     }
 
     fun loadCustomConfig() {
@@ -125,10 +129,17 @@ class EasyPay : EasyPlugin(), KtorStat {
     fun loadMap() {
         val cancelOnDrop = config.getBoolean("map.cancel-on-drop")
         MapUtilProvider.setMapUtil(
-            VirtualMap(
-                NMSMap.Hand.valueOf(config.getString("map.hand").uppercase()),
-                cancelOnDrop
-            )
+            if (config.getString("map.type") == "virtual" && MinecraftVersion.currentVersion != MinecraftVersion.Version.V1_20_2) {
+                VirtualMap(
+                    NMSMap.Hand.valueOf(config.getString("map.hand").uppercase()),
+                    cancelOnDrop
+                )
+            } else {
+                RealMap(
+                    NMSMap.Hand.valueOf(config.getString("map.hand").uppercase()),
+                    cancelOnDrop
+                )
+            }
         )
     }
 

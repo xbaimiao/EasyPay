@@ -1,13 +1,13 @@
 plugins {
     java
     id("com.github.johnrengelman.shadow") version ("7.1.2")
-    id("com.xbaimiao.easylib") version ("1.1.0")
+    id("com.xbaimiao.easylib") version ("1.1.1")
     kotlin("jvm") version "1.7.10"
 }
 
 easylib {
-    version = "3.2.9"
-    nbt = false
+    version = "3.3.5"
+    nbt = true
     hikariCP = true
     ormlite = false
     userMinecraftLib = true
@@ -16,7 +16,7 @@ easylib {
 }
 
 group = "com.xbaimiao.easypay"
-version = "1.0.9"
+version = "1.1.1"
 
 repositories {
     mavenLocal()
