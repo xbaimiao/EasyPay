@@ -16,7 +16,7 @@ easylib {
 }
 
 group = "com.xbaimiao.easypay"
-version = "1.1.1"
+version = "1.1.2"
 
 repositories {
     mavenLocal()
@@ -79,7 +79,7 @@ tasks {
     }
     shadowJar {
         dependencies {
-            exclude(dependency("org.slf4j:"))
+//            exclude(dependency("org.slf4j:"))
             exclude(dependency("org.jetbrains:annotations:"))
             exclude(dependency("com.google.code.gson:gson:2.8.0"))
 //            exclude(dependency("org.jetbrains.kotlin:"))

@@ -2,15 +2,13 @@ package com.xbaimiao.easypay.map
 
 import com.xbaimiao.easylib.nms.NMSMap
 import com.xbaimiao.easylib.nms.buildMap
-import com.xbaimiao.easylib.util.giveItem
-import com.xbaimiao.easylib.util.isAir
-import com.xbaimiao.easylib.util.isNotAir
-import com.xbaimiao.easylib.util.registerListener
+import com.xbaimiao.easylib.util.*
 import de.tr7zw.changeme.nbtapi.NBTItem
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.*
+import org.bukkit.inventory.ItemStack
 import java.awt.image.BufferedImage
 
 /**
@@ -25,6 +23,11 @@ class RealMap(private val hand: NMSMap.Hand, override val cancelOnDrop: Boolean)
 
     init {
         registerListener(this)
+        submit(period = 20) {
+            for (onlinePlayer in onlinePlayers()) {
+                onlinePlayer.inventory.forEach { it.tryRemove() }
+            }
+        }
     }
 
     @EventHandler
@@ -35,15 +38,9 @@ class RealMap(private val hand: NMSMap.Hand, override val cancelOnDrop: Boolean)
     @EventHandler
     fun hand(event: PlayerItemHeldEvent) {
         val player = event.player
-        val item = player.inventory.getItem(event.previousSlot)
-        if (item.isAir()) return
-        val nbt = NBTItem(item)
-        if (!nbt.hasTag("EasyPayRealMap")) {
-            return
+        if (player.inventory.getItem(event.previousSlot).tryRemove()) {
+            dropFuncMap.remove(player.name)?.forEach { it.invoke() }
         }
-
-        item.amount = 0
-        dropFuncMap.remove(player.name)?.forEach { it.invoke() }
     }
 
     @EventHandler
@@ -64,14 +61,21 @@ class RealMap(private val hand: NMSMap.Hand, override val cancelOnDrop: Boolean)
     }
 
     private fun check(player: Player) {
-        val item = player.inventory.itemInMainHand
-        if (item.isAir()) return
-        val nbt = NBTItem(item)
-        if (!nbt.hasTag("EasyPayRealMap")) {
-            return
+        if (player.inventory.itemInMainHand.tryRemove()) {
+            dropFuncMap.remove(player.name)?.forEach { it.invoke() }
         }
-        item.amount = 0
-        dropFuncMap.remove(player.name)?.forEach { it.invoke() }
+    }
+
+    private fun ItemStack?.tryRemove(): Boolean {
+        if (this == null) return false
+        if (isNotAir()) {
+            val nbt = NBTItem(this)
+            if (nbt.hasTag("EasyPayRealMap")) {
+                amount = 0
+                return true
+            }
+        }
+        return false
     }
 
     override fun sendMap(player: Player, bufferedImage: BufferedImage, onDrop: () -> Unit) {
