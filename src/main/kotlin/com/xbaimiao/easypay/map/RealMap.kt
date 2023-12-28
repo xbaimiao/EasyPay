@@ -25,7 +25,7 @@ class RealMap(private val hand: NMSMap.Hand, override val cancelOnDrop: Boolean)
         registerListener(this)
         submit(period = 20) {
             for (onlinePlayer in onlinePlayers()) {
-                onlinePlayer.inventory.forEach { it.tryRemove() }
+                onlinePlayer.inventory.forEach { it.tryRemove(false) }
             }
         }
     }
@@ -38,7 +38,7 @@ class RealMap(private val hand: NMSMap.Hand, override val cancelOnDrop: Boolean)
     @EventHandler
     fun hand(event: PlayerItemHeldEvent) {
         val player = event.player
-        if (player.inventory.getItem(event.previousSlot).tryRemove()) {
+        if (player.inventory.getItem(event.previousSlot).tryRemove(true)) {
             dropFuncMap.remove(player.name)?.forEach { it.invoke() }
         }
     }
@@ -61,18 +61,30 @@ class RealMap(private val hand: NMSMap.Hand, override val cancelOnDrop: Boolean)
     }
 
     private fun check(player: Player) {
-        if (player.inventory.itemInMainHand.tryRemove()) {
+        if (player.inventory.itemInMainHand.tryRemove(true)) {
             dropFuncMap.remove(player.name)?.forEach { it.invoke() }
         }
     }
 
-    private fun ItemStack?.tryRemove(): Boolean {
+    private fun ItemStack?.tryRemove(force: Boolean): Boolean {
         if (this == null) return false
         if (isNotAir()) {
             val nbt = NBTItem(this)
             if (nbt.hasTag("EasyPayRealMap")) {
-                amount = 0
-                return true
+                if (force) {
+                    amount = 0
+                    return true
+                }
+                val generateTime = if (nbt.hasTag("EasyPayRealMapTime")) {
+                    nbt.getLong("EasyPayRealMapTime")
+                } else {
+                    0
+                }
+                if (generateTime == 0L || generateTime < System.currentTimeMillis()) {
+                    amount = 0
+                    return true
+                }
+                return false
             }
         }
         return false
@@ -84,18 +96,27 @@ class RealMap(private val hand: NMSMap.Hand, override val cancelOnDrop: Boolean)
 
         val nbt = NBTItem(mapItem)
         nbt.setInteger("EasyPayRealMap", 63)
+        nbt.setLong("EasyPayRealMapTime", System.currentTimeMillis() + (1000 * 60 * 5))
         nbt.applyNBT(mapItem)
 
         if (hand == NMSMap.Hand.MAIN) {
+            var itemStack: ItemStack? = null
             if (player.inventory.itemInMainHand.isNotAir()) {
-                player.giveItem(player.inventory.itemInMainHand)
+                itemStack = player.inventory.itemInMainHand.clone()
             }
             player.inventory.itemInMainHand = mapItem
+            if (itemStack != null) {
+                player.giveItem(itemStack)
+            }
         } else {
+            var itemStack: ItemStack? = null
             if (player.inventory.itemInOffHand.isNotAir()) {
-                player.giveItem(player.inventory.itemInOffHand)
+                itemStack = player.inventory.itemInOffHand.clone()
             }
             player.inventory.itemInOffHand = mapItem
+            if (itemStack!= null) {
+                player.giveItem(itemStack)
+            }
         }
     }
 

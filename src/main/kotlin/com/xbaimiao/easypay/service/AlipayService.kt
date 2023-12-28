@@ -35,6 +35,9 @@ class AlipayService(
 
     override val name: String = "alipay"
 
+    /**
+     * 创建一个订单
+     */
     override fun createOrder(player: Player, item: Item): Order? {
         val request = AlipayTradePrecreateRequest()
         request.notifyUrl = notify
@@ -62,6 +65,9 @@ class AlipayService(
         return null
     }
 
+    /**
+     * 查询订单状态
+     */
     override fun queryOrder(order: Order): OrderStatus {
         val query = AlipayTradeQueryRequest()
 
