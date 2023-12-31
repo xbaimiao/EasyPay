@@ -1,11 +1,8 @@
 package com.xbaimiao.easypay
 
-import com.github.retrooper.packetevents.PacketEvents
 import com.xbaimiao.easylib.EasyPlugin
 import com.xbaimiao.easylib.database.MysqlHikariDatabase
 import com.xbaimiao.easylib.database.SQLiteHikariDatabase
-import com.xbaimiao.easylib.nms.MinecraftVersion
-import com.xbaimiao.easylib.nms.NMSMap
 import com.xbaimiao.easylib.skedule.launchCoroutine
 import com.xbaimiao.easylib.util.info
 import com.xbaimiao.easylib.util.warn
@@ -19,7 +16,6 @@ import com.xbaimiao.easypay.item.CustomConfiguration
 import com.xbaimiao.easypay.item.CustomPriceItemConfig
 import com.xbaimiao.easypay.map.MapUtilProvider
 import com.xbaimiao.easypay.map.RealMap
-import com.xbaimiao.easypay.map.VirtualMap
 import com.xbaimiao.easypay.reward.RewardHandle
 import com.xbaimiao.easypay.service.AlipayService
 import com.xbaimiao.easypay.service.DLCWeChatService
@@ -27,7 +23,6 @@ import com.xbaimiao.easypay.service.OfficialWeChatService
 import com.xbaimiao.easypay.util.FunctionUtil
 import com.xbaimiao.ktor.KtorPluginsBukkit
 import com.xbaimiao.ktor.KtorStat
-import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder
 
 @Suppress("unused")
 class EasyPay : EasyPlugin(), KtorStat {
@@ -36,19 +31,9 @@ class EasyPay : EasyPlugin(), KtorStat {
         de.tr7zw.changeme.nbtapi.utils.MinecraftVersion.disableUpdateCheck()
         de.tr7zw.changeme.nbtapi.utils.MinecraftVersion.disableBStats()
         de.tr7zw.changeme.nbtapi.utils.MinecraftVersion.disablePackageWarning()
-        if (MinecraftVersion.currentVersion != MinecraftVersion.Version.V1_20_2) {
-            info("Loading PacketEvents...")
-
-            PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this))
-            PacketEvents.getAPI().settings.bStats(false).checkForUpdates(false).debug(false)
-            PacketEvents.getAPI().load()
-        }
     }
 
     override fun enable() {
-        if (MinecraftVersion.currentVersion != MinecraftVersion.Version.V1_20_2) {
-            PacketEvents.getAPI().init()
-        }
         launchCoroutine {
             // 初始化统计
             KtorPluginsBukkit.init(this@EasyPay, this@EasyPay)
@@ -82,13 +67,7 @@ class EasyPay : EasyPlugin(), KtorStat {
             functionManager.register(HasPermissionFunction(), "perm", "权限", "permission")
             functionManager.register(ExecuteFunction(), "执行命令", "执行", "cmd", "exec", "command")
             functionManager.register(
-                PlayerExecuteFunction(),
-                "玩家命令",
-                "玩家执行",
-                "cmdPlayer",
-                "commandPlayer",
-                "execPlayer",
-                "player"
+                PlayerExecuteFunction(), "玩家命令", "玩家执行", "cmdPlayer", "commandPlayer", "execPlayer", "player"
             )
             functionManager.register(CancelOrderFunction(), "取消订单", "取消", "c")
             functionManager.register(ChangePriceFunction(), "更改价格", "价格", "cost", "amount")
@@ -105,9 +84,6 @@ class EasyPay : EasyPlugin(), KtorStat {
                 dlcWeChatService.walletConnector.orderTimeout(orderPrice)
             }
             dlcWeChatService.walletConnector.close()
-        }
-        if (MinecraftVersion.currentVersion != MinecraftVersion.Version.V1_20_2) {
-            runCatching { PacketEvents.getAPI().terminate() }
         }
     }
 
@@ -128,19 +104,7 @@ class EasyPay : EasyPlugin(), KtorStat {
 
     fun loadMap() {
         val cancelOnDrop = config.getBoolean("map.cancel-on-drop")
-        MapUtilProvider.setMapUtil(
-            if (config.getString("map.type") == "virtual" && MinecraftVersion.currentVersion != MinecraftVersion.Version.V1_20_2) {
-                VirtualMap(
-                    NMSMap.Hand.valueOf(config.getString("map.hand").uppercase()),
-                    cancelOnDrop
-                )
-            } else {
-                RealMap(
-                    NMSMap.Hand.valueOf(config.getString("map.hand").uppercase()),
-                    cancelOnDrop
-                )
-            }
-        )
+        MapUtilProvider.setMapUtil(RealMap(config.getString("map.hand") == "MAIN", cancelOnDrop))
     }
 
     fun loadDatabase() {
@@ -174,8 +138,7 @@ class EasyPay : EasyPlugin(), KtorStat {
         } else {
             PayServiceProvider.registerService(
                 DLCWeChatService(
-                    config.getString("wechat.server"),
-                    config.getString("wechat.qrcode")
+                    config.getString("wechat.server"), config.getString("wechat.qrcode")
                 )
             )
         }

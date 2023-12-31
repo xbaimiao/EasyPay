@@ -1,7 +1,5 @@
 package com.xbaimiao.easypay.map
 
-import com.xbaimiao.easylib.nms.NMSMap
-import com.xbaimiao.easylib.nms.buildMap
 import com.xbaimiao.easylib.util.*
 import de.tr7zw.changeme.nbtapi.NBTItem
 import org.bukkit.entity.Player
@@ -17,7 +15,7 @@ import java.awt.image.BufferedImage
  * @author xbaimiao
  * @since 2023/11/15 20:36
  */
-class RealMap(private val hand: NMSMap.Hand, override val cancelOnDrop: Boolean) : MapUtil, Listener {
+class RealMap(private val mainHand: Boolean, override val cancelOnDrop: Boolean) : MapUtil, Listener {
 
     private val dropFuncMap = mutableMapOf<String, MutableCollection<() -> Unit>>()
 
@@ -32,6 +30,10 @@ class RealMap(private val hand: NMSMap.Hand, override val cancelOnDrop: Boolean)
 
     @EventHandler
     fun drop(event: PlayerDropItemEvent) {
+        if (event.itemDrop.itemStack.tryRemove(true) || event.player.inventory.itemInMainHand.tryRemove(true)) {
+            event.itemDrop.remove()
+            event.isCancelled = true
+        }
         dropFuncMap.remove(event.player.name)?.forEach { it.invoke() }
     }
 
@@ -92,14 +94,14 @@ class RealMap(private val hand: NMSMap.Hand, override val cancelOnDrop: Boolean)
 
     override fun sendMap(player: Player, bufferedImage: BufferedImage, onDrop: () -> Unit) {
         dropFuncMap.computeIfAbsent(player.name) { mutableSetOf() }.add(onDrop)
-        val mapItem = buildMap(bufferedImage, hand, 128, 128).mapItem
+        val mapItem = buildMap(bufferedImage, 128, 128).mapItem
 
         val nbt = NBTItem(mapItem)
         nbt.setInteger("EasyPayRealMap", 63)
         nbt.setLong("EasyPayRealMapTime", System.currentTimeMillis() + (1000 * 60 * 5))
         nbt.applyNBT(mapItem)
 
-        if (hand == NMSMap.Hand.MAIN) {
+        if (mainHand) {
             var itemStack: ItemStack? = null
             if (player.inventory.itemInMainHand.isNotAir()) {
                 itemStack = player.inventory.itemInMainHand.clone()
@@ -114,7 +116,7 @@ class RealMap(private val hand: NMSMap.Hand, override val cancelOnDrop: Boolean)
                 itemStack = player.inventory.itemInOffHand.clone()
             }
             player.inventory.itemInOffHand = mapItem
-            if (itemStack!= null) {
+            if (itemStack != null) {
                 player.giveItem(itemStack)
             }
         }
