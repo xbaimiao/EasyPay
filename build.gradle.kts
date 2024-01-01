@@ -51,7 +51,12 @@ dependencies {
     implementation("com.google.zxing:core:3.5.2")
     implementation("dev.rgbmc:WalletConnector:1.0.0-cc9b05d")
     implementation("dev.rgbmc:FastExpression:1.0.0-a0aa2c1")
+
+    // EvalEx 2 for Java 8-10
+    implementation("com.udojava:EvalEx:2.7")
+    // EvalEx 3 for Java 11+
     implementation("com.ezylang:EvalEx:3.0.5")
+
     implementation("com.xbaimiao.ktor:ktor-plugins-bukkit:1.0.8")
     implementation("com.github.wechatpay-apiv3:wechatpay-java:0.2.12")
 
@@ -99,7 +104,8 @@ tasks {
         relocate("com.google.gson", "${project.group}.shadow.gson")
         relocate("dev.rgbmc.walletconnector", "${project.group}.shadow.wechat")
         relocate("dev.rgbmc.expression", "${project.group}.shadow.expression")
-        relocate("com.ezylang.evalex", "${project.group}.shadow.evalex")
+        relocate("com.ezylang.evalex", "${project.group}.shadow.evalex3")
+        relocate("com.udojava.evalex", "${project.group}.shadow.evalex2")
         relocate("com.xbaimiao.ktor", "${project.group}.shadow.ktor")
         relocate("javax.xml", "${project.group}.shadow.javax.xml")
         relocate("okhttp3", "${project.group}.shadow.okhttp3")

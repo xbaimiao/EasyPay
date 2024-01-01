@@ -62,7 +62,15 @@ class EasyPay : EasyPlugin(), KtorStat {
             val functionManager = FunctionUtil.functionManager.functionManager
             functionManager.register(TitleFunction(), "标题")
             functionManager.register(MessageFunction(), "消息", "msg")
-            functionManager.register(ConditionFunction(), "条件", "如果")
+            // EvalEx 兼容 - Java11往下使用EvalEx2进行条件解析, Java11+使用EvalEx3
+            if (System.getProperty("java.version").split(".")[0].toInt() >= 11) {
+                info("已检测到插件在 Java11+ 环境中运行 条件函数将使用EvalEx3模式")
+                functionManager.register(ConditionFunction(), "条件", "如果")
+            } else {
+                info("已检测到插件在 Java8-10 环境中运行 条件函数将使用EvalEx2模式 (与EvalEx3函数不兼容)")
+                functionManager.register(EvalEx2ConditionFunction(), "条件", "如果")
+            }
+
             functionManager.register(ReturnFunction(), "返回", "取消", "结束")
             functionManager.register(HasPermissionFunction(), "perm", "权限", "permission")
             functionManager.register(ExecuteFunction(), "执行命令", "执行", "cmd", "exec", "command")
