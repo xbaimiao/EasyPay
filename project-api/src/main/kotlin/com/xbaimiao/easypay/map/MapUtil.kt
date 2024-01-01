@@ -13,6 +13,8 @@ interface MapUtil {
 
     val cancelOnDrop: Boolean
 
+    fun clearAllMap(player: Player)
+
     /**
      * 给玩家发送一个地图物品，当玩家丢弃时执行 onDrop
      * @param player 玩家

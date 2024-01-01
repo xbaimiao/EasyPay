@@ -35,16 +35,16 @@ private fun handle(player: Player, item: Item, service: PayService) {
             async {
                 Database.inst().addOrder(player.name, OrderData.fromOrder(it, player.name))
             }
-            player.updateInventory()
+            MapUtilProvider.getMapUtil().clearAllMap(player)
             it.item.sendTo(player, service, it)
         },
         timeout = {
             player.sendLang("command-order-timeout")
-            player.updateInventory()
+            MapUtilProvider.getMapUtil().clearAllMap(player)
         }
     ) {
         player.sendLang("command-item-cancel")
-        player.updateInventory()
+        MapUtilProvider.getMapUtil().clearAllMap(player)
     }.thenAccept { order ->
         if (order != null) {
             launchCoroutine {
@@ -58,7 +58,7 @@ private fun handle(player: Player, item: Item, service: PayService) {
                         order.close()
                     }
                     player.sendLang("command-close-order")
-                    player.updateInventory()
+                    MapUtilProvider.getMapUtil().clearAllMap(player)
                 }
             }
         } else {

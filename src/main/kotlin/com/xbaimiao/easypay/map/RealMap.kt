@@ -92,6 +92,11 @@ class RealMap(private val mainHand: Boolean, override val cancelOnDrop: Boolean)
         return false
     }
 
+    override fun clearAllMap(player: Player) {
+        player.inventory.forEach { it.tryRemove(true) }
+        player.updateInventory()
+    }
+
     override fun sendMap(player: Player, bufferedImage: BufferedImage, onDrop: () -> Unit) {
         dropFuncMap.computeIfAbsent(player.name) { mutableSetOf() }.add(onDrop)
         val mapItem = buildMap(bufferedImage, 128, 128).mapItem
