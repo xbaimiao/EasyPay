@@ -3,7 +3,6 @@ package com.xbaimiao.easypay.item
 import com.xbaimiao.easypay.api.Item
 import com.xbaimiao.easypay.entity.Order
 import com.xbaimiao.easypay.entity.PayService
-import com.xbaimiao.easypay.util.FunctionUtil
 import org.bukkit.entity.Player
 
 /**
@@ -12,17 +11,13 @@ import org.bukkit.entity.Player
  * @author xbaimiao
  * @since 2023/9/19 12:59
  */
-abstract class AbstractItem(
-    private val actions: List<String>,
-    private val preActions: List<String>
-) : Item {
+abstract class AbstractItem : Item {
 
     override fun preCreate(player: Player, service: PayService, order: Order): Boolean {
-        return FunctionUtil.parseActions(player, order, service, preActions)
+        return true
     }
 
     override fun onCreate(player: Player, service: PayService, order: Order) {
-        FunctionUtil.parseActions(player, order, service, actions)
     }
 
 }

@@ -6,12 +6,13 @@ plugins {
 }
 
 easylib {
-    version = "3.4.2"
-    nbt = true
+    version = "3.4.3"
+    nbt = false
+    nbtVersion = "1.3.1"
     hikariCP = true
     ormlite = false
-    userMinecraftLib = true
-    minecraftVersion = "1.12.2"
+    userMinecraftLib = false
+    minecraftVersion = "1.7.10"
     isPaper = false
 }
 
@@ -38,7 +39,7 @@ subprojects {
     dependencies {
         compileOnly(kotlin("stdlib-jdk8"))
         compileOnly(fileTree("../libs"))
-        compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
+        compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     }
 
 }
@@ -47,14 +48,14 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(project(":project-api"))
     implementation("com.alipay.sdk:alipay-sdk-java:4.38.72.ALL")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     implementation("com.google.zxing:core:3.5.2")
     implementation("dev.rgbmc:WalletConnector:1.0.0-cc9b05d")
-    implementation("dev.rgbmc:FastExpression:1.0.0-a0aa2c1")
-    implementation("com.ezylang:EvalEx:3.0.5")
-    implementation("com.xbaimiao.ktor:ktor-plugins-bukkit:1.0.8")
+    implementation("com.xbaimiao.ktor:ktor-plugins-bukkit:1.1.0")
     implementation("com.github.wechatpay-apiv3:wechatpay-java:0.2.12")
+    implementation("com.google.guava:guava:21.0")
 
+    compileOnly(fileTree("libs"))
     //implementation("com.google.code.gson:gson:2.10.1")
 }
 
@@ -92,14 +93,11 @@ tasks {
         relocate("com.xbaimiao.easylib", "${project.group}.shadow.easylib")
         relocate("com.zaxxer.hikari", "${project.group}.shadow.hikari")
         relocate("com.j256.ormlite", "${project.group}.shadow.ormlite")
-        relocate("de.tr7zw", "${project.group}.shadow.itemnbtapi")
         relocate("kotlin", "${project.group}.shadow.kotlin")
         relocate("kotlinx", "${project.group}.shadow.kotlinx")
         relocate("org.java_websocket", "${project.group}.shadow.websocket")
         relocate("com.google.gson", "${project.group}.shadow.gson")
         relocate("dev.rgbmc.walletconnector", "${project.group}.shadow.wechat")
-        relocate("dev.rgbmc.expression", "${project.group}.shadow.expression")
-        relocate("com.ezylang.evalex", "${project.group}.shadow.evalex")
         relocate("com.xbaimiao.ktor", "${project.group}.shadow.ktor")
         relocate("javax.xml", "${project.group}.shadow.javax.xml")
         relocate("okhttp3", "${project.group}.shadow.okhttp3")
@@ -108,6 +106,7 @@ tasks {
         relocate("org.w3c.dom", "${project.group}.shadow.org.w3c.dom")
         relocate("org.bouncycastle", "${project.group}.shadow.org.bouncycastle")
         relocate("com.alipay.api", "${project.group}.shadow.com.alipay.api")
+        relocate("com.google.common", "${project.group}.shadow.common")
         relocate("com.google.zxing", "${project.group}.shadow.zxing")
         relocate("_COROUTINE", "${project.group}.shadow.COROUTINE")
         relocate("com.wechat.pay.java", "${project.group}.shadow.wechat.pay")

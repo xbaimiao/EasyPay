@@ -10,7 +10,6 @@ import com.xbaimiao.easypay.api.ItemProvider
 import com.xbaimiao.easypay.database.Database
 import com.xbaimiao.easypay.database.DefaultDatabase
 import com.xbaimiao.easypay.entity.PayServiceProvider
-import com.xbaimiao.easypay.functions.*
 import com.xbaimiao.easypay.item.CommandItem
 import com.xbaimiao.easypay.item.CustomConfiguration
 import com.xbaimiao.easypay.item.CustomPriceItemConfig
@@ -20,18 +19,11 @@ import com.xbaimiao.easypay.reward.RewardHandle
 import com.xbaimiao.easypay.service.AlipayService
 import com.xbaimiao.easypay.service.DLCWeChatService
 import com.xbaimiao.easypay.service.OfficialWeChatService
-import com.xbaimiao.easypay.util.FunctionUtil
 import com.xbaimiao.ktor.KtorPluginsBukkit
 import com.xbaimiao.ktor.KtorStat
 
 @Suppress("unused")
 class EasyPay : EasyPlugin(), KtorStat {
-
-    override fun load() {
-        de.tr7zw.changeme.nbtapi.utils.MinecraftVersion.disableUpdateCheck()
-        de.tr7zw.changeme.nbtapi.utils.MinecraftVersion.disableBStats()
-        de.tr7zw.changeme.nbtapi.utils.MinecraftVersion.disablePackageWarning()
-    }
 
     override fun enable() {
         launchCoroutine {
@@ -59,19 +51,6 @@ class EasyPay : EasyPlugin(), KtorStat {
             loadDatabase()
             RewardHandle.loadConfiguration()
 
-            val functionManager = FunctionUtil.functionManager.functionManager
-            functionManager.register(TitleFunction(), "标题")
-            functionManager.register(MessageFunction(), "消息", "msg")
-            functionManager.register(ConditionFunction(), "条件", "如果")
-            functionManager.register(ReturnFunction(), "返回", "取消", "结束")
-            functionManager.register(HasPermissionFunction(), "perm", "权限", "permission")
-            functionManager.register(ExecuteFunction(), "执行命令", "执行", "cmd", "exec", "command")
-            functionManager.register(
-                PlayerExecuteFunction(), "玩家命令", "玩家执行", "cmdPlayer", "commandPlayer", "execPlayer", "player"
-            )
-            functionManager.register(CancelOrderFunction(), "取消订单", "取消", "c")
-            functionManager.register(ChangePriceFunction(), "更改价格", "价格", "cost", "amount")
-
             rootCommand.register()
         }
     }
@@ -93,9 +72,6 @@ class EasyPay : EasyPlugin(), KtorStat {
             section.getInt("min"),
             section.getInt("max"),
             section.getInt("ratio"),
-            section.getStringList("actions"),
-            section.getStringList("pre-actions"),
-            section.getStringList("rewards"),
             section.getStringList("commands"),
             section.getString("name")
         )
@@ -161,10 +137,7 @@ class EasyPay : EasyPlugin(), KtorStat {
                 when (type) {
                     "CommandItem" -> {
                         val commands = section.getStringList("$name.commands")
-                        val actions = section.getStringList("$name.actions")
-                        val preActions = section.getStringList("$name.pre-actions")
-                        val rewards = section.getStringList("$name.rewards")
-                        ItemProvider.register(CommandItem(price, name, commands, actions, preActions, rewards))
+                        ItemProvider.register(CommandItem(price, name, commands))
                     }
 
                     else -> warn("未知商品类型 $type")

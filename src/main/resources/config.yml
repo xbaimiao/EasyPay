@@ -41,8 +41,6 @@ wechat:
   # 订单等待时长 (单位: 秒) 超时取消订单
   wait-time: 60
 map:
-  # virtual 为虚拟 real 为真实的物品 real尚未实现
-  type: 'virtual'
   # 地图放置位置 MAIN 为主手 OFF 为副手
   hand: 'MAIN'
   # 是否在地图丢弃时取消订单
@@ -68,18 +66,6 @@ builtin:
     ratio: 100
     # 商品名称
     name: '自定义金额充值'
-    # 订单创建后发送给玩家的消息
-    actions:
-      - 'if("$service" == "wechat") title(&a请使用微信扫码支付 &f$price 元, &e填写金额务必与上方一致, 10, 40, 10) return()'
-      - 'if("$service" == "alipay") title(&a请支付 &f$price 元, &7使用支付宝扫码付款, 10, 40, 10) return()'
-    # 订单创建前执行
-    pre-actions:
-      # 下面注释的意思是如果玩家没有 example.permission 权限将不能创建这个订单
-      #- 'perm(example.permission) cancel()'
-      - 'return()'
-    # 订单完成后执行 (解析式)
-    rewards:
-      - 'if(%easypay_price_$player% == 0) msg(&a您是第一次充值)'
     # 执行的命令
     commands:
       - 'say %player_name% 您充值了 %custom_amount% 点券'
@@ -90,12 +76,5 @@ items:
     type: 'CommandItem'
     # 价格
     price: 0.01
-    actions:
-      - 'if("$service" == "wechat") title(&a请使用微信扫码支付 &f$price 元, &e填写金额务必与上方一致, 10, 40, 10) return()'
-      - 'if("$service" == "alipay") title(&a请支付 &f$price 元, &7使用支付宝扫码付款, 10, 40, 10) return()'
-    pre-actions:
-      - 'return()'
-    rewards:
-      - 'if(%easypay_price_$player% == 0) msg(&a您是第一次充值)'
     commands:
       - 'say %player_name% 您购买成功了 %item_name%'
