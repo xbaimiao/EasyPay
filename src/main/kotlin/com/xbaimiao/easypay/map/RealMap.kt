@@ -7,7 +7,6 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerDropItemEvent
-import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.ItemStack
@@ -28,7 +27,11 @@ class RealMap(private val mainHand: Boolean, override val cancelOnDrop: Boolean)
         registerListener(this)
         submit(period = 20) {
             for (onlinePlayer in onlinePlayers()) {
-                onlinePlayer.inventory.forEach { it.tryRemove(false) }
+                onlinePlayer.inventory.withIndex().forEach { (slot, it) ->
+                    if (it.tryRemove(false)) {
+                        onlinePlayer.inventory.setItem(slot, null)
+                    }
+                }
             }
         }
     }
@@ -54,19 +57,10 @@ class RealMap(private val mainHand: Boolean, override val cancelOnDrop: Boolean)
 
     @EventHandler
     fun quit(event: PlayerQuitEvent) {
-        check(event.player)
-    }
-
-    @EventHandler
-    fun b(event: PlayerInteractEvent) {
-        if (event.clickedBlock != null) {
-            check(event.player)
-        }
-    }
-
-    private fun check(player: Player) {
+        val player = event.player
         if (player.inventory.itemInMainHand.tryRemove(true)) {
             dropFuncMap.remove(player.name)?.forEach { it.invoke() }
+            player.inventory.itemInMainHand = null
         }
     }
 
