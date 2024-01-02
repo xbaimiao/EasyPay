@@ -1,10 +1,7 @@
 package com.xbaimiao.easypay.database
 
-import com.google.common.cache.CacheBuilder
 import com.xbaimiao.easylib.database.SQLDatabase
 import java.sql.ResultSet
-import java.util.*
-import java.util.concurrent.TimeUnit
 
 /**
  * DefaultDatabase
@@ -16,13 +13,7 @@ class DefaultDatabase(private val sqlDatabase: SQLDatabase) : Database {
 
     private val table = "easy_pay_order"
     private val rewardTable = "easy_pay_reward"
-    private val allCacheKey = UUID.randomUUID().toString()
-
-    // 一个用于缓存所有订单的缓存
-    private val orderCache = CacheBuilder
-        .newBuilder()
-        .expireAfterWrite(3, TimeUnit.SECONDS)
-        .build<String, Collection<OrderData>>()
+    private val webOrderTable = "easy_pay_web_order"
 
     init {
         sqlDatabase.useConnection { connection ->
@@ -46,6 +37,22 @@ class DefaultDatabase(private val sqlDatabase: SQLDatabase) : Database {
                 |);""".trimMargin()
             )
             createRewardTable.use { it.executeUpdate() }
+
+            val createWebOrderTable = connection.prepareStatement(
+                """CREATE TABLE IF NOT EXISTS `$webOrderTable`(
+                    |`order_id` VARCHAR(64) PRIMARY KEY ,
+                    |`create_time` LONG,
+                    |`pay_time` LONG,
+                    |`send_time` LONG,
+                    |`desc` VARCHAR(255),
+                    |`pay_type` VARCHAR(10),
+                    |`price` DOUBLE(100,2),
+                    |`player` VARCHAR(32),
+                    |`status` VARCHAR(16),
+                    |`send_log` VARCHAR(255)
+                    |);""".trimMargin()
+            )
+            createWebOrderTable.use { it.executeUpdate() }
         }
     }
 
@@ -63,7 +70,6 @@ class DefaultDatabase(private val sqlDatabase: SQLDatabase) : Database {
     }
 
     override fun getAllOrder(): Collection<OrderData> {
-        orderCache.getIfPresent(allCacheKey)?.let { return it }
 
         return sqlDatabase.useConnection { connection ->
             val allOrder = ArrayList<OrderData>()
@@ -76,12 +82,11 @@ class DefaultDatabase(private val sqlDatabase: SQLDatabase) : Database {
             }
             statement.close()
 
-            allOrder.also { orderCache.put(allCacheKey, it) }
+            allOrder
         }
     }
 
     override fun getAllOrder(playerName: String): Collection<OrderData> {
-        orderCache.getIfPresent(playerName)?.let { return it }
 
         return sqlDatabase.useConnection { connection ->
             val allOrder = ArrayList<OrderData>()
@@ -95,7 +100,7 @@ class DefaultDatabase(private val sqlDatabase: SQLDatabase) : Database {
             }
             statement.close()
 
-            allOrder.also { orderCache.put(playerName, it) }
+            allOrder
         }
     }
 
@@ -114,7 +119,10 @@ class DefaultDatabase(private val sqlDatabase: SQLDatabase) : Database {
     }
 
     override fun addRewardPrice(playerName: String, num: Double) {
-        addOrder(playerName, OrderData(System.currentTimeMillis().toString(), "手动修改累充金额", "null", "null", num, playerName))
+        addOrder(
+            playerName,
+            OrderData(System.currentTimeMillis().toString(), "手动修改累充金额", "null", "null", num, playerName)
+        )
     }
 
     @Synchronized
@@ -140,6 +148,65 @@ class DefaultDatabase(private val sqlDatabase: SQLDatabase) : Database {
             val statement = connection.prepareStatement("INSERT INTO `$rewardTable` VALUES (?,?);")
             statement.setString(1, playerName)
             statement.setString(2, reward)
+            statement.use { it.executeUpdate() }
+        }
+    }
+
+    override fun addWebOrder(webOrder: WebOrder) {
+        sqlDatabase.useConnection { connection ->
+            val statement = connection.prepareStatement("INSERT INTO `$webOrderTable` VALUES (?,?,?,?,?,?,?,?,?,?);")
+            statement.setString(1, webOrder.orderId)
+            statement.setLong(2, webOrder.createTime)
+            statement.setLong(3, webOrder.payTime)
+            statement.setLong(4, webOrder.sendTime)
+            statement.setString(5, webOrder.desc)
+            statement.setString(6, webOrder.payType)
+            statement.setDouble(7, webOrder.price)
+            statement.setString(8, webOrder.player)
+            statement.setString(9, webOrder.status.name)
+            statement.setString(10, webOrder.sendLog)
+            statement.use { it.executeUpdate() }
+        }
+    }
+
+    override fun getWebOrder(orderId: String): WebOrder? {
+        return sqlDatabase.useConnection { connection ->
+            val statement = connection.prepareStatement("SELECT * FROM `$webOrderTable` WHERE `order_id` = ?;")
+            statement.setString(1, orderId)
+            var webOrder: WebOrder? = null
+            statement.executeQuery().use { resultSet ->
+                if (resultSet.next()) {
+                    webOrder = WebOrder(
+                        resultSet.getLong("create_time"),
+                        resultSet.getLong("pay_time"),
+                        resultSet.getLong("send_time"),
+                        resultSet.getString("desc"),
+                        resultSet.getString("order_id"),
+                        resultSet.getString("pay_type"),
+                        resultSet.getDouble("price"),
+                        resultSet.getString("player"),
+                        WebOrder.Status.valueOf(resultSet.getString("status")),
+                        resultSet.getString("send_log"),
+                    )
+                }
+            }
+            statement.close()
+            webOrder
+        }
+    }
+
+    override fun updateWebOrder(webOrder: WebOrder) {
+        sqlDatabase.useConnection { connection ->
+            val statement = connection.prepareStatement(
+                """UPDATE `$webOrderTable` 
+                SET `pay_time` = ?, `send_time` = ?, `status` = ?, `send_log` = ?
+                WHERE `order_id` = ?;""".trimMargin()
+            )
+            statement.setLong(1, webOrder.payTime)
+            statement.setLong(2, webOrder.sendTime)
+            statement.setString(3, webOrder.status.name)
+            statement.setString(4, webOrder.sendLog)
+            statement.setString(5, webOrder.orderId)
             statement.use { it.executeUpdate() }
         }
     }

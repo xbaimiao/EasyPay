@@ -16,3 +16,8 @@ reward-have-already-received-it: '&c已领取'
 reward-can-be-claimed: '&a可领取'
 reward-not-permission: '&c没有权限'
 reward-not-permission-tips: '&7[&e&l!&7]&c 你没有权限领取这个累充奖励'
+web-order-send-log:
+  - "{0}开始发货 目标玩家: {1}"
+  - "发货前金币 {2} 发货前点券 {3}"
+  - "执行命令 {4}"
+  - "发货后金币 {5} 发货后点券 {6}"

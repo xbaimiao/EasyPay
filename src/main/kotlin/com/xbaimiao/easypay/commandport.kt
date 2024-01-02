@@ -1,5 +1,7 @@
 package com.xbaimiao.easypay
 
+import com.xbaimiao.easylib.bridge.economy.EconomyManager
+import com.xbaimiao.easylib.chat.Lang
 import com.xbaimiao.easylib.chat.Lang.sendLang
 import com.xbaimiao.easylib.command.ArgNode
 import com.xbaimiao.easylib.command.command
@@ -17,6 +19,7 @@ import com.xbaimiao.easypay.item.CustomConfiguration
 import com.xbaimiao.easypay.map.MapUtilProvider
 import com.xbaimiao.easypay.reward.RewardHandle
 import com.xbaimiao.easypay.util.ZxingUtil
+import com.xbaimiao.easypay.util.formatTime
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
@@ -36,7 +39,29 @@ private fun handle(player: Player, item: Item, service: PayService) {
                 Database.inst().addOrder(player.name, OrderData.fromOrder(it, player.name))
             }
             MapUtilProvider.getMapUtil().clearAllMap(player)
-            it.item.sendTo(player, service, it)
+            val oldVault = EconomyManager.vault[player]
+            val oldPoints = EconomyManager.playerPoints[player]
+
+            val commands = it.item.sendTo(player, service, it)
+            val newVault = EconomyManager.vault[player]
+            val newPoints = EconomyManager.playerPoints[player]
+            async {
+                val webOrder = Database.inst().getWebOrder(it.orderId)
+                if (webOrder != null) {
+                    webOrder.sendTime = System.currentTimeMillis()
+                    webOrder.sendLog = Lang.asLangText<List<String>>(
+                        "web-order-send-log",
+                        System.currentTimeMillis().formatTime(),
+                        player.name,
+                        oldVault,
+                        oldPoints,
+                        commands.joinToString("  ,  "),
+                        newVault,
+                        newPoints
+                    ).joinToString("\r\n")
+                    Database.inst().updateWebOrder(webOrder)
+                }
+            }
         },
         timeout = {
             player.sendLang("command-order-timeout")
@@ -44,7 +69,7 @@ private fun handle(player: Player, item: Item, service: PayService) {
         }
     ) {
         player.sendLang("command-item-cancel")
-        MapUtilProvider.getMapUtil().clearAllMap(player)
+        player.updateInventory()
     }.thenAccept { order ->
         if (order != null) {
             launchCoroutine {
@@ -58,7 +83,7 @@ private fun handle(player: Player, item: Item, service: PayService) {
                         order.close()
                     }
                     player.sendLang("command-close-order")
-                    MapUtilProvider.getMapUtil().clearAllMap(player)
+                    player.updateInventory()
                 }
             }
         } else {

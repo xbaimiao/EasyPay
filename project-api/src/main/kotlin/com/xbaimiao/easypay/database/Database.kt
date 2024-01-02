@@ -35,6 +35,12 @@ interface Database {
      */
     fun setGetReward(playerName: String, reward: String)
 
+    fun addWebOrder(webOrder: WebOrder)
+
+    fun getWebOrder(orderId: String): WebOrder?
+
+    fun updateWebOrder(webOrder: WebOrder)
+
     companion object {
 
         private var INST: Database? = null

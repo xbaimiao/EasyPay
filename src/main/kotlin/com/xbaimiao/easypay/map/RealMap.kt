@@ -77,11 +77,11 @@ class RealMap(private val mainHand: Boolean, override val cancelOnDrop: Boolean)
                     return true
                 }
                 val generateTime = if (nbt.hasKey("EasyPayRealMapTime")) {
-                    nbt.getInteger("EasyPayRealMapTime")
+                    nbt.getDouble("EasyPayRealMapTime")
                 } else {
-                    0
+                    0.0
                 }
-                if (generateTime == 0 || generateTime < System.currentTimeMillis()) {
+                if (generateTime == 0.0 || generateTime < System.currentTimeMillis()) {
                     modifyMeta<ItemMeta> {
                         type = Material.AIR
                     }
@@ -108,7 +108,7 @@ class RealMap(private val mainHand: Boolean, override val cancelOnDrop: Boolean)
 
         val nbt = NBTItem(mapItem)
         nbt.setInteger("EasyPayRealMap", 63)
-        nbt.setInteger("EasyPayRealMapTime", System.currentTimeMillis().toInt() + (1000 * 60 * 5))
+        nbt.setDouble("EasyPayRealMapTime", System.currentTimeMillis().toDouble() + (1000 * 60 * 5))
         mapItem = nbt.item
 
         if (mainHand) {
