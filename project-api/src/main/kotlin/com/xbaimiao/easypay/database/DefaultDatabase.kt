@@ -211,4 +211,31 @@ class DefaultDatabase(private val sqlDatabase: SQLDatabase) : Database {
         }
     }
 
+    override fun getAllWebOrder(): Collection<WebOrder> {
+        return sqlDatabase.useConnection { connection ->
+            val list = ArrayList<WebOrder>()
+            val statement = connection.prepareStatement("SELECT * FROM `$webOrderTable`;")
+            statement.executeQuery().use { resultSet ->
+                while (resultSet.next()) {
+                    list.add(
+                        WebOrder(
+                            resultSet.getLong("create_time"),
+                            resultSet.getLong("pay_time"),
+                            resultSet.getLong("send_time"),
+                            resultSet.getString("desc"),
+                            resultSet.getString("order_id"),
+                            resultSet.getString("pay_type"),
+                            resultSet.getDouble("price"),
+                            resultSet.getString("player"),
+                            WebOrder.Status.valueOf(resultSet.getString("status")),
+                            resultSet.getString("send_log"),
+                        )
+                    )
+                }
+            }
+            statement.close()
+            list
+        }
+    }
+
 }

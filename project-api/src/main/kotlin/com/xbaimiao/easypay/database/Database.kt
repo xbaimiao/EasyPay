@@ -41,6 +41,8 @@ interface Database {
 
     fun updateWebOrder(webOrder: WebOrder)
 
+    fun getAllWebOrder(): Collection<WebOrder>
+
     companion object {
 
         private var INST: Database? = null
