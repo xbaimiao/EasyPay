@@ -11,5 +11,3 @@ softdepend:
   - CMI
   - XConomy
   - ProtocolLib
-depend:
-  - ItemNBTAPI

@@ -1,8 +1,7 @@
 package com.xbaimiao.easypay.map
 
 import com.xbaimiao.easylib.util.*
-import de.tr7zw.itemnbtapi.NBTItem
-import org.bukkit.Material
+import de.tr7zw.changeme.nbtapi.NBTItem
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -10,7 +9,6 @@ import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.meta.ItemMeta
 import java.awt.image.BufferedImage
 
 /**

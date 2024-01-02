@@ -34,7 +34,7 @@ import org.bukkit.entity.Player
  * @since 2023/9/13 10:27
  */
 
-suspend fun SchedulerController.sendReward(player: Player, order: Order, service: PayService?) {
+suspend fun SchedulerController.sendReward(player: Player, order: Order, service: PayService) {
     switchContext(SynchronizationContext.SYNC)
     if (!player.isOnline) {
         warn("玩家 ${player.name} 不在线 发货失败 等待重新进服在发货")
@@ -88,8 +88,6 @@ private fun handle(player: Player, item: Item, service: PayService) {
             } else {
                 warn("玩家 ${player.name} 不在线 将在它下一次进服的时候发货")
             }
-            MapUtilProvider.getMapUtil().clearAllMap(player)
-            it.item.sendTo(player, service, it)
         },
         timeout = {
             player.sendLang("command-order-timeout")
