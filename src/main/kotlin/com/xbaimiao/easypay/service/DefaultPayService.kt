@@ -89,7 +89,7 @@ interface DefaultPayService : PayService {
             debug("订单超时 ${order.orderId}")
             async {
                 val webOrder = Database.inst().getWebOrder(order.orderId)
-                if (webOrder != null) {
+                if (webOrder != null && webOrder.status == WebOrder.Status.WAIT) {
                     // 改成超时状态
                     webOrder.status = WebOrder.Status.TIMEOUT
                     Database.inst().updateWebOrder(webOrder)
