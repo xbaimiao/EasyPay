@@ -43,6 +43,18 @@ interface Database {
 
     fun updateWebOrder(webOrder: WebOrder)
 
+    fun updateAllWebOrderTimeout() {
+        for (webOrder in this.getAllWebOrder()) {
+            if (webOrder.status != WebOrder.Status.WAIT) {
+                continue
+            }
+            if (webOrder.createTime + (1000 * 5 * 60) < System.currentTimeMillis()) {
+                webOrder.status = WebOrder.Status.TIMEOUT
+                updateWebOrder(webOrder)
+            }
+        }
+    }
+
     fun getAllWebOrder(): Collection<WebOrder>
 
     companion object {
