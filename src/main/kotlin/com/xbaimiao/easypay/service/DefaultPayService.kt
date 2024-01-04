@@ -74,7 +74,7 @@ interface DefaultPayService : PayService {
                         val webOrder = Database.inst().getWebOrder(order.orderId)
                         if (webOrder != null) {
                             // 检测到支付成功 改成待发货状态
-                            webOrder.status = WebOrder.Status.TRANSACTION_COMPLETED_WAITING_FOR_DELIVERY
+                            webOrder.status = WebOrder.Status.WAIT_DELIVERY
                             webOrder.payTime = System.currentTimeMillis()
                             Database.inst().updateWebOrder(webOrder)
                         }

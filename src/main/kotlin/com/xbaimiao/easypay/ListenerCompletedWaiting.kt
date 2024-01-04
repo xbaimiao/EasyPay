@@ -25,7 +25,7 @@ object ListenerCompletedWaiting : Listener {
             }
             val allWebOrder = Database.inst().getWebOrderByPlayer(event.player.name)
             for (order in allWebOrder) {
-                if (order.status == WebOrder.Status.TRANSACTION_COMPLETED_WAITING_FOR_DELIVERY) {
+                if (order.status == WebOrder.Status.WAIT_DELIVERY) {
                     // 如果是等待发货状态
                     val service = PayServiceProvider.getService(order.payType)
                     if (service == null) {
