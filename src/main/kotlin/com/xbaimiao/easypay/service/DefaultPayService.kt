@@ -4,6 +4,8 @@ import com.xbaimiao.easylib.skedule.SchedulerController
 import com.xbaimiao.easylib.skedule.launchCoroutine
 import com.xbaimiao.easylib.util.debug
 import com.xbaimiao.easypay.api.Item
+import com.xbaimiao.easypay.database.Database
+import com.xbaimiao.easypay.database.WebOrder
 import com.xbaimiao.easypay.entity.Order
 import com.xbaimiao.easypay.entity.OrderStatus
 import com.xbaimiao.easypay.entity.PayService
@@ -42,7 +44,9 @@ interface DefaultPayService : PayService {
         val future = CompletableFuture<Order?>()
         launchCoroutine {
             val order = async {
-                createOrder(player, item)
+                createOrder(player, item)?.also {
+                    Database.inst().addWebOrder(it.baseWebOrder(player.name))
+                }
             }
             if (order == null) {
                 debug("订单创建失败 ${this@DefaultPayService::class.java.simpleName}")
@@ -66,6 +70,15 @@ interface DefaultPayService : PayService {
                 debug("订单状态: $status")
                 // 如果已经支付跳出循环调用回调方法
                 if (status == OrderStatus.SUCCESS) {
+                    async {
+                        val webOrder = Database.inst().getWebOrder(order.orderId)
+                        if (webOrder != null) {
+                            // 检测到支付成功 改成待发货状态
+                            webOrder.status = WebOrder.Status.WAIT_DELIVERY
+                            webOrder.payTime = System.currentTimeMillis()
+                            Database.inst().updateWebOrder(webOrder)
+                        }
+                    }
                     debug("支付成功 ${order.orderId}")
                     call.invoke(this, order)
                     return@launchCoroutine
@@ -74,6 +87,14 @@ interface DefaultPayService : PayService {
                 waitFor(20)
             }
             debug("订单超时 ${order.orderId}")
+            async {
+                val webOrder = Database.inst().getWebOrder(order.orderId)
+                if (webOrder != null) {
+                    // 改成超时状态
+                    webOrder.status = WebOrder.Status.TIMEOUT
+                    Database.inst().updateWebOrder(webOrder)
+                }
+            }
             timeOut(timeout, order)
         }
         return future

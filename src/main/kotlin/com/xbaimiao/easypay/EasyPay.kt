@@ -5,6 +5,7 @@ import com.xbaimiao.easylib.database.MysqlHikariDatabase
 import com.xbaimiao.easylib.database.SQLiteHikariDatabase
 import com.xbaimiao.easylib.skedule.launchCoroutine
 import com.xbaimiao.easylib.util.info
+import com.xbaimiao.easylib.util.submit
 import com.xbaimiao.easylib.util.warn
 import com.xbaimiao.easypay.api.ItemProvider
 import com.xbaimiao.easypay.database.Database
@@ -107,6 +108,7 @@ class EasyPay : EasyPlugin(), KtorStat {
             section.getStringList("commands"),
             section.getString("name")
         )
+        ItemProvider.registerCustomItem(customPriceItemConfig)
         CustomConfiguration.setCustomPriceItemConfig(customPriceItemConfig)
     }
 
@@ -122,6 +124,9 @@ class EasyPay : EasyPlugin(), KtorStat {
             SQLiteHikariDatabase("database.db")
         }
         Database.setInst(DefaultDatabase(hikariDatabase))
+        submit(async = true) {
+            Database.inst().updateAllWebOrderTimeout()
+        }
     }
 
     fun loadServices() {

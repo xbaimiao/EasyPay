@@ -53,6 +53,7 @@ class AlipayService(
         request.bizModel = model
 
         val response = alipayClient.execute(request)
+        debug(response.body)
         val order = Order(tradeNo, item, response.qrCode, this, item.price)
         if (!item.preCreate(player, this, order)) {
             return null

@@ -6,7 +6,7 @@ plugins {
 }
 
 easylib {
-    version = "3.4.2"
+    version = "3.4.3"
     nbt = true
     hikariCP = true
     ormlite = false
@@ -16,7 +16,7 @@ easylib {
 }
 
 group = "com.xbaimiao.easypay"
-version = "1.1.5"
+version = "1.1.8"
 
 repositories {
     mavenLocal()
@@ -38,7 +38,7 @@ subprojects {
     dependencies {
         compileOnly(kotlin("stdlib-jdk8"))
         compileOnly(fileTree("../libs"))
-        compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
+        compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     }
 
 }
@@ -47,7 +47,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(project(":project-api"))
     implementation("com.alipay.sdk:alipay-sdk-java:4.38.72.ALL")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     implementation("com.google.zxing:core:3.5.2")
     implementation("dev.rgbmc:WalletConnector:1.0.0-cc9b05d")
     implementation("dev.rgbmc:FastExpression:1.0.0-a0aa2c1")
@@ -57,7 +57,7 @@ dependencies {
     // EvalEx 3 for Java 11+
     implementation("com.ezylang:EvalEx:3.0.5")
 
-    implementation("com.xbaimiao.ktor:ktor-plugins-bukkit:1.0.8")
+    implementation("com.xbaimiao.ktor:ktor-plugins-bukkit:1.1.0")
     implementation("com.github.wechatpay-apiv3:wechatpay-java:0.2.12")
 
     //implementation("com.google.code.gson:gson:2.10.1")

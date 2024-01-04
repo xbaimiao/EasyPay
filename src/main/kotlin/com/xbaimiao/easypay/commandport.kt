@@ -1,22 +1,29 @@
 package com.xbaimiao.easypay
 
+import com.xbaimiao.easylib.bridge.economy.EconomyManager
+import com.xbaimiao.easylib.chat.Lang
 import com.xbaimiao.easylib.chat.Lang.sendLang
 import com.xbaimiao.easylib.command.ArgNode
 import com.xbaimiao.easylib.command.command
 import com.xbaimiao.easylib.command.debugCommand
+import com.xbaimiao.easylib.skedule.SchedulerController
 import com.xbaimiao.easylib.skedule.SynchronizationContext
 import com.xbaimiao.easylib.skedule.launchCoroutine
 import com.xbaimiao.easylib.util.plugin
+import com.xbaimiao.easylib.util.warn
 import com.xbaimiao.easypay.api.Item
 import com.xbaimiao.easypay.api.ItemProvider
 import com.xbaimiao.easypay.database.Database
 import com.xbaimiao.easypay.database.OrderData
+import com.xbaimiao.easypay.database.WebOrder
+import com.xbaimiao.easypay.entity.Order
 import com.xbaimiao.easypay.entity.PayService
 import com.xbaimiao.easypay.entity.PayServiceProvider
 import com.xbaimiao.easypay.item.CustomConfiguration
 import com.xbaimiao.easypay.map.MapUtilProvider
 import com.xbaimiao.easypay.reward.RewardHandle
 import com.xbaimiao.easypay.util.ZxingUtil
+import com.xbaimiao.easypay.util.formatTime
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
@@ -26,14 +33,60 @@ import org.bukkit.entity.Player
  * @author xbaimiao
  * @since 2023/9/13 10:27
  */
+
+suspend fun SchedulerController.sendReward(player: Player, order: Order, service: PayService?) {
+    switchContext(SynchronizationContext.SYNC)
+    if (!player.isOnline) {
+        warn("玩家 ${player.name} 不在线 发货失败 等待重新进服在发货")
+        return
+    }
+    MapUtilProvider.getMapUtil().clearAllMap(player)
+    val oldVault = EconomyManager.vault[player]
+    val oldPoints = EconomyManager.playerPoints[player]
+
+    val commands = order.item.sendTo(player, service, order)
+    val newVault = EconomyManager.vault[player]
+    val newPoints = EconomyManager.playerPoints[player]
+    async {
+        Database.inst().addOrder(player.name, OrderData.fromOrder(order, player.name))
+        val webOrder = Database.inst().getWebOrder(order.orderId)
+        if (webOrder != null) {
+            webOrder.status = WebOrder.Status.SUCCESS
+            webOrder.sendTime = System.currentTimeMillis()
+            webOrder.sendLog = Lang.asLangText<List<String>>(
+                "web-order-send-log",
+                System.currentTimeMillis().formatTime(),
+                player.name,
+                oldVault,
+                oldPoints,
+                commands.joinToString("  ,  "),
+                newVault,
+                newPoints
+            ).joinToString("\r\n")
+            Database.inst().updateWebOrder(webOrder)
+        }
+    }
+}
+
+fun Player.hasEmptySlot(): Boolean {
+    return (0..35).any { inventory.getItem(it) == null }
+}
+
 private fun handle(player: Player, item: Item, service: PayService) {
+    if (!player.hasEmptySlot()) {
+        player.sendLang("command-not-empty-slot")
+        return
+    }
     player.sendLang("command-create-start")
     service.createOrderCall(
         player = player,
         item = item,
         call = {
-            async {
-                Database.inst().addOrder(player.name, OrderData.fromOrder(it, player.name))
+            if (player.isOnline) {
+                // 玩家在线 发货并把status改成 SUCCESS
+                sendReward(player, it, service)
+            } else {
+                warn("玩家 ${player.name} 不在线 将在它下一次进服的时候发货")
             }
             MapUtilProvider.getMapUtil().clearAllMap(player)
             it.item.sendTo(player, service, it)
@@ -55,10 +108,10 @@ private fun handle(player: Player, item: Item, service: PayService) {
                 player.sendLang("command-create-success", order.price.toString())
                 MapUtilProvider.getMapUtil().sendMap(player, qr) {
                     if (MapUtilProvider.getMapUtil().cancelOnDrop) {
+                        player.sendLang("command-close-order")
+                        MapUtilProvider.getMapUtil().clearAllMap(player)
                         order.close()
                     }
-                    player.sendLang("command-close-order")
-                    MapUtilProvider.getMapUtil().clearAllMap(player)
                 }
             }
         } else {

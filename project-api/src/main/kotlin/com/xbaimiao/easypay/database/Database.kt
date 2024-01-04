@@ -35,6 +35,28 @@ interface Database {
      */
     fun setGetReward(playerName: String, reward: String)
 
+    fun addWebOrder(webOrder: WebOrder)
+
+    fun getWebOrder(orderId: String): WebOrder?
+
+    fun getWebOrderByPlayer(playerName: String): Collection<WebOrder>
+
+    fun updateWebOrder(webOrder: WebOrder)
+
+    fun updateAllWebOrderTimeout() {
+        for (webOrder in this.getAllWebOrder()) {
+            if (webOrder.status != WebOrder.Status.WAIT) {
+                continue
+            }
+            if (webOrder.createTime + (1000 * 5 * 60) < System.currentTimeMillis()) {
+                webOrder.status = WebOrder.Status.TIMEOUT
+                updateWebOrder(webOrder)
+            }
+        }
+    }
+
+    fun getAllWebOrder(): Collection<WebOrder>
+
     companion object {
 
         private var INST: Database? = null
