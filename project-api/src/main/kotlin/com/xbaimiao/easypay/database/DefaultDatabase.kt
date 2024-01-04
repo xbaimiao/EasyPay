@@ -211,6 +211,21 @@ class DefaultDatabase(private val sqlDatabase: SQLDatabase) : Database {
         }
     }
 
+    override fun getWebOrderByStatus(status: WebOrder.Status): Collection<WebOrder> {
+        return sqlDatabase.useConnection { connection: Connection ->
+            val statement = connection.prepareStatement("SELECT * FROM `$webOrderTable` WHERE `status` = ?")
+            statement.setString(1, status.name)
+            val list = ArrayList<WebOrder>()
+            statement.executeQuery().use { resultSet ->
+                while (resultSet.next()) {
+                    list.add(resultSet.toWebOrder())
+                }
+            }
+            statement.close()
+            list
+        }
+    }
+
     override fun updateWebOrder(webOrder: WebOrder) {
         sqlDatabase.useConnection { connection ->
             val statement = connection.prepareStatement(
