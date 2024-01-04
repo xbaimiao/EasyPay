@@ -41,10 +41,12 @@ interface Database {
 
     fun getWebOrderByPlayer(playerName: String): Collection<WebOrder>
 
+    fun getWebOrderByStatus(status: WebOrder.Status): Collection<WebOrder>
+
     fun updateWebOrder(webOrder: WebOrder)
 
     fun updateAllWebOrderTimeout() {
-        for (webOrder in this.getAllWebOrder()) {
+        for (webOrder in this.getWebOrderByStatus(WebOrder.Status.WAIT)) {
             if (webOrder.status != WebOrder.Status.WAIT) {
                 continue
             }
