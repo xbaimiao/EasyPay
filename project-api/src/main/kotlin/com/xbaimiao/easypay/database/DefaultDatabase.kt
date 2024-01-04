@@ -1,6 +1,7 @@
 package com.xbaimiao.easypay.database
 
 import com.xbaimiao.easylib.database.SQLDatabase
+import java.sql.Connection
 import java.sql.ResultSet
 
 /**
@@ -195,6 +196,21 @@ class DefaultDatabase(private val sqlDatabase: SQLDatabase) : Database {
         }
     }
 
+    override fun getWebOrderByPlayer(playerName: String): Collection<WebOrder> {
+        return sqlDatabase.useConnection { connection: Connection ->
+            val statement = connection.prepareStatement("SELECT * FROM `$webOrderTable` WHERE `player` = ?")
+            statement.setString(1, playerName)
+            val list = ArrayList<WebOrder>()
+            statement.executeQuery().use { resultSet ->
+                while (resultSet.next()) {
+                    list.add(resultSet.toWebOrder())
+                }
+            }
+            statement.close()
+            list
+        }
+    }
+
     override fun updateWebOrder(webOrder: WebOrder) {
         sqlDatabase.useConnection { connection ->
             val statement = connection.prepareStatement(
@@ -217,25 +233,27 @@ class DefaultDatabase(private val sqlDatabase: SQLDatabase) : Database {
             val statement = connection.prepareStatement("SELECT * FROM `$webOrderTable`;")
             statement.executeQuery().use { resultSet ->
                 while (resultSet.next()) {
-                    list.add(
-                        WebOrder(
-                            resultSet.getLong("create_time"),
-                            resultSet.getLong("pay_time"),
-                            resultSet.getLong("send_time"),
-                            resultSet.getString("desc"),
-                            resultSet.getString("order_id"),
-                            resultSet.getString("pay_type"),
-                            resultSet.getDouble("price"),
-                            resultSet.getString("player"),
-                            WebOrder.Status.valueOf(resultSet.getString("status")),
-                            resultSet.getString("send_log"),
-                        )
-                    )
+                    list.add(resultSet.toWebOrder())
                 }
             }
             statement.close()
             list
         }
+    }
+
+    private fun ResultSet.toWebOrder(): WebOrder {
+        return WebOrder(
+            this.getLong("create_time"),
+            this.getLong("pay_time"),
+            this.getLong("send_time"),
+            this.getString("desc"),
+            this.getString("order_id"),
+            this.getString("pay_type"),
+            this.getDouble("price"),
+            this.getString("player"),
+            WebOrder.Status.valueOf(this.getString("status")),
+            this.getString("send_log"),
+        )
     }
 
 }

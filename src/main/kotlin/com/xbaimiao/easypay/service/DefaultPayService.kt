@@ -73,7 +73,8 @@ interface DefaultPayService : PayService {
                     async {
                         val webOrder = Database.inst().getWebOrder(order.orderId)
                         if (webOrder != null) {
-                            webOrder.status = WebOrder.Status.SUCCESS
+                            // 检测到支付成功 改成待发货状态
+                            webOrder.status = WebOrder.Status.TRANSACTION_COMPLETED_WAITING_FOR_DELIVERY
                             webOrder.payTime = System.currentTimeMillis()
                             Database.inst().updateWebOrder(webOrder)
                         }
@@ -86,6 +87,14 @@ interface DefaultPayService : PayService {
                 waitFor(20)
             }
             debug("订单超时 ${order.orderId}")
+            async {
+                val webOrder = Database.inst().getWebOrder(order.orderId)
+                if (webOrder != null) {
+                    // 改成超时状态
+                    webOrder.status = WebOrder.Status.TIMEOUT
+                    Database.inst().updateWebOrder(webOrder)
+                }
+            }
             timeOut(timeout, order)
         }
         return future

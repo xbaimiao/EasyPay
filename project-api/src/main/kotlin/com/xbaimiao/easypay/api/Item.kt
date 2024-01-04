@@ -35,6 +35,6 @@ interface Item {
     /**
      * 发货
      */
-    fun sendTo(player: Player, service: PayService, order: Order): Collection<String>
+    fun sendTo(player: Player, service: PayService?, order: Order): Collection<String>
 
 }

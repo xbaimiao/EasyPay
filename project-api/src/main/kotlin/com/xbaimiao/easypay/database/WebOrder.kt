@@ -24,7 +24,7 @@ data class WebOrder(
 ) {
 
     enum class Status {
-        WAIT, SUCCESS
+        WAIT, SUCCESS, TIMEOUT, TRANSACTION_COMPLETED_WAITING_FOR_DELIVERY
     }
 
 }

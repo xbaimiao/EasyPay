@@ -39,6 +39,8 @@ interface Database {
 
     fun getWebOrder(orderId: String): WebOrder?
 
+    fun getWebOrderByPlayer(playerName: String): Collection<WebOrder>
+
     fun updateWebOrder(webOrder: WebOrder)
 
     fun getAllWebOrder(): Collection<WebOrder>

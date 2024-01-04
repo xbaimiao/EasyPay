@@ -11,6 +11,7 @@ import com.xbaimiao.easylib.util.info
 object ItemProvider {
 
     private val allItem = ArrayList<Item>()
+    private var customItemCreate: CustomItemCreate? = null
 
     fun register(item: Item) {
         allItem.add(item)
@@ -19,6 +20,18 @@ object ItemProvider {
 
     fun getItem(name: String): Item? {
         return getAllItem().find { it.name == name }
+    }
+
+    fun isCustomItem(name: String): Boolean {
+        return customItemCreate?.name == name
+    }
+
+    fun getCustomItem(price: Double): Item? {
+        return customItemCreate?.createItem(price)
+    }
+
+    fun registerCustomItem(customItemCreate: CustomItemCreate) {
+        this.customItemCreate = customItemCreate
     }
 
     fun getAllItem(): Collection<Item> {

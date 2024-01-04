@@ -25,6 +25,10 @@ import com.xbaimiao.ktor.KtorStat
 @Suppress("unused")
 class EasyPay : EasyPlugin(), KtorStat {
 
+    override fun getUserId(): String {
+        return "caicai"
+    }
+
     override fun enable() {
         launchCoroutine {
             // 初始化统计
@@ -75,6 +79,7 @@ class EasyPay : EasyPlugin(), KtorStat {
             section.getStringList("commands"),
             section.getString("name")
         )
+        ItemProvider.registerCustomItem(customPriceItemConfig)
         CustomConfiguration.setCustomPriceItemConfig(customPriceItemConfig)
     }
 

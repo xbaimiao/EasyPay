@@ -2,6 +2,7 @@ package com.xbaimiao.easypay.item
 
 import com.xbaimiao.easylib.bridge.player.parseECommand
 import com.xbaimiao.easylib.bridge.replacePlaceholder
+import com.xbaimiao.easypay.api.CustomItemCreate
 import com.xbaimiao.easypay.entity.Order
 import com.xbaimiao.easypay.entity.PayService
 import org.bukkit.Bukkit
@@ -34,7 +35,7 @@ data class CustomPriceItem(
     override val name: String
 ) : AbstractItem() {
 
-    override fun sendTo(player: Player, service: PayService, order: Order): Collection<String> {
+    override fun sendTo(player: Player, service: PayService?, order: Order): Collection<String> {
         commands.parseECommand(player).exec(Bukkit.getConsoleSender())
         return commands.map { it.replace("%player_name%", player.name).replacePlaceholder(player) }
     }
@@ -46,8 +47,8 @@ data class CustomPriceItemConfig(
     val max: Int,
     val ratio: Int,
     val commands: List<String>,
-    val name: String
-) {
+    override val name: String
+) : CustomItemCreate {
 
     private fun replaceList(price: Double, name: String, list: List<String>): List<String> {
         val newList = list.toMutableList()
@@ -57,7 +58,7 @@ data class CustomPriceItemConfig(
         return newList
     }
 
-    fun createItem(price: Double): CustomPriceItem {
+    override fun createItem(price: Double): CustomPriceItem {
         return CustomPriceItem(
             replaceList(price, name, commands),
             price,

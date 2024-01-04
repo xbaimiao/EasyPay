@@ -19,7 +19,7 @@ data class CommandItem(
     private val command: List<String>,
 ) : AbstractItem() {
 
-    override fun sendTo(player: Player, service: PayService, order: Order): Collection<String> {
+    override fun sendTo(player: Player, service: PayService?, order: Order): Collection<String> {
         val cmdList = command.toMutableList()
         cmdList.replaceAll { it.replace("%item_name%", name) }
         cmdList.parseECommand(player).exec(Bukkit.getConsoleSender())
