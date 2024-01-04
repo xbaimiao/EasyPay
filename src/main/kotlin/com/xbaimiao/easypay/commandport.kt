@@ -68,7 +68,15 @@ suspend fun SchedulerController.sendReward(player: Player, order: Order, service
     }
 }
 
+fun Player.hasEmptySlot(): Boolean {
+    return (0..35).any { inventory.getItem(it) == null }
+}
+
 private fun handle(player: Player, item: Item, service: PayService) {
+    if (!player.hasEmptySlot()) {
+        player.sendLang("command-not-empty-slot")
+        return
+    }
     player.sendLang("command-create-start")
     service.createOrderCall(
         player = player,
