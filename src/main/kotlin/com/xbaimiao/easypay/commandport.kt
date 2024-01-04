@@ -246,6 +246,14 @@ private val reward = command<CommandSender>("reward") {
     sub(rewardAdd)
 }
 
+private val check = command<CommandSender>("check") {
+    description = "检测指定玩家是否还有未发货订单 并发货"
+    val playerArg = players()
+    exec {
+        playerArg.value()?.let { ListenerCompletedWaiting.check(it) }
+    }
+}
+
 val rootCommand = command<CommandSender>("easypay") {
     description = "主要命令"
     permission = "easypay.command"
@@ -254,5 +262,6 @@ val rootCommand = command<CommandSender>("easypay") {
     sub(printAllOrder)
     sub(reload)
     sub(reward)
+    sub(check)
     sub(debugCommand)
 }

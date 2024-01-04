@@ -9,6 +9,7 @@ import com.xbaimiao.easypay.database.Database
 import com.xbaimiao.easypay.database.WebOrder
 import com.xbaimiao.easypay.entity.Order
 import com.xbaimiao.easypay.entity.PayServiceProvider
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
@@ -19,11 +20,15 @@ object ListenerCompletedWaiting : Listener {
     @EventHandler
     fun join(event: PlayerJoinEvent) {
         val player = event.player
+        check(player)
+    }
+
+    fun check(player: Player) {
         launchCoroutine(SynchronizationContext.ASYNC) {
             if (!player.isOnline) {
                 return@launchCoroutine
             }
-            val allWebOrder = Database.inst().getWebOrderByPlayer(event.player.name)
+            val allWebOrder = Database.inst().getWebOrderByPlayer(player.name)
             for (order in allWebOrder) {
                 if (order.status == WebOrder.Status.WAIT_DELIVERY) {
                     // 如果是等待发货状态
