@@ -8,6 +8,7 @@ plugins {
 easylib {
     version = "3.4.3"
     nbt = true
+    nbtVersion = "2.12.2"
     hikariCP = true
     ormlite = false
     userMinecraftLib = true
