@@ -41,7 +41,7 @@ data class CustomPriceItem(
 
     override fun sendTo(player: Player, service: PayService, order: Order): Collection<String> {
         commands.parseECommand(player).exec(Bukkit.getConsoleSender())
-        FunctionUtil.parseActions(player, order, service, rewards)
+        FunctionUtil.instance.parseActions(player, order, service, rewards)
         return commands.map { it.replace("%player_name%", player.name).replacePlaceholder(player) }
     }
 

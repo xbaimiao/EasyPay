@@ -3,7 +3,7 @@ package com.xbaimiao.easypay.functions
 import com.xbaimiao.easylib.chat.colored
 import com.xbaimiao.easypay.parameters.PlayerParameter
 import com.xbaimiao.easypay.results.CancellableResult
-import com.xbaimiao.easypay.util.FunctionUtil.argumentArray
+import com.xbaimiao.easypay.util.FunctionUtil.Companion.argumentArray
 import dev.rgbmc.expression.functions.FastFunction
 import dev.rgbmc.expression.functions.FunctionParameter
 import dev.rgbmc.expression.functions.FunctionResult

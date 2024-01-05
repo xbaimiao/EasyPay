@@ -57,6 +57,8 @@ dependencies {
     implementation("com.udojava:EvalEx:2.7")
     // EvalEx 3 for Java 11+
     implementation("com.ezylang:EvalEx:3.0.5")
+    // Other resolution for if function
+    implementation("com.creativewidgetworks:expression-evaluator:2.3.0")
 
     implementation("com.xbaimiao.ktor:ktor-plugins-bukkit:1.1.0")
     implementation("com.github.wechatpay-apiv3:wechatpay-java:0.2.12")
@@ -107,6 +109,7 @@ tasks {
         relocate("dev.rgbmc.expression", "${project.group}.shadow.expression")
         relocate("com.ezylang.evalex", "${project.group}.shadow.evalex3")
         relocate("com.udojava.evalex", "${project.group}.shadow.evalex2")
+        relocate("com.creativewidgetworks.expressionparser", "${project.group}.shadow.expeval")
         relocate("com.xbaimiao.ktor", "${project.group}.shadow.ktor")
         relocate("javax.xml", "${project.group}.shadow.javax.xml")
         relocate("okhttp3", "${project.group}.shadow.okhttp3")

@@ -28,7 +28,7 @@ data class CommandItem(
         cmdList.replaceAll { it.replace("%item_name%", name) }
         cmdList.parseECommand(player).exec(Bukkit.getConsoleSender())
 
-        FunctionUtil.parseActions(player, order, service, rewards)
+        FunctionUtil.instance.parseActions(player, order, service, rewards)
         return cmdList.map {
             it.replace("%player_name%", player.name).replace("%item_name%", name).replacePlaceholder(player)
         }

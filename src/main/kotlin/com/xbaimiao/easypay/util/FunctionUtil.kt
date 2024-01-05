@@ -1,6 +1,7 @@
 package com.xbaimiao.easypay.util
 
 import com.xbaimiao.easylib.bridge.replacePlaceholder
+import com.xbaimiao.easypay.api.FunctionUtil
 import com.xbaimiao.easypay.entity.Order
 import com.xbaimiao.easypay.entity.PayService
 import com.xbaimiao.easypay.parameters.PlayerParameter
@@ -11,8 +12,13 @@ import dev.rgbmc.expression.parameters.StringParameter
 import org.bukkit.entity.Player
 
 
-object FunctionUtil {
-    val functionManager = FastExpression()
+class FunctionUtil : FunctionUtil() {
+    private val functionManager = FastExpression()
+
+    init {
+        FunctionUtil.instance = this
+        instance = this
+    }
 
     private fun parseFunctions(
         manager: FastExpression,
@@ -41,23 +47,31 @@ object FunctionUtil {
         return true
     }
 
-    private fun String.reformatArgument(): String {
-        return this.replace(" ,", ",").replace(", ", ",")
+    override fun getFastExpression(): FastExpression {
+        return functionManager
     }
 
-    private fun String.formatVariables(vararg values: Any): String {
-        return if (values.size % 2 == 0) {
-            var temp = this
-            for (i in (values.indices step 2)) {
-                temp = temp.replace("$" + values[i], values[i + 1].toString())
-            }
-            temp
-        } else {
-            this
+    companion object {
+        lateinit var instance: com.xbaimiao.easypay.util.FunctionUtil
+
+        private fun String.reformatArgument(): String {
+            return this.replace(" ,", ",").replace(", ", ",")
         }
-    }
 
-    fun String.argumentArray(): List<String> {
-        return this.reformatArgument().split(",")
+        private fun String.formatVariables(vararg values: Any): String {
+            return if (values.size % 2 == 0) {
+                var temp = this
+                for (i in (values.indices step 2)) {
+                    temp = temp.replace("$" + values[i], values[i + 1].toString())
+                }
+                temp
+            } else {
+                this
+            }
+        }
+
+        fun String.argumentArray(): List<String> {
+            return this.reformatArgument().split(",")
+        }
     }
 }

@@ -18,11 +18,11 @@ abstract class AbstractItem(
 ) : Item {
 
     override fun preCreate(player: Player, service: PayService, order: Order): Boolean {
-        return FunctionUtil.parseActions(player, order, service, preActions)
+        return FunctionUtil.instance.parseActions(player, order, service, preActions)
     }
 
     override fun onCreate(player: Player, service: PayService, order: Order) {
-        FunctionUtil.parseActions(player, order, service, actions)
+        FunctionUtil.instance.parseActions(player, order, service, actions)
     }
 
 }
