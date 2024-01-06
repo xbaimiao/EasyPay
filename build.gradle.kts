@@ -6,9 +6,9 @@ plugins {
 }
 
 easylib {
-    version = "3.4.3"
-    nbt = false
-    nbtVersion = "1.3.1"
+    version = "3.4.5"
+    nbt = true
+    nbtVersion = "2.12.2"
     hikariCP = true
     ormlite = false
     userMinecraftLib = false
@@ -17,7 +17,7 @@ easylib {
 }
 
 group = "com.xbaimiao.easypay"
-version = "ver1.7.10-1.1.8"
+version = "ver1.7.10-1.2.0"
 
 repositories {
     mavenLocal()
