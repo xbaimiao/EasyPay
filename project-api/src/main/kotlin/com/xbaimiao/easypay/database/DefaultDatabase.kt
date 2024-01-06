@@ -50,7 +50,7 @@ class DefaultDatabase(private val sqlDatabase: SQLDatabase) : Database {
                     |`price` DOUBLE(100,2),
                     |`player` VARCHAR(32),
                     |`status` VARCHAR(16),
-                    |`send_log` VARCHAR(255)
+                    |`send_log` VARCHAR(2550)
                     |);""".trimMargin()
             )
             createWebOrderTable.use { it.executeUpdate() }
