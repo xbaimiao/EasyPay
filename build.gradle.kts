@@ -17,7 +17,7 @@ easylib {
 }
 
 group = "com.xbaimiao.easypay"
-version = "1.2.0"
+version = "1.2.1"
 
 repositories {
     mavenLocal()
@@ -69,6 +69,7 @@ dependencies {
 tasks {
     compileJava {
         options.encoding = "UTF-8"
+        options.release = 8
     }
     compileKotlin {
         kotlinOptions {

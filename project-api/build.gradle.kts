@@ -21,6 +21,7 @@ tasks.register("sourcesJar", Jar::class.java) {
 tasks {
     compileJava {
         options.encoding = "UTF-8"
+        options.release = 8
     }
     compileKotlin {
         kotlinOptions {

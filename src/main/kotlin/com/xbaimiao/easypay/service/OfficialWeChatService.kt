@@ -6,12 +6,13 @@ import com.wechat.pay.java.service.payments.nativepay.NativePayService
 import com.wechat.pay.java.service.payments.nativepay.model.Amount
 import com.wechat.pay.java.service.payments.nativepay.model.PrepayRequest
 import com.wechat.pay.java.service.payments.nativepay.model.QueryOrderByOutTradeNoRequest
+import com.xbaimiao.easylib.util.debug
 import com.xbaimiao.easylib.util.plugin
 import com.xbaimiao.easypay.api.Item
 import com.xbaimiao.easypay.entity.Order
 import com.xbaimiao.easypay.entity.OrderStatus
+import org.bukkit.Bukkit
 import org.bukkit.configuration.ConfigurationSection
-import org.bukkit.entity.Player
 import java.io.File
 
 /**
@@ -50,7 +51,7 @@ class OfficialWeChatService(
 
     override val name: String = "wechat-official"
 
-    override fun createOrder(player: Player, item: Item): Order? {
+    override fun createOrder(player: String, item: Item): Order? {
         val tradeNo = generateOrderId()
         val request = PrepayRequest()
         request.appid = appId
@@ -65,8 +66,13 @@ class OfficialWeChatService(
         val result = service.prepay(request)
 
         val order = Order(tradeNo, item, result.codeUrl, this, item.price)
-        if (!item.preCreate(player, this, order)) {
-            return null
+        val offlinePlayer = Bukkit.getOfflinePlayer(player)
+
+        if (offlinePlayer.isOnline) {
+            debug("offline player online execute preCreate")
+            if (!item.preCreate(offlinePlayer.player, this, order)) {
+                return null
+            }
         }
 
         return order
