@@ -10,7 +10,9 @@ import com.xbaimiao.easylib.util.debug
 import com.xbaimiao.easypay.api.Item
 import com.xbaimiao.easypay.entity.Order
 import com.xbaimiao.easypay.entity.OrderStatus
-import org.bukkit.entity.Player
+import com.xbaimiao.easypay.util.ZxingUtil
+import org.bukkit.Bukkit
+import java.io.File
 
 /**
  * AlipayService
@@ -35,10 +37,15 @@ class AlipayService(
 
     override val name: String = "alipay"
 
+    override val displayName: String = "支付宝"
+
+    override val logoFile: File
+        get() = ZxingUtil.alipayLogo
+
     /**
      * 创建一个订单
      */
-    override fun createOrder(player: Player, item: Item): Order? {
+    override fun createOrder(player: String, item: Item): Order? {
         val request = AlipayTradePrecreateRequest()
         request.notifyUrl = notify
         val tradeNo = generateOrderId()
@@ -55,8 +62,13 @@ class AlipayService(
         val response = alipayClient.execute(request)
         debug(response.body)
         val order = Order(tradeNo, item, response.qrCode, this, item.price)
-        if (!item.preCreate(player, this, order)) {
-            return null
+        val offlinePlayer = Bukkit.getOfflinePlayer(player)
+
+        if (offlinePlayer.isOnline) {
+            debug("offline player online execute preCreate")
+            if (!item.preCreate(offlinePlayer.player, this, order)) {
+                return null
+            }
         }
 
         if (response.isSuccess) {

@@ -8,8 +8,10 @@ import com.xbaimiao.easylib.util.plugin
 import com.xbaimiao.easypay.api.Item
 import com.xbaimiao.easypay.entity.Order
 import com.xbaimiao.easypay.entity.OrderStatus
+import com.xbaimiao.easypay.util.ZxingUtil
 import dev.rgbmc.walletconnector.WalletConnector
-import org.bukkit.entity.Player
+import org.bukkit.Bukkit
+import java.io.File
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -42,8 +44,13 @@ class DLCWeChatService(
 
     override val name: String = "wechat"
 
+    override val displayName: String = "微信监听"
+
+    override val logoFile: File
+        get() = ZxingUtil.wechatLogo
+
     override fun createOrderCall(
-        player: Player,
+        player: String,
         item: Item,
         call: suspend SchedulerController.(Order) -> Unit,
         timeout: suspend SchedulerController.(Order) -> Unit,
@@ -58,12 +65,15 @@ class DLCWeChatService(
         walletConnector.orderTimeout(order.item.price)
     }
 
-    override fun createOrder(player: Player, item: Item): Order? {
+    override fun createOrder(player: String, item: Item): Order? {
         var newPrice = item.price
+        val offlinePlayer = Bukkit.getOfflinePlayer(player)
         if (list.contains(newPrice)) {
             if (plugin.config.getBoolean("wechat.dynamic-cost")) {
                 // Dynamic Cost
-                player.sendLang("command-wechat-dynamic-cost")
+                if (offlinePlayer.isOnline) {
+                    offlinePlayer.player.sendLang("command-wechat-dynamic-cost")
+                }
                 while (list.contains(newPrice)) {
                     newPrice += 0.01
                 }
@@ -74,9 +84,14 @@ class DLCWeChatService(
         }
         val tradeNo = generateOrderId()
         val order = Order(tradeNo, item, qrcodeContent, this, newPrice)
-        if (!item.preCreate(player, this, order)) {
-            return null
+
+        if (offlinePlayer.isOnline) {
+            debug("offline player online execute preCreate")
+            if (!item.preCreate(offlinePlayer.player, this, order)) {
+                return null
+            }
         }
+
         // Join?
         // 监听已浮动的价格
         val status = walletConnector.createOrder(newPrice).join()

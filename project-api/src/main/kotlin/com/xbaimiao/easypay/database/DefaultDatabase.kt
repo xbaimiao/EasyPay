@@ -46,7 +46,7 @@ class DefaultDatabase(private val sqlDatabase: SQLDatabase) : Database {
                     |`pay_time` LONG,
                     |`send_time` LONG,
                     |`desc` VARCHAR(255),
-                    |`pay_type` VARCHAR(10),
+                    |`pay_type` VARCHAR(255),
                     |`price` DOUBLE(100,2),
                     |`player` VARCHAR(32),
                     |`status` VARCHAR(16),

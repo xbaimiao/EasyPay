@@ -100,7 +100,7 @@ private fun handle(player: Player, item: Item, service: PayService) {
         if (order != null) {
             launchCoroutine {
                 val qr = async {
-                    ZxingUtil.generate(order.qrCode)
+                    ZxingUtil.generate(order.qrCode, order.service.logoFile)
                 }
                 order.item.onCreate(player, service, order)
                 player.sendLang("command-create-success", order.price.toString())

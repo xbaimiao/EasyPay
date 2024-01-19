@@ -17,7 +17,7 @@ easylib {
 }
 
 group = "com.xbaimiao.easypay"
-version = "ver1.7.10-1.2.0"
+version = "ver1.7.10-1.2.1"
 
 repositories {
     mavenLocal()
@@ -50,6 +50,7 @@ dependencies {
     implementation("com.alipay.sdk:alipay-sdk-java:4.38.72.ALL")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     implementation("com.google.zxing:core:3.5.2")
+    implementation("com.google.zxing:javase:3.5.2")
     implementation("dev.rgbmc:WalletConnector:1.0.0-cc9b05d")
     implementation("com.xbaimiao.ktor:ktor-plugins-bukkit:1.1.0")
     implementation("com.github.wechatpay-apiv3:wechatpay-java:0.2.12")
@@ -62,6 +63,7 @@ dependencies {
 tasks {
     compileJava {
         options.encoding = "UTF-8"
+        options.release = 8
     }
     compileKotlin {
         kotlinOptions {

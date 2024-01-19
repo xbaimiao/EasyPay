@@ -20,7 +20,7 @@ interface DefaultPayService : PayService {
     }
 
     override fun createOrderCall(
-        player: Player,
+        player: String,
         item: Item,
         call: suspend SchedulerController.(Order) -> Unit,
         timeout: suspend SchedulerController.(Order) -> Unit,
@@ -29,12 +29,26 @@ interface DefaultPayService : PayService {
         return createOrderCall(player, item, call, timeout, cancel, 60 * 5)
     }
 
+    override fun createOrderCall(
+        player: Player,
+        item: Item,
+        call: suspend SchedulerController.(Order) -> Unit,
+        timeout: suspend SchedulerController.(Order) -> Unit,
+        cancel: () -> Unit
+    ): CompletableFuture<Order?> {
+        return createOrderCall(player.name, item, call, timeout, cancel)
+    }
+
     override fun close(order: Order) {
         closeOrderList.add(order.orderId)
     }
 
+    override fun createOrder(player: Player, item: Item): Order? {
+        return createOrder(player.name, item)
+    }
+
     fun createOrderCall(
-        player: Player,
+        player: String,
         item: Item,
         call: suspend SchedulerController.(Order) -> Unit,
         timeout: suspend SchedulerController.(Order) -> Unit,
@@ -45,7 +59,7 @@ interface DefaultPayService : PayService {
         launchCoroutine {
             val order = async {
                 createOrder(player, item)?.also {
-                    Database.inst().addWebOrder(it.baseWebOrder(player.name))
+                    Database.inst().addWebOrder(it.baseWebOrder(player))
                 }
             }
             if (order == null) {
