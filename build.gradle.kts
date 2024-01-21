@@ -17,7 +17,7 @@ easylib {
 }
 
 group = "com.xbaimiao.easypay"
-version = "1.2.1"
+version = "1.2.2"
 
 repositories {
     mavenLocal()
@@ -27,6 +27,12 @@ repositories {
     }
     maven {
         url = uri("https://repo.codemc.io/repository/maven-releases/")
+    }
+    maven {
+        url = uri("https://repo.lukasa.lt/repository/maven-public/")
+    }
+    maven {
+        url = uri("https://repo.dmulloy2.net/repository/public/")
     }
 }
 
@@ -47,7 +53,7 @@ subprojects {
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(project(":project-api"))
-    implementation("com.alipay.sdk:alipay-sdk-java:4.38.72.ALL")
+    implementation("com.alipay.sdk:alipay-sdk-java:4.38.192.ALL")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     implementation("com.google.zxing:core:3.5.2")
     implementation("com.google.zxing:javase:3.5.2")
@@ -63,6 +69,11 @@ dependencies {
 
     implementation("com.xbaimiao.ktor:ktor-plugins-bukkit:1.1.0")
     implementation("com.github.wechatpay-apiv3:wechatpay-java:0.2.12")
+
+    implementation("com.comphenix.packetwrapper:PacketWrapper:1.20-2.2.1") {
+        exclude(module = "spigot-api")
+    }
+    compileOnly("com.comphenix.protocol:ProtocolLib:5.1.0")
 
     //implementation("com.google.code.gson:gson:2.10.1")
 }
@@ -123,6 +134,7 @@ tasks {
         relocate("com.google.zxing", "${project.group}.shadow.zxing")
         relocate("_COROUTINE", "${project.group}.shadow.COROUTINE")
         relocate("com.wechat.pay.java", "${project.group}.shadow.wechat.pay")
+        relocate("com.comphenix.packetwrapper", "${project.group}.shadow.packets")
         minimize()
     }
 }

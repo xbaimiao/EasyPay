@@ -17,6 +17,7 @@ import com.xbaimiao.easypay.item.CustomConfiguration
 import com.xbaimiao.easypay.item.CustomPriceItemConfig
 import com.xbaimiao.easypay.map.MapUtilProvider
 import com.xbaimiao.easypay.map.RealMap
+import com.xbaimiao.easypay.map.VirtualMap
 import com.xbaimiao.easypay.reward.RewardHandle
 import com.xbaimiao.easypay.service.AlipayService
 import com.xbaimiao.easypay.service.DLCWeChatService
@@ -24,6 +25,7 @@ import com.xbaimiao.easypay.service.OfficialWeChatService
 import com.xbaimiao.easypay.util.FunctionUtil
 import com.xbaimiao.ktor.KtorPluginsBukkit
 import com.xbaimiao.ktor.KtorStat
+import org.bukkit.Bukkit
 
 @Suppress("unused")
 class EasyPay : EasyPlugin(), KtorStat {
@@ -39,7 +41,7 @@ class EasyPay : EasyPlugin(), KtorStat {
             // 初始化统计
             KtorPluginsBukkit.init(this@EasyPay, this@EasyPay)
             // userId 是用户Id 如果获取的时候报错 代表没有注入用户ID
-            val userId = runCatching { userId }.getOrNull()
+            /*val userId = runCatching { userId }.getOrNull()
             if (userId != null) {
                 info("$userId 感谢您的支持!")
                 val has = async {
@@ -50,7 +52,7 @@ class EasyPay : EasyPlugin(), KtorStat {
                 }
                 // 统计服务器在线的方法
                 stat()
-            }
+            }*/
             saveDefaultConfig()
 
             loadCustomConfig()
@@ -124,7 +126,25 @@ class EasyPay : EasyPlugin(), KtorStat {
 
     fun loadMap() {
         val cancelOnDrop = config.getBoolean("map.cancel-on-drop")
-        MapUtilProvider.setMapUtil(RealMap(config.getString("map.hand") == "MAIN", cancelOnDrop))
+        val virtualMode = config.getBoolean("map.virtual")
+        val mainHand = config.getString("map.hand") == "MAIN"
+        val mapUtil = if (virtualMode && checkProtocolLib()) {
+            info("EasyPay正在使用发包地图模式")
+            info("发包地图仅支持最新的Minecraft版本")
+            info("如您在较旧的服务器版本上使用发包地图遇到问题 请关闭此功能 提出兼容请求将不会被处理")
+            VirtualMap(mainHand, cancelOnDrop)
+        } else RealMap(mainHand, cancelOnDrop)
+        MapUtilProvider.setMapUtil(mapUtil)
+    }
+
+    private fun checkProtocolLib(): Boolean {
+        if (Bukkit.getPluginManager().isPluginEnabled("ProtocolLib")) {
+            val version = Bukkit.getPluginManager()
+                .getPlugin("ProtocolLib").description.version
+                .split("-")[0].replace(".", "").toInt()
+            return version > 510
+        }
+        return false
     }
 
     fun loadDatabase() {

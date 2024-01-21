@@ -58,6 +58,8 @@ map:
   hand: 'MAIN'
   # 是否在地图丢弃时取消订单
   cancel-on-drop: false
+  # 发包地图模式 (此功能为测试版 仅兼容最新的Minecraft版本 请勿随意开启)
+  virtual: false
 database:
   mysql:
     # 是否启用mysql 不启用使用sqlite
