@@ -8,8 +8,10 @@ import com.xbaimiao.easylib.util.plugin
 import com.xbaimiao.easypay.api.Item
 import com.xbaimiao.easypay.entity.Order
 import com.xbaimiao.easypay.entity.OrderStatus
+import com.xbaimiao.easypay.util.ZxingUtil
 import dev.rgbmc.walletconnector.WalletConnector
 import org.bukkit.Bukkit
+import java.io.File
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -41,6 +43,11 @@ class DLCWeChatService(
     }
 
     override val name: String = "wechat"
+
+    override val displayName: String = "微信监听"
+
+    override val logoFile: File
+        get() = ZxingUtil.wechatLogo
 
     override fun createOrderCall(
         player: String,

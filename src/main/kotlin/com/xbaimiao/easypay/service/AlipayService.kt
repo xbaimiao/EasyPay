@@ -10,7 +10,9 @@ import com.xbaimiao.easylib.util.debug
 import com.xbaimiao.easypay.api.Item
 import com.xbaimiao.easypay.entity.Order
 import com.xbaimiao.easypay.entity.OrderStatus
+import com.xbaimiao.easypay.util.ZxingUtil
 import org.bukkit.Bukkit
+import java.io.File
 
 /**
  * AlipayService
@@ -34,6 +36,11 @@ class AlipayService(
     }
 
     override val name: String = "alipay"
+
+    override val displayName: String = "支付宝"
+
+    override val logoFile: File
+        get() = ZxingUtil.alipayLogo
 
     /**
      * 创建一个订单

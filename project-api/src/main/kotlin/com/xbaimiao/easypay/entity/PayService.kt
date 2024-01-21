@@ -3,6 +3,7 @@ package com.xbaimiao.easypay.entity
 import com.xbaimiao.easylib.skedule.SchedulerController
 import com.xbaimiao.easypay.api.Item
 import org.bukkit.entity.Player
+import java.io.File
 import java.util.concurrent.CompletableFuture
 import kotlin.math.roundToInt
 
@@ -15,6 +16,10 @@ import kotlin.math.roundToInt
 interface PayService {
 
     val name: String
+
+    val displayName: String
+
+    val logoFile: File
 
     /**
      * 创建一个订单 此方法为同步创建 会占用主线程资源 推荐使用 [createOrderCall]

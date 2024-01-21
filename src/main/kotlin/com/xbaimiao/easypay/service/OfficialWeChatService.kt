@@ -11,6 +11,7 @@ import com.xbaimiao.easylib.util.plugin
 import com.xbaimiao.easypay.api.Item
 import com.xbaimiao.easypay.entity.Order
 import com.xbaimiao.easypay.entity.OrderStatus
+import com.xbaimiao.easypay.util.ZxingUtil
 import org.bukkit.Bukkit
 import org.bukkit.configuration.ConfigurationSection
 import java.io.File
@@ -50,6 +51,10 @@ class OfficialWeChatService(
     }
 
     override val name: String = "wechat-official"
+
+    override val displayName: String = "微信官方"
+    override val logoFile: File
+        get() = ZxingUtil.wechatLogo
 
     override fun createOrder(player: String, item: Item): Order? {
         val tradeNo = generateOrderId()
