@@ -7,6 +7,7 @@ import com.xbaimiao.easylib.skedule.launchCoroutine
 import com.xbaimiao.easylib.util.info
 import com.xbaimiao.easylib.util.submit
 import com.xbaimiao.easylib.util.warn
+import com.xbaimiao.easypay.api.Item
 import com.xbaimiao.easypay.api.ItemProvider
 import com.xbaimiao.easypay.database.Database
 import com.xbaimiao.easypay.database.DefaultDatabase
@@ -15,6 +16,7 @@ import com.xbaimiao.easypay.functions.*
 import com.xbaimiao.easypay.item.CommandItem
 import com.xbaimiao.easypay.item.CustomConfiguration
 import com.xbaimiao.easypay.item.CustomPriceItemConfig
+import com.xbaimiao.easypay.item.ItemSack
 import com.xbaimiao.easypay.map.MapUtilProvider
 import com.xbaimiao.easypay.map.RealMap
 import com.xbaimiao.easypay.map.VirtualMap
@@ -41,7 +43,7 @@ class EasyPay : EasyPlugin(), KtorStat {
             // 初始化统计
             KtorPluginsBukkit.init(this@EasyPay, this@EasyPay)
             // userId 是用户Id 如果获取的时候报错 代表没有注入用户ID
-            /*val userId = runCatching { userId }.getOrNull()
+            val userId = runCatching { userId }.getOrNull()
             if (userId != null) {
                 info("$userId 感谢您的支持!")
                 val has = async {
@@ -52,7 +54,7 @@ class EasyPay : EasyPlugin(), KtorStat {
                 }
                 // 统计服务器在线的方法
                 stat()
-            }*/
+            }
             saveDefaultConfig()
 
             loadCustomConfig()
@@ -208,6 +210,20 @@ class EasyPay : EasyPlugin(), KtorStat {
                         val preActions = section.getStringList("$name.pre-actions")
                         val rewards = section.getStringList("$name.rewards")
                         ItemProvider.register(CommandItem(price, name, commands, actions, preActions, rewards))
+                    }
+
+                    "ItemSack" -> {
+                        val itemList = section.getStringList("$name.items")
+                        val items = mutableListOf<Item>()
+                        itemList.forEach {
+                            val item = ItemProvider.getItem(it)
+                            if (item == null) {
+                                warn("| 注册商品包时无法找到商品: $it 请检查商品是否存在或调整配置顺序")
+                            } else {
+                                items.add(item)
+                            }
+                        }
+                        ItemProvider.register(ItemSack(items))
                     }
 
                     else -> warn("未知商品类型 $type")
