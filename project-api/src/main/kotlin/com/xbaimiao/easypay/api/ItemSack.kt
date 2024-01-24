@@ -1,6 +1,5 @@
-package com.xbaimiao.easypay.item
+package com.xbaimiao.easypay.api
 
-import com.xbaimiao.easypay.api.Item
 import com.xbaimiao.easypay.entity.Order
 import com.xbaimiao.easypay.entity.PayService
 import org.bukkit.entity.Player
