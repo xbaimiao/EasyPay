@@ -34,7 +34,7 @@ class DLCWeChatService(
 
     override fun timeOut(timeout: suspend SchedulerController.(Order) -> Unit, order: Order) {
         launchCoroutine {
-            list.remove(order.price)
+            orderMap[order.price] = OrderStatus.UNKNOWN
             async {
                 walletConnector.orderTimeout(order.price)
             }
@@ -61,20 +61,20 @@ class DLCWeChatService(
 
     override fun close(order: Order) {
         super.close(order)
-        list.remove(order.price)
+        orderMap[order.price] = OrderStatus.UNKNOWN
         walletConnector.orderTimeout(order.item.price)
     }
 
     override fun createOrder(player: String, item: Item): Order? {
         var newPrice = item.price
         val offlinePlayer = Bukkit.getOfflinePlayer(player)
-        if (list.contains(newPrice)) {
+        if (orderMap.containsKey(newPrice) && orderMap[newPrice] != OrderStatus.UNKNOWN) {
             if (plugin.config.getBoolean("wechat.dynamic-cost")) {
                 // Dynamic Cost
                 if (offlinePlayer.isOnline) {
                     offlinePlayer.player.sendLang("command-wechat-dynamic-cost")
                 }
-                while (list.contains(newPrice)) {
+                while (orderMap.contains(newPrice)) {
                     newPrice += 0.01
                 }
             } else {
@@ -99,23 +99,23 @@ class DLCWeChatService(
             // Cancel Order [multi-servers]
             return null
         }
-        list.add(newPrice)
+        orderMap[newPrice] = OrderStatus.WAIT_SCAN
         walletConnector.listenOrder(newPrice) {
-            list.remove(newPrice)
+            orderMap.remove(newPrice)
         }
         return order
     }
 
     override fun queryOrder(order: Order): OrderStatus {
         debug("queryWechat $order Price: ${order.price}")
-        return when (list.contains(order.price)) {
+        return when (orderMap.containsKey(order.price)) {
             // 支付成功
             false -> OrderStatus.SUCCESS
-            else -> OrderStatus.WAIT_SCAN
+            else -> return orderMap[order.price]!!
         }
     }
 
     companion object {
-        val list: MutableList<Double> = ArrayList()
+        val orderMap: MutableMap<Double, OrderStatus> = mutableMapOf()
     }
 }

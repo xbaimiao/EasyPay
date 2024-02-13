@@ -17,7 +17,7 @@ easylib {
 }
 
 group = "com.xbaimiao.easypay"
-version = "1.2.2"
+version = "1.2.2-RC"
 
 repositories {
     mavenLocal()

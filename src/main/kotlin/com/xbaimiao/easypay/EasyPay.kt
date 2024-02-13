@@ -103,8 +103,8 @@ class EasyPay : EasyPlugin(), KtorStat {
         val dlcWeChatService = PayServiceProvider.getService(DLCWeChatService::class.java)
         if (dlcWeChatService != null) {
             info("正在断开与WalletMonitor的连接")
-            for (orderPrice in DLCWeChatService.list) {
-                dlcWeChatService.walletConnector.orderTimeout(orderPrice)
+            for (orderEntry in DLCWeChatService.orderMap) {
+                dlcWeChatService.walletConnector.orderTimeout(orderEntry.key)
             }
             dlcWeChatService.walletConnector.close()
         }
