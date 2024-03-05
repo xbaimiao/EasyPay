@@ -4,6 +4,7 @@ import com.xbaimiao.easylib.chat.Lang.sendLang
 import com.xbaimiao.easylib.skedule.SchedulerController
 import com.xbaimiao.easylib.skedule.launchCoroutine
 import com.xbaimiao.easylib.util.debug
+import com.xbaimiao.easylib.util.info
 import com.xbaimiao.easylib.util.plugin
 import com.xbaimiao.easylib.util.warn
 import com.xbaimiao.easypay.api.Item
@@ -27,10 +28,12 @@ class DLCWeChatService(
 ) : DefaultPayService {
 
     val walletConnector: WalletConnector = WalletConnector()
-    var counter: Int = 0
+    private var counter: Int = 0
+    private var connected: Boolean = false
 
     init {
         WalletConnector.setDisconnectCallback {
+            connected = false
             counter++
             if (counter >= plugin.config.getInt("wechat.max-retry")) {
                 WalletConnector.setReconnect(false)
@@ -38,7 +41,9 @@ class DLCWeChatService(
             }
         }
         WalletConnector.setConnectedCallback {
+            info("已连接上EasyPay微信DLC")
             counter = 0
+            connected = true
         }
         WalletConnector.setReconnect(true)
         walletConnector.connect(server)
@@ -78,6 +83,7 @@ class DLCWeChatService(
     }
 
     override fun createOrder(player: String, item: Item): Order? {
+        if (!connected) return null // Waiting Connected
         var newPrice = item.price
         val offlinePlayer = Bukkit.getOfflinePlayer(player)
         if (orderMap.containsKey(newPrice) && orderMap[newPrice] != OrderStatus.UNKNOWN) {
