@@ -17,7 +17,7 @@ easylib {
 }
 
 group = "com.xbaimiao.easypay"
-version = "1.2.2-RC"
+version = "1.2.2-RC2"
 
 repositories {
     mavenLocal()
@@ -53,11 +53,11 @@ subprojects {
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(project(":project-api"))
-    implementation("com.alipay.sdk:alipay-sdk-java:4.38.192.ALL")
+    implementation("com.alipay.sdk:alipay-sdk-java:4.38.221.ALL")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     implementation("com.google.zxing:core:3.5.2")
     implementation("com.google.zxing:javase:3.5.2")
-    implementation("dev.rgbmc:WalletConnector:1.0.0-cc9b05d")
+    implementation("dev.rgbmc:WalletConnector:1.0.0-3656068")
     implementation("dev.rgbmc:FastExpression:1.0.0-a0aa2c1")
 
     // EvalEx 2 for Java 8-10

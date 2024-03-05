@@ -5,6 +5,7 @@ import com.xbaimiao.easylib.skedule.SchedulerController
 import com.xbaimiao.easylib.skedule.launchCoroutine
 import com.xbaimiao.easylib.util.debug
 import com.xbaimiao.easylib.util.plugin
+import com.xbaimiao.easylib.util.warn
 import com.xbaimiao.easypay.api.Item
 import com.xbaimiao.easypay.entity.Order
 import com.xbaimiao.easypay.entity.OrderStatus
@@ -26,8 +27,19 @@ class DLCWeChatService(
 ) : DefaultPayService {
 
     val walletConnector: WalletConnector = WalletConnector()
+    var counter: Int = 0
 
     init {
+        WalletConnector.setDisconnectCallback {
+            counter++
+            if (counter >= plugin.config.getInt("wechat.max-retry")) {
+                WalletConnector.setReconnect(false)
+                warn("EasyPay微信DLC 已超过最大重连次数 请重载EasyPay后再次尝试链接")
+            }
+        }
+        WalletConnector.setConnectedCallback {
+            counter = 0
+        }
         WalletConnector.setReconnect(true)
         walletConnector.connect(server)
     }
