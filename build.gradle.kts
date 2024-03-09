@@ -17,7 +17,7 @@ easylib {
 }
 
 group = "com.xbaimiao.easypay"
-version = "1.2.2-RC2"
+version = "1.2.2-RC3"
 
 repositories {
     mavenLocal()
@@ -54,6 +54,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(project(":project-api"))
     implementation("com.alipay.sdk:alipay-sdk-java:4.38.221.ALL")
+    implementation("com.paypal.sdk:checkout-sdk:2.0.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     implementation("com.google.zxing:core:3.5.2")
     implementation("com.google.zxing:javase:3.5.2")
@@ -63,7 +64,7 @@ dependencies {
     // EvalEx 2 for Java 8-10
     implementation("com.udojava:EvalEx:2.7")
     // EvalEx 3 for Java 11+
-    implementation("com.ezylang:EvalEx:3.0.5")
+    implementation("com.ezylang:EvalEx:3.1.1")
     // Other resolution for if function
     implementation("com.creativewidgetworks:expression-evaluator:2.3.0")
 
@@ -74,6 +75,9 @@ dependencies {
         exclude(module = "spigot-api")
     }
     compileOnly("com.comphenix.protocol:ProtocolLib:5.1.0")
+    compileOnly("net.kyori:adventure-api:4.16.0")
+    compileOnly("net.kyori:adventure-text-minimessage:4.16.0")
+    implementation("net.kyori:adventure-platform-bukkit:4.3.2")
 
     //implementation("com.google.code.gson:gson:2.10.1")
 }
@@ -135,6 +139,7 @@ tasks {
         relocate("_COROUTINE", "${project.group}.shadow.COROUTINE")
         relocate("com.wechat.pay.java", "${project.group}.shadow.wechat.pay")
         relocate("com.comphenix.packetwrapper", "${project.group}.shadow.packets")
+        relocate("com.paypal", "${project.group}.shadow.paypal")
         minimize()
     }
 }

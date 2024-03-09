@@ -10,6 +10,8 @@ import com.xbaimiao.easylib.util.warn
 import com.xbaimiao.easypay.api.Item
 import com.xbaimiao.easypay.api.ItemProvider
 import com.xbaimiao.easypay.api.ItemSack
+import com.xbaimiao.easypay.book.BookUtilProvider
+import com.xbaimiao.easypay.book.DefaultBook
 import com.xbaimiao.easypay.database.Database
 import com.xbaimiao.easypay.database.DefaultDatabase
 import com.xbaimiao.easypay.entity.PayServiceProvider
@@ -24,6 +26,7 @@ import com.xbaimiao.easypay.reward.RewardHandle
 import com.xbaimiao.easypay.service.AlipayService
 import com.xbaimiao.easypay.service.DLCWeChatService
 import com.xbaimiao.easypay.service.OfficialWeChatService
+import com.xbaimiao.easypay.service.PayPalService
 import com.xbaimiao.easypay.util.FunctionUtil
 import com.xbaimiao.ktor.KtorPluginsBukkit
 import com.xbaimiao.ktor.KtorStat
@@ -59,6 +62,7 @@ class EasyPay : EasyPlugin(), KtorStat {
 
             loadCustomConfig()
             loadMap()
+            loadBook()
             loadServices()
             loadItems()
             loadDatabase()
@@ -139,6 +143,11 @@ class EasyPay : EasyPlugin(), KtorStat {
         MapUtilProvider.setMapUtil(mapUtil)
     }
 
+    fun loadBook() {
+        val lines = config.getStringList("book.lines")
+        BookUtilProvider.setBookUtil(DefaultBook(lines))
+    }
+
     private fun checkProtocolLib(): Boolean {
         if (Bukkit.getPluginManager().isPluginEnabled("ProtocolLib")) {
             val version = Bukkit.getPluginManager()
@@ -193,6 +202,18 @@ class EasyPay : EasyPlugin(), KtorStat {
         } else {
             PayServiceProvider.registerService(
                 OfficialWeChatService(config.getConfigurationSection("wechat-official"))
+            )
+        }
+
+        if (config.getBoolean("paypal.enable")) {
+            info("正在配置PayPal支付服务")
+            PayServiceProvider.registerService(
+                PayPalService(
+                    config.getString("paypal.environment"),
+                    config.getString("paypal.client-id"),
+                    config.getString("paypal.client-secret"),
+                    config.getString("paypal.currency")
+                )
             )
         }
     }

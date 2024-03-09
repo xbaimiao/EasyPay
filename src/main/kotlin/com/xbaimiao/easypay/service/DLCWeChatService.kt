@@ -133,6 +133,10 @@ class DLCWeChatService(
         }
     }
 
+    override fun isInteractive(): Boolean {
+        return false
+    }
+
     companion object {
         val orderMap: MutableMap<Double, OrderStatus> = mutableMapOf()
     }

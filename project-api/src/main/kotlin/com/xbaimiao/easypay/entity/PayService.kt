@@ -84,4 +84,8 @@ interface PayService {
         return (System.currentTimeMillis() + (Math.random() * 10000000L).roundToInt()).toString()
     }
 
+    /**
+     * 可交互的 (即可以在网页上付款 而不需要扫描)
+     */
+    fun isInteractive(): Boolean
 }
