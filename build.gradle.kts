@@ -74,10 +74,12 @@ dependencies {
     implementation("com.comphenix.packetwrapper:PacketWrapper:1.20-2.2.1") {
         exclude(module = "spigot-api")
     }
+
     compileOnly("com.comphenix.protocol:ProtocolLib:5.1.0")
     compileOnly("net.kyori:adventure-api:4.16.0")
     compileOnly("net.kyori:adventure-text-minimessage:4.16.0")
     implementation("net.kyori:adventure-platform-bukkit:4.3.2")
+    implementation("com.stripe:stripe-java:24.19.0")
 
     //implementation("com.google.code.gson:gson:2.10.1")
 }

@@ -7,4 +7,6 @@ import org.bukkit.entity.Player
  */
 interface BookUtil {
     fun openBook(player: Player, price: String, url: String)
+
+    fun closeBook(player: Player)
 }

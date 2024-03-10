@@ -45,4 +45,9 @@ class DefaultBook(
             ).build()
         adventure.player(player).openBook(book)
     }
+
+    override fun closeBook(player: Player) {
+        player.openWorkbench(player.location, true)
+        player.closeInventory()
+    }
 }

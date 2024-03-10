@@ -107,4 +107,15 @@ object ZxingUtil {
         }
         fileObj
     }
+
+    val stripeLogo by lazy {
+        val fileObj = File(plugin.dataFolder, "icon${File.separator}stripe.png")
+        if (!fileObj.exists()) {
+            if (!fileObj.parentFile.exists()) {
+                fileObj.parentFile.mkdirs()
+            }
+            plugin.saveResource("icon/stripe.png", false)
+        }
+        fileObj
+    }
 }

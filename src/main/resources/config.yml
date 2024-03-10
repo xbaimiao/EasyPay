@@ -65,8 +65,18 @@ paypal:
   client-id: "CLIENT_ID"
   # PayPal提供的Client Secret
   client-secret: "CLIENT_SECRET"
-  # 收款货币 (CNY/USD等 更多请查阅PayPal restful api文档)
-  currency: "CNY"
+  # 收款货币 (CNY/USD/HKD等 更多请查阅PayPal restful api文档)
+  currency: "HKD"
+stripe:
+  # 启用Stripe功能
+  enable: false
+  # Stripe提供的ApiKey私钥
+  api-key: "PRIVATE_API_KEY"
+  # 收款货币 (CNY/USD/HKD等 更多请查阅Stripe开发文档)
+  # https://docs.stripe.com/currencies?presentment-currency=MX#presentment-currencies
+  currency: "HKD"
+  # 支付成功跳转地址
+  success-url: "https://www.baidu.com/"
 map:
   # 地图放置位置 MAIN 为主手 OFF 为副手
   hand: 'MAIN'
@@ -78,11 +88,20 @@ book:
   # 书本页面 MiniMessage格式
   # https://docs.advntr.dev/minimessage/format.html
   lines:
-    - "<aqua><bold>请点击下方链接前往支付页面</bold></aqua>"
-    - ""
-    - "<click:open_url:'${url}'><hover:show_text:'<white>点击此处跳转网页'><red><bold>!!!点击此处跳转网页!!!</bold></red></hover></click>"
-    - ""
-    - "<aqua><bold>请点击上方链接前往支付页面</bold></aqua>"
+    - "<click:open_url:${url}><blue><bold> 请点击链接前往支付页面</bold></blue></click>"
+    - "<click:open_url:${url}>                            </click>"
+    - "<click:open_url:${url}>                            </click>"
+    - "<click:open_url:${url}>                            </click>"
+    - "<click:open_url:${url}>                            </click>"
+    - "<click:open_url:${url}>                            </click>"
+    - "<click:open_url:${url}>                            </click>"
+    - "<click:open_url:${url}><hover:show_text:'<white>点击此处跳转网页'><red><bold>  !!!点击此处跳转网页!!!</bold></red></hover></click>"
+    - "<click:open_url:${url}>                            </click>"
+    - "<click:open_url:${url}>                            </click>"
+    - "<click:open_url:${url}>                            </click>"
+    - "<click:open_url:${url}>                            </click>"
+    - "<click:open_url:${url}>                            </click>"
+    - "<click:open_url:${url}><blue><bold> 请点击链接前往支付页面</bold></blue></click>"
 database:
   mysql:
     # 是否启用mysql 不启用使用sqlite

@@ -2,6 +2,7 @@ package com.xbaimiao.easypay.service
 
 import com.paypal.core.PayPalEnvironment
 import com.paypal.core.PayPalHttpClient
+import com.paypal.http.exceptions.HttpException
 import com.paypal.orders.*
 import com.xbaimiao.easypay.api.Item
 import com.xbaimiao.easypay.entity.Order
@@ -61,10 +62,17 @@ class PayPalService(
 
     override fun queryOrder(order: Order): OrderStatus {
         val orderId: String = order.orderId
-        val getRequest = OrdersGetRequest(orderId)
-        val paypalOrder = client.execute(getRequest).result()
-        if (paypalOrder.status().equals("COMPLETED", ignoreCase = true)) {
-            return OrderStatus.SUCCESS
+        try {
+            val request = OrdersGetRequest(orderId)
+            val paypalOrder = client.execute(request).result()
+            if (paypalOrder.status().equals("APPROVED", ignoreCase = true)) {
+                val captureRequest = OrdersCaptureRequest(orderId)
+                client.execute(captureRequest).result()
+            } else if (paypalOrder.status().equals("COMPLETED", ignoreCase = true)) {
+                return OrderStatus.SUCCESS
+            }
+        } catch (e: HttpException) {
+            return OrderStatus.WAIT_SCAN
         }
         return OrderStatus.WAIT_PAY
     }

@@ -23,12 +23,8 @@ import com.xbaimiao.easypay.map.MapUtilProvider
 import com.xbaimiao.easypay.map.RealMap
 import com.xbaimiao.easypay.map.VirtualMap
 import com.xbaimiao.easypay.reward.RewardHandle
-import com.xbaimiao.easypay.service.AlipayService
-import com.xbaimiao.easypay.service.DLCWeChatService
-import com.xbaimiao.easypay.service.OfficialWeChatService
-import com.xbaimiao.easypay.service.PayPalService
+import com.xbaimiao.easypay.service.*
 import com.xbaimiao.easypay.util.FunctionUtil
-import com.xbaimiao.ktor.KtorPluginsBukkit
 import com.xbaimiao.ktor.KtorStat
 import org.bukkit.Bukkit
 
@@ -44,7 +40,7 @@ class EasyPay : EasyPlugin(), KtorStat {
     override fun enable() {
         launchCoroutine {
             // 初始化统计
-            KtorPluginsBukkit.init(this@EasyPay, this@EasyPay)
+            /*KtorPluginsBukkit.init(this@EasyPay, this@EasyPay)
             // userId 是用户Id 如果获取的时候报错 代表没有注入用户ID
             val userId = runCatching { userId }.getOrNull()
             if (userId != null) {
@@ -57,7 +53,7 @@ class EasyPay : EasyPlugin(), KtorStat {
                 }
                 // 统计服务器在线的方法
                 stat()
-            }
+            }*/
             saveDefaultConfig()
 
             loadCustomConfig()
@@ -213,6 +209,17 @@ class EasyPay : EasyPlugin(), KtorStat {
                     config.getString("paypal.client-id"),
                     config.getString("paypal.client-secret"),
                     config.getString("paypal.currency")
+                )
+            )
+        }
+
+        if (config.getBoolean("stripe.enable")) {
+            info("正在配置Stripe支付服务")
+            PayServiceProvider.registerService(
+                StripeService(
+                    config.getString("stripe.api-key"),
+                    config.getString("stripe.currency"),
+                    config.getString("stripe.success-url", "https://www.baidu.com/")
                 )
             )
         }
