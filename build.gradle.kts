@@ -1,33 +1,28 @@
 plugins {
     java
     id("com.github.johnrengelman.shadow") version ("7.1.2")
-    id("com.xbaimiao.easylib") version ("1.1.1")
     kotlin("jvm") version "1.7.10"
-}
-
-easylib {
-    version = "3.4.5"
-    nbt = true
-    nbtVersion = "2.12.2"
-    hikariCP = true
-    ormlite = false
-    userMinecraftLib = true
-    minecraftVersion = "1.12.2"
-    isPaper = false
 }
 
 group = "com.xbaimiao.easypay"
 version = "1.2.1"
 
 repositories {
-    mavenLocal()
     mavenCentral()
+    maven {
+        credentials {
+            username = project.findProperty("githubUsername").toString()
+            password = project.findProperty("githubPassword").toString()
+        }
+        name = "GithubPackages"
+        url = uri("https://maven.pkg.github.com/xbaimiao/EasyLib")
+    }
     maven {
         url = uri("https://repo.fastmcmirror.org/content/repositories/releases/")
     }
-    maven {
-        url = uri("https://repo.codemc.io/repository/maven-releases/")
-    }
+    maven("https://papermc.io/repo/repository/maven-public/")
+    maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
+    maven("https://repo.codemc.org/repository/maven-public/")
 }
 
 subprojects {
@@ -36,15 +31,34 @@ subprojects {
         plugin("kotlin")
     }
 
+    repositories{
+        mavenCentral()
+        maven {
+            credentials {
+                username = project.findProperty("githubUsername").toString()
+                password = project.findProperty("githubPassword").toString()
+            }
+            name = "GithubPackages"
+            url = uri("https://maven.pkg.github.com/xbaimiao/EasyLib")
+        }
+        maven("https://papermc.io/repo/repository/maven-public/")
+        maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
+        maven("https://repo.codemc.org/repository/maven-public/")
+    }
+
     dependencies {
         compileOnly(kotlin("stdlib-jdk8"))
+        compileOnly("com.xbaimiao:easy-lib:3.5.7")
         compileOnly(fileTree("../libs"))
         compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+        compileOnly("org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT")
     }
 
 }
 
 dependencies {
+    implementation("com.xbaimiao:easy-lib:3.5.7")
+    implementation("de.tr7zw:item-nbt-api:2.12.2")
     implementation(kotlin("stdlib-jdk8"))
     implementation(project(":project-api"))
     implementation("com.alipay.sdk:alipay-sdk-java:4.38.72.ALL")
@@ -63,7 +77,7 @@ dependencies {
 
     implementation("com.xbaimiao.ktor:ktor-plugins-bukkit:1.1.0")
     implementation("com.github.wechatpay-apiv3:wechatpay-java:0.2.12")
-
+    compileOnly("org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT")
     //implementation("com.google.code.gson:gson:2.10.1")
 }
 
