@@ -7,7 +7,11 @@ import com.xbaimiao.easylib.skedule.launchCoroutine
 import com.xbaimiao.easylib.util.info
 import com.xbaimiao.easylib.util.submit
 import com.xbaimiao.easylib.util.warn
+import com.xbaimiao.easypay.api.Item
 import com.xbaimiao.easypay.api.ItemProvider
+import com.xbaimiao.easypay.api.ItemSack
+import com.xbaimiao.easypay.book.BookUtilProvider
+import com.xbaimiao.easypay.book.DefaultBook
 import com.xbaimiao.easypay.database.Database
 import com.xbaimiao.easypay.database.DefaultDatabase
 import com.xbaimiao.easypay.entity.PayServiceProvider
@@ -17,13 +21,12 @@ import com.xbaimiao.easypay.item.CustomConfiguration
 import com.xbaimiao.easypay.item.CustomPriceItemConfig
 import com.xbaimiao.easypay.map.MapUtilProvider
 import com.xbaimiao.easypay.map.RealMap
+import com.xbaimiao.easypay.map.VirtualMap
 import com.xbaimiao.easypay.reward.RewardHandle
-import com.xbaimiao.easypay.service.AlipayService
-import com.xbaimiao.easypay.service.DLCWeChatService
-import com.xbaimiao.easypay.service.OfficialWeChatService
+import com.xbaimiao.easypay.service.*
 import com.xbaimiao.easypay.util.FunctionUtil
-import com.xbaimiao.ktor.KtorPluginsBukkit
 import com.xbaimiao.ktor.KtorStat
+import org.bukkit.Bukkit
 
 @Suppress("unused")
 class EasyPay : EasyPlugin(), KtorStat {
@@ -37,7 +40,7 @@ class EasyPay : EasyPlugin(), KtorStat {
     override fun enable() {
         launchCoroutine {
             // 初始化统计
-            KtorPluginsBukkit.init(this@EasyPay, this@EasyPay)
+            /*KtorPluginsBukkit.init(this@EasyPay, this@EasyPay)
             // userId 是用户Id 如果获取的时候报错 代表没有注入用户ID
             val userId = runCatching { userId }.getOrNull()
             if (userId != null) {
@@ -50,11 +53,12 @@ class EasyPay : EasyPlugin(), KtorStat {
                 }
                 // 统计服务器在线的方法
                 stat()
-            }
+            }*/
             saveDefaultConfig()
 
             loadCustomConfig()
             loadMap()
+            loadBook()
             loadServices()
             loadItems()
             loadDatabase()
@@ -99,8 +103,8 @@ class EasyPay : EasyPlugin(), KtorStat {
         val dlcWeChatService = PayServiceProvider.getService(DLCWeChatService::class.java)
         if (dlcWeChatService != null) {
             info("正在断开与WalletMonitor的连接")
-            for (orderPrice in DLCWeChatService.list) {
-                dlcWeChatService.walletConnector.orderTimeout(orderPrice)
+            for (orderEntry in DLCWeChatService.orderMap) {
+                dlcWeChatService.walletConnector.orderTimeout(orderEntry.key)
             }
             dlcWeChatService.walletConnector.close()
         }
@@ -124,7 +128,30 @@ class EasyPay : EasyPlugin(), KtorStat {
 
     fun loadMap() {
         val cancelOnDrop = config.getBoolean("map.cancel-on-drop")
-        MapUtilProvider.setMapUtil(RealMap(config.getString("map.hand") == "MAIN", cancelOnDrop))
+        val virtualMode = config.getBoolean("map.virtual")
+        val mainHand = config.getString("map.hand") == "MAIN"
+        val mapUtil = if (virtualMode && checkProtocolLib()) {
+            info("EasyPay正在使用发包地图模式")
+            info("发包地图仅支持最新的Minecraft版本")
+            info("如您在较旧的服务器版本上使用发包地图遇到问题 请关闭此功能 提出兼容请求将不会被处理")
+            VirtualMap(mainHand, cancelOnDrop)
+        } else RealMap(mainHand, cancelOnDrop)
+        MapUtilProvider.setMapUtil(mapUtil)
+    }
+
+    fun loadBook() {
+        val lines = config.getStringList("book.lines")
+        BookUtilProvider.setBookUtil(DefaultBook(lines))
+    }
+
+    private fun checkProtocolLib(): Boolean {
+        if (Bukkit.getPluginManager().isPluginEnabled("ProtocolLib")) {
+            val version = Bukkit.getPluginManager()
+                .getPlugin("ProtocolLib").description.version
+                .split("-")[0].replace(".", "").toInt()
+            return version > 510
+        }
+        return false
     }
 
     fun loadDatabase() {
@@ -173,6 +200,29 @@ class EasyPay : EasyPlugin(), KtorStat {
                 OfficialWeChatService(config.getConfigurationSection("wechat-official"))
             )
         }
+
+        if (config.getBoolean("paypal.enable")) {
+            info("正在配置PayPal支付服务")
+            PayServiceProvider.registerService(
+                PayPalService(
+                    config.getString("paypal.environment"),
+                    config.getString("paypal.client-id"),
+                    config.getString("paypal.client-secret"),
+                    config.getString("paypal.currency")
+                )
+            )
+        }
+
+        if (config.getBoolean("stripe.enable")) {
+            info("正在配置Stripe支付服务")
+            PayServiceProvider.registerService(
+                StripeService(
+                    config.getString("stripe.api-key"),
+                    config.getString("stripe.currency"),
+                    config.getString("stripe.success-url", "https://www.baidu.com/")
+                )
+            )
+        }
     }
 
     fun loadItems() {
@@ -188,6 +238,20 @@ class EasyPay : EasyPlugin(), KtorStat {
                         val preActions = section.getStringList("$name.pre-actions")
                         val rewards = section.getStringList("$name.rewards")
                         ItemProvider.register(CommandItem(price, name, commands, actions, preActions, rewards))
+                    }
+
+                    "ItemSack" -> {
+                        val itemList = section.getStringList("$name.items")
+                        val items = mutableListOf<Item>()
+                        itemList.forEach {
+                            val item = ItemProvider.getItem(it)
+                            if (item == null) {
+                                warn("| 注册商品包时无法找到商品: $it 请检查商品是否存在或调整配置顺序")
+                            } else {
+                                items.add(item)
+                            }
+                        }
+                        ItemProvider.register(ItemSack(items))
                     }
 
                     else -> warn("未知商品类型 $type")

@@ -13,6 +13,7 @@ import com.xbaimiao.easylib.util.plugin
 import com.xbaimiao.easylib.util.warn
 import com.xbaimiao.easypay.api.Item
 import com.xbaimiao.easypay.api.ItemProvider
+import com.xbaimiao.easypay.book.BookUtilProvider
 import com.xbaimiao.easypay.database.Database
 import com.xbaimiao.easypay.database.OrderData
 import com.xbaimiao.easypay.database.WebOrder
@@ -40,7 +41,11 @@ suspend fun SchedulerController.sendReward(player: Player, order: Order, service
         warn("玩家 ${player.name} 不在线 发货失败 等待重新进服在发货")
         return
     }
-    MapUtilProvider.getMapUtil().clearAllMap(player)
+    if (service.isInteractive()) {
+        BookUtilProvider.getBookUtil().closeBook(player)
+    } else {
+        MapUtilProvider.getMapUtil().clearAllMap(player)
+    }
     val oldVault = EconomyManager.vault[player]
     val oldPoints = EconomyManager.playerPoints[player]
 
@@ -91,24 +96,36 @@ private fun handle(player: Player, item: Item, service: PayService) {
         },
         timeout = {
             player.sendLang("command-order-timeout")
-            MapUtilProvider.getMapUtil().clearAllMap(player)
+            if (service.isInteractive()) {
+                BookUtilProvider.getBookUtil().closeBook(player)
+            } else {
+                MapUtilProvider.getMapUtil().clearAllMap(player)
+            }
         }
     ) {
         player.sendLang("command-item-cancel")
-        MapUtilProvider.getMapUtil().clearAllMap(player)
+        if (service.isInteractive()) {
+            BookUtilProvider.getBookUtil().closeBook(player)
+        } else {
+            MapUtilProvider.getMapUtil().clearAllMap(player)
+        }
     }.thenAccept { order ->
         if (order != null) {
             launchCoroutine {
-                val qr = async {
-                    ZxingUtil.generate(order.qrCode, order.service.logoFile)
-                }
                 order.item.onCreate(player, service, order)
                 player.sendLang("command-create-success", order.price.toString())
-                MapUtilProvider.getMapUtil().sendMap(player, qr) {
-                    if (MapUtilProvider.getMapUtil().cancelOnDrop) {
-                        player.sendLang("command-close-order")
-                        MapUtilProvider.getMapUtil().clearAllMap(player)
-                        order.close()
+                if (service.isInteractive()) {
+                    BookUtilProvider.getBookUtil().openBook(player, order.price.toString(), order.qrCode)
+                } else {
+                    val qr = async {
+                        ZxingUtil.generate(order.qrCode, order.service.logoFile)
+                    }
+                    MapUtilProvider.getMapUtil().sendMap(player, qr) {
+                        if (MapUtilProvider.getMapUtil().cancelOnDrop) {
+                            player.sendLang("command-close-order")
+                            MapUtilProvider.getMapUtil().clearAllMap(player)
+                            order.close()
+                        }
                     }
                 }
             }
@@ -208,6 +225,7 @@ private val reload = command<CommandSender>("reload") {
         p.reloadConfig()
         p.loadCustomConfig()
         p.loadMap()
+        p.loadBook()
         p.loadDatabase()
         p.loadServices()
         p.loadItems()

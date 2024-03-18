@@ -4,7 +4,9 @@ import com.xbaimiao.easylib.chat.Lang.sendLang
 import com.xbaimiao.easylib.skedule.SchedulerController
 import com.xbaimiao.easylib.skedule.launchCoroutine
 import com.xbaimiao.easylib.util.debug
+import com.xbaimiao.easylib.util.info
 import com.xbaimiao.easylib.util.plugin
+import com.xbaimiao.easylib.util.warn
 import com.xbaimiao.easypay.api.Item
 import com.xbaimiao.easypay.entity.Order
 import com.xbaimiao.easypay.entity.OrderStatus
@@ -26,15 +28,30 @@ class DLCWeChatService(
 ) : DefaultPayService {
 
     val walletConnector: WalletConnector = WalletConnector()
+    private var counter: Int = 0
+    private var connected: Boolean = false
 
     init {
+        WalletConnector.setDisconnectCallback {
+            connected = false
+            counter++
+            if (counter >= plugin.config.getInt("wechat.max-retry")) {
+                WalletConnector.setReconnect(false)
+                warn("EasyPay微信DLC 已超过最大重连次数 请重载EasyPay后再次尝试链接")
+            }
+        }
+        WalletConnector.setConnectedCallback {
+            info("已连接上EasyPay微信DLC")
+            counter = 0
+            connected = true
+        }
         WalletConnector.setReconnect(true)
         walletConnector.connect(server)
     }
 
     override fun timeOut(timeout: suspend SchedulerController.(Order) -> Unit, order: Order) {
         launchCoroutine {
-            list.remove(order.price)
+            orderMap[order.price] = OrderStatus.UNKNOWN
             async {
                 walletConnector.orderTimeout(order.price)
             }
@@ -61,20 +78,21 @@ class DLCWeChatService(
 
     override fun close(order: Order) {
         super.close(order)
-        list.remove(order.price)
+        orderMap[order.price] = OrderStatus.UNKNOWN
         walletConnector.orderTimeout(order.item.price)
     }
 
     override fun createOrder(player: String, item: Item): Order? {
+        if (!connected) return null // Waiting Connected
         var newPrice = item.price
         val offlinePlayer = Bukkit.getOfflinePlayer(player)
-        if (list.contains(newPrice)) {
+        if (orderMap.containsKey(newPrice) && orderMap[newPrice] != OrderStatus.UNKNOWN) {
             if (plugin.config.getBoolean("wechat.dynamic-cost")) {
                 // Dynamic Cost
                 if (offlinePlayer.isOnline) {
                     offlinePlayer.player.sendLang("command-wechat-dynamic-cost")
                 }
-                while (list.contains(newPrice)) {
+                while (orderMap.contains(newPrice)) {
                     newPrice += 0.01
                 }
             } else {
@@ -99,23 +117,27 @@ class DLCWeChatService(
             // Cancel Order [multi-servers]
             return null
         }
-        list.add(newPrice)
+        orderMap[newPrice] = OrderStatus.WAIT_SCAN
         walletConnector.listenOrder(newPrice) {
-            list.remove(newPrice)
+            orderMap.remove(newPrice)
         }
         return order
     }
 
     override fun queryOrder(order: Order): OrderStatus {
         debug("queryWechat $order Price: ${order.price}")
-        return when (list.contains(order.price)) {
+        return when (orderMap.containsKey(order.price)) {
             // 支付成功
             false -> OrderStatus.SUCCESS
-            else -> OrderStatus.WAIT_SCAN
+            else -> return orderMap[order.price]!!
         }
     }
 
+    override fun isInteractive(): Boolean {
+        return false
+    }
+
     companion object {
-        val list: MutableList<Double> = ArrayList()
+        val orderMap: MutableMap<Double, OrderStatus> = mutableMapOf()
     }
 }

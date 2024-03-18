@@ -53,11 +53,55 @@ wechat:
   dynamic-cost: false
   # 订单等待时长 (单位: 秒) 超时取消订单
   wait-time: 60
+  # 重连次数 (超过次数无法连接将停止尝试 直到重载插件)
+  max-retry: 5
+paypal:
+  # 启用PayPal功能
+  enable: false
+  # 环境 (SANDBOX/PRODUCTION)
+  # 生产环境上使用请设置为PRODUCTION
+  environment: SANDBOX
+  # PayPal提供的Client ID
+  client-id: "CLIENT_ID"
+  # PayPal提供的Client Secret
+  client-secret: "CLIENT_SECRET"
+  # 收款货币 (CNY/USD/HKD等 更多请查阅PayPal restful api文档)
+  currency: "HKD"
+stripe:
+  # 启用Stripe功能
+  enable: false
+  # Stripe提供的ApiKey私钥
+  api-key: "PRIVATE_API_KEY"
+  # 收款货币 (CNY/USD/HKD等 更多请查阅Stripe开发文档)
+  # https://docs.stripe.com/currencies?presentment-currency=MX#presentment-currencies
+  currency: "HKD"
+  # 支付成功跳转地址
+  success-url: "https://www.baidu.com/"
 map:
   # 地图放置位置 MAIN 为主手 OFF 为副手
   hand: 'MAIN'
   # 是否在地图丢弃时取消订单
   cancel-on-drop: false
+  # 发包地图模式 (此功能为测试版 仅兼容最新的Minecraft版本 请勿随意开启)
+  virtual: false
+book:
+  # 书本页面 MiniMessage格式
+  # https://docs.advntr.dev/minimessage/format.html
+  lines:
+    - "<click:open_url:${url}><blue><bold> 请点击链接前往支付页面</bold></blue></click>"
+    - "<click:open_url:${url}>                            </click>"
+    - "<click:open_url:${url}>                            </click>"
+    - "<click:open_url:${url}>                            </click>"
+    - "<click:open_url:${url}>                            </click>"
+    - "<click:open_url:${url}>                            </click>"
+    - "<click:open_url:${url}>                            </click>"
+    - "<click:open_url:${url}><hover:show_text:'<white>点击此处跳转网页'><red><bold>  !!!点击此处跳转网页!!!</bold></red></hover></click>"
+    - "<click:open_url:${url}>                            </click>"
+    - "<click:open_url:${url}>                            </click>"
+    - "<click:open_url:${url}>                            </click>"
+    - "<click:open_url:${url}>                            </click>"
+    - "<click:open_url:${url}>                            </click>"
+    - "<click:open_url:${url}><blue><bold> 请点击链接前往支付页面</bold></blue></click>"
 database:
   mysql:
     # 是否启用mysql 不启用使用sqlite

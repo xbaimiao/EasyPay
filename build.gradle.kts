@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.xbaimiao.easypay"
-version = "1.2.1"
+version = "1.2.2-RC3"
 
 repositories {
     mavenCentral()
@@ -23,6 +23,12 @@ repositories {
     maven("https://papermc.io/repo/repository/maven-public/")
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
     maven("https://repo.codemc.org/repository/maven-public/")
+    maven {
+        url = uri("https://repo.lukasa.lt/repository/maven-public/")
+    }
+    maven {
+        url = uri("https://repo.dmulloy2.net/repository/public/")
+    }
 }
 
 subprojects {
@@ -61,22 +67,34 @@ dependencies {
     implementation("de.tr7zw:item-nbt-api:2.12.2")
     implementation(kotlin("stdlib-jdk8"))
     implementation(project(":project-api"))
-    implementation("com.alipay.sdk:alipay-sdk-java:4.38.72.ALL")
+    implementation("com.alipay.sdk:alipay-sdk-java:4.38.221.ALL")
+    implementation("com.paypal.sdk:checkout-sdk:2.0.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     implementation("com.google.zxing:core:3.5.2")
     implementation("com.google.zxing:javase:3.5.2")
-    implementation("dev.rgbmc:WalletConnector:1.0.0-cc9b05d")
+    implementation("dev.rgbmc:WalletConnector:1.0.0-3656068")
     implementation("dev.rgbmc:FastExpression:1.0.0-a0aa2c1")
 
     // EvalEx 2 for Java 8-10
     implementation("com.udojava:EvalEx:2.7")
     // EvalEx 3 for Java 11+
-    implementation("com.ezylang:EvalEx:3.0.5")
+    implementation("com.ezylang:EvalEx:3.1.1")
     // Other resolution for if function
     implementation("com.creativewidgetworks:expression-evaluator:2.3.0")
 
     implementation("com.xbaimiao.ktor:ktor-plugins-bukkit:1.1.0")
     implementation("com.github.wechatpay-apiv3:wechatpay-java:0.2.12")
+
+    implementation("com.comphenix.packetwrapper:PacketWrapper:1.20-2.2.1") {
+        exclude(module = "spigot-api")
+    }
+
+    compileOnly("com.comphenix.protocol:ProtocolLib:5.1.0")
+    compileOnly("net.kyori:adventure-api:4.16.0")
+    compileOnly("net.kyori:adventure-text-minimessage:4.16.0")
+    implementation("net.kyori:adventure-platform-bukkit:4.3.2")
+    implementation("com.stripe:stripe-java:24.19.0")
+
     compileOnly("org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT")
     //implementation("com.google.code.gson:gson:2.10.1")
 }
@@ -137,6 +155,8 @@ tasks {
         relocate("com.google.zxing", "${project.group}.shadow.zxing")
         relocate("_COROUTINE", "${project.group}.shadow.COROUTINE")
         relocate("com.wechat.pay.java", "${project.group}.shadow.wechat.pay")
+        relocate("com.comphenix.packetwrapper", "${project.group}.shadow.packets")
+        relocate("com.paypal", "${project.group}.shadow.paypal")
         minimize()
     }
 }
