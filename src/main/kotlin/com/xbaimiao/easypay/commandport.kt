@@ -23,6 +23,7 @@ import com.xbaimiao.easypay.entity.PayServiceProvider
 import com.xbaimiao.easypay.item.CustomConfiguration
 import com.xbaimiao.easypay.map.MapUtilProvider
 import com.xbaimiao.easypay.reward.RewardHandle
+import com.xbaimiao.easypay.reward.RewardHandle.rewardsArgNode
 import com.xbaimiao.easypay.util.ZxingUtil
 import com.xbaimiao.easypay.util.formatTime
 import org.bukkit.command.CommandSender
@@ -257,11 +258,25 @@ private val rewardAdd = command<CommandSender>("add") {
     }
 }
 
+private val rewardCheck = command<CommandSender>("check") {
+    description = "检查玩家是否可以领取奖励"
+    val rewardArg = requiredArg(rewardsArgNode)
+    val playerArg = players()
+    exec {
+        val reward = rewardArg.value() ?: return@exec error("${rewardArg.argString()} 不存在")
+        val player = playerArg.value() ?: return@exec error("${playerArg.argString()} 不存在")
+        launchCoroutine {
+            reward.sendReward(player)
+        }
+    }
+}
+
 private val reward = command<CommandSender>("reward") {
     permission = "easypay.command.reward"
     description = "累充相关命令"
     sub(rewardOpen)
     sub(rewardAdd)
+    sub(rewardCheck)
 }
 
 private val check = command<CommandSender>("check") {

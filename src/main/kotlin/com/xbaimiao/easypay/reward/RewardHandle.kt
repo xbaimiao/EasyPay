@@ -1,9 +1,8 @@
 package com.xbaimiao.easypay.reward
 
-import com.xbaimiao.easylib.bridge.player.parseECommand
 import com.xbaimiao.easylib.chat.BuiltInConfiguration
-import com.xbaimiao.easylib.chat.Lang.sendLang
 import com.xbaimiao.easylib.chat.colored
+import com.xbaimiao.easylib.command.ArgNode
 import com.xbaimiao.easylib.skedule.SynchronizationContext
 import com.xbaimiao.easylib.skedule.launchCoroutine
 import com.xbaimiao.easylib.ui.SpigotBasic
@@ -11,18 +10,35 @@ import com.xbaimiao.easylib.ui.Variable
 import com.xbaimiao.easylib.ui.convertItem
 import com.xbaimiao.easylib.util.warn
 import com.xbaimiao.easypay.database.Database
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
-import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
 object RewardHandle {
 
     private lateinit var configuration: BuiltInConfiguration
-    private val mutex: Mutex = Mutex()
+    val rewardsArgNode = ArgNode("reward", exec = { token ->
+        getRewards().map { it.internalName }.filter { it.startsWith(token) }
+    }, parse = {token ->
+        getRewards().find { it.internalName == token }
+    })
 
     fun loadConfiguration() {
         configuration = BuiltInConfiguration("reward.yml")
+    }
+
+    fun getRewards(): Collection<Reward> {
+        val section = configuration.getConfigurationSection("items") ?: return emptyList()
+
+        val collection = arrayListOf<Reward>()
+        for (key in section.getKeys(false)) {
+            val internalName = section.getString("$key.internal-name")
+            val price = section.getDouble("$key.price", 0.0)
+            val commands = section.getStringList("$key.commands")
+            val reward = internalName?.let { Reward(it, price, commands, section.getString("$key.permission")) }
+            if (reward != null) {
+                collection.add(reward)
+            }
+        }
+        return collection
     }
 
     fun open(player: Player) {
@@ -55,29 +71,10 @@ object RewardHandle {
                     val reward = internalName?.let { Reward(it, price, commands, section.getString("$key.permission")) }
                     if (reward != null) {
                         basic.onClick(key[0]) {
-                            if (reward.permission != null && !player.hasPermission(reward.permission)) {
-                                player.sendLang("reward-not-permission-tips")
-                                return@onClick
-                            }
-                            launchCoroutine(SynchronizationContext.ASYNC) {
-                                val result = mutex.withLock {
-                                    val allPrice = Database.inst().getAllOrder(player.name).sumOf { it.price }
-                                    if (allPrice < price) {
-                                        player.sendLang("reward-this-amount-has-not-been-reached")
-                                        return@withLock false
-                                    }
-                                    if (!Database.inst().canGetReward(player.name, internalName)) {
-                                        player.sendLang("reward-already-received-it")
-                                        return@withLock false
-                                    }
-                                    Database.inst().setGetReward(player.name, internalName)
-                                    return@withLock true
-                                }
-                                if (result) {
-                                    switchContext(SynchronizationContext.SYNC)
-                                    reward.commands.parseECommand(player).exec(Bukkit.getConsoleSender())
-                                    open(player)
-                                }
+                            launchCoroutine {
+                                reward.sendReward(player)
+                                switchContext(SynchronizationContext.SYNC)
+                                open(player)
                             }
                         }
                     }

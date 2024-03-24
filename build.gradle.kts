@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.xbaimiao.easypay"
-version = "1.2.2-RC3"
+version = "1.2.2-RC4"
 
 repositories {
     mavenCentral()

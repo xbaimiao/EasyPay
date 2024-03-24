@@ -11,3 +11,4 @@ softdepend:
   - CMI
   - XConomy
   - ProtocolLib
+update-info: '/easypay reward check 累充奖励名 玩家名 -> 手动发放累充奖励(会判断是否能领取并发送提示)'
