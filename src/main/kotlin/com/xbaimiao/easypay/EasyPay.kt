@@ -25,6 +25,7 @@ import com.xbaimiao.easypay.map.VirtualMap
 import com.xbaimiao.easypay.reward.RewardHandle
 import com.xbaimiao.easypay.service.*
 import com.xbaimiao.easypay.util.FunctionUtil
+import com.xbaimiao.ktor.KtorPluginsBukkit
 import com.xbaimiao.ktor.KtorStat
 import org.bukkit.Bukkit
 
@@ -40,7 +41,7 @@ class EasyPay : EasyPlugin(), KtorStat {
     override fun enable() {
         launchCoroutine {
             // 初始化统计
-            /*KtorPluginsBukkit.init(this@EasyPay, this@EasyPay)
+            KtorPluginsBukkit.init(this@EasyPay, this@EasyPay)
             // userId 是用户Id 如果获取的时候报错 代表没有注入用户ID
             val userId = runCatching { userId }.getOrNull()
             if (userId != null) {
@@ -53,7 +54,7 @@ class EasyPay : EasyPlugin(), KtorStat {
                 }
                 // 统计服务器在线的方法
                 stat()
-            }*/
+            }
             saveDefaultConfig()
 
             loadCustomConfig()
@@ -161,6 +162,7 @@ class EasyPay : EasyPlugin(), KtorStat {
             SQLiteHikariDatabase("database.db")
         }
         Database.setInst(DefaultDatabase(hikariDatabase))
+        info("数据库加载成功 使用${hikariDatabase.javaClass.simpleName} 进行数据库操作")
         submit(async = true) {
             Database.inst().updateAllWebOrderTimeout()
         }

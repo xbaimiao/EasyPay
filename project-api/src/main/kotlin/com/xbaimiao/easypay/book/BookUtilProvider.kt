@@ -8,7 +8,7 @@ object BookUtilProvider {
 
     fun setBookUtil(bookUtil: BookUtil) {
         this.bookUtil = bookUtil
-        info("使用 ${bookUtil.javaClass.simpleName} 做为地图工具")
+        info("使用 ${bookUtil.javaClass.simpleName} 做为书本工具")
     }
 
     fun getBookUtil(): BookUtil {

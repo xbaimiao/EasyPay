@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.xbaimiao.easypay"
-version = "1.2.2-RC4"
+version = "1.2.2-RC5"
 
 repositories {
     mavenCentral()
@@ -65,6 +65,7 @@ subprojects {
 dependencies {
     implementation("com.xbaimiao:easy-lib:3.5.7")
     implementation("de.tr7zw:item-nbt-api:2.12.2")
+    implementation("com.zaxxer:HikariCP:4.0.3")
     implementation(kotlin("stdlib-jdk8"))
     implementation(project(":project-api"))
     implementation("com.alipay.sdk:alipay-sdk-java:4.38.221.ALL")
