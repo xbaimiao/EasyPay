@@ -1,22 +1,17 @@
 plugins {
     java
-    id("com.github.johnrengelman.shadow") version ("7.1.2")
+    id("com.github.johnrengelman.shadow") version ("8.1.1")
     kotlin("jvm") version "1.7.10"
 }
 
 group = "com.xbaimiao.easypay"
-version = "1.2.2-RC5"
+version = "1.2.2-RC6"
 
 repositories {
     mavenCentral()
-    maven {
-        credentials {
-            username = project.findProperty("githubUsername").toString()
-            password = project.findProperty("githubPassword").toString()
-        }
-        name = "GithubPackages"
-        url = uri("https://maven.pkg.github.com/xbaimiao/EasyLib")
-    }
+    mavenLocal()
+    // Use Proxied Repo
+    maven("https://repo.fastmcmirror.org/content/repositories/xbaimiao/")
     maven {
         url = uri("https://repo.fastmcmirror.org/content/repositories/releases/")
     }
@@ -39,14 +34,8 @@ subprojects {
 
     repositories{
         mavenCentral()
-        maven {
-            credentials {
-                username = project.findProperty("githubUsername").toString()
-                password = project.findProperty("githubPassword").toString()
-            }
-            name = "GithubPackages"
-            url = uri("https://maven.pkg.github.com/xbaimiao/EasyLib")
-        }
+        // Use Proxied Repo
+        maven("https://repo.fastmcmirror.org/content/repositories/xbaimiao/")
         maven("https://papermc.io/repo/repository/maven-public/")
         maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
         maven("https://repo.codemc.org/repository/maven-public/")
@@ -63,13 +52,12 @@ subprojects {
 }
 
 dependencies {
-    implementation("com.xbaimiao:easy-lib:3.5.7")
+    implementation("com.xbaimiao:easy-lib:3.6.2")
     implementation("de.tr7zw:item-nbt-api:2.12.2")
     implementation("com.zaxxer:HikariCP:4.0.3")
     implementation(kotlin("stdlib-jdk8"))
     implementation(project(":project-api"))
-    implementation("com.alipay.sdk:alipay-sdk-java:4.38.221.ALL")
-    implementation("com.paypal.sdk:checkout-sdk:2.0.0")
+    implementation("com.alipay.sdk:alipay-sdk-java:4.39.2.ALL")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     implementation("com.google.zxing:core:3.5.2")
     implementation("com.google.zxing:javase:3.5.2")
@@ -93,8 +81,12 @@ dependencies {
     compileOnly("com.comphenix.protocol:ProtocolLib:5.1.0")
     compileOnly("net.kyori:adventure-api:4.16.0")
     compileOnly("net.kyori:adventure-text-minimessage:4.16.0")
-    implementation("net.kyori:adventure-platform-bukkit:4.3.2")
-    implementation("com.stripe:stripe-java:24.19.0")
+    compileOnly("net.kyori:adventure-platform-bukkit:4.3.2")
+
+    compileOnly("com.stripe:stripe-java:24.21.0")
+    compileOnly("com.paypal.sdk:checkout-sdk:2.0.0")
+
+    implementation("com.github.kittinunf.fuel:fuel:3.0.0-alpha1")
 
     compileOnly("org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT")
     //implementation("com.google.code.gson:gson:2.10.1")
@@ -115,6 +107,7 @@ tasks {
         props.add("version" to "${rootProject.version}")
         props.add("main" to "${project.rootProject.group}.${project.rootProject.name}")
         props.add("name" to project.rootProject.name)
+        filteringCharset = "UTF-8"
         filesMatching("plugin.yml") {
             expand(*props.toTypedArray())
         }
@@ -157,7 +150,9 @@ tasks {
         relocate("_COROUTINE", "${project.group}.shadow.COROUTINE")
         relocate("com.wechat.pay.java", "${project.group}.shadow.wechat.pay")
         relocate("com.comphenix.packetwrapper", "${project.group}.shadow.packets")
-        relocate("com.paypal", "${project.group}.shadow.paypal")
+        //relocate("com.paypal", "${project.group}.shadow.paypal")
+        //relocate("com.stripe", "${project.group}.shadow.stripe")
+        relocate("fuel", "${project.group}.shadow.fuel")
         minimize()
     }
 }

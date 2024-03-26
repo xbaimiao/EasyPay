@@ -10,7 +10,6 @@ import com.xbaimiao.easypay.entity.OrderStatus
 import com.xbaimiao.easypay.util.ZxingUtil
 import java.io.File
 
-
 class PayPalService(
     environment: String,
     clientId: String,

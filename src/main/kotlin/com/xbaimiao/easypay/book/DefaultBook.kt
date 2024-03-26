@@ -9,7 +9,6 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import net.kyori.adventure.text.minimessage.tag.standard.StandardTags
 import org.bukkit.entity.Player
 
-
 class DefaultBook(
     private val lines: List<String>
 ) : BookUtil {

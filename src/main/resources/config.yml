@@ -77,6 +77,15 @@ stripe:
   currency: "HKD"
   # 支付成功跳转地址
   success-url: "https://www.baidu.com/"
+easy-gate:
+  # 启用EasyGate功能
+  enable: false
+  # EasyGate的Client-ID
+  client-id: ""
+  # EasyGate的Client-Secret
+  client-secret: ""
+  # 订单超时时长 (单位: 秒) 最长900秒
+  wait-time: 600
 map:
   # 地图放置位置 MAIN 为主手 OFF 为副手
   hand: 'MAIN'

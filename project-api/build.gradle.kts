@@ -34,10 +34,10 @@ publishing {
     repositories {
         maven {
             credentials {
-                username = project.findProperty("BaiUser").toString()
-                password = project.findProperty("BaiPassword").toString()
+                username = "xbaimiao"
+                password = "xbaimiao"
             }
-            url = URI("https://maven.xbaimiao.com/repository/releases/")
+            url = URI("https://repo.fastmcmirror.org/content/repositories/snapshots/")
         }
     }
     publications {

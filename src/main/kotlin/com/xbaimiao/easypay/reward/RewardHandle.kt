@@ -17,7 +17,7 @@ object RewardHandle {
     private lateinit var configuration: BuiltInConfiguration
     val rewardsArgNode = ArgNode("reward", exec = { token ->
         getRewards().map { it.internalName }.filter { it.startsWith(token) }
-    }, parse = {token ->
+    }, parse = { token ->
         getRewards().find { it.internalName == token }
     })
 

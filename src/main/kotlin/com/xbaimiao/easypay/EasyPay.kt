@@ -31,7 +31,6 @@ import org.bukkit.Bukkit
 
 @Suppress("unused")
 class EasyPay : EasyPlugin(), KtorStat {
-
     override fun load() {
         de.tr7zw.changeme.nbtapi.utils.MinecraftVersion.disableUpdateCheck()
         de.tr7zw.changeme.nbtapi.utils.MinecraftVersion.disableBStats()
@@ -222,6 +221,17 @@ class EasyPay : EasyPlugin(), KtorStat {
                     config.getString("stripe.api-key"),
                     config.getString("stripe.currency"),
                     config.getString("stripe.success-url", "https://www.baidu.com/")
+                )
+            )
+        }
+
+        if (config.getBoolean("easy-gate.enable")) {
+            info("正在配置EasyGate支付服务")
+            PayServiceProvider.registerService(
+                EasyGateService(
+                    config.getString("easy-gate.client-id"),
+                    config.getString("easy-gate.client-secret"),
+                    config.getInt("easy-gate.wait-time", 300)
                 )
             )
         }
