@@ -5,6 +5,7 @@ import com.xbaimiao.easylib.bridge.replacePlaceholder
 import com.xbaimiao.easypay.api.CustomItemCreate
 import com.xbaimiao.easypay.entity.Order
 import com.xbaimiao.easypay.entity.PayService
+import com.xbaimiao.easypay.scripting.GroovyScriptManager
 import com.xbaimiao.easypay.util.FunctionUtil
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -41,6 +42,7 @@ data class CustomPriceItem(
 
     override fun sendTo(player: Player, service: PayService, order: Order): Collection<String> {
         commands.parseECommand(player).exec(Bukkit.getConsoleSender())
+        GroovyScriptManager.instance.orderReward(player, service, order)
         FunctionUtil.instance.parseActions(player, order, service, rewards)
         return commands.map { it.replace("%player_name%", player.name).replacePlaceholder(player) }
     }

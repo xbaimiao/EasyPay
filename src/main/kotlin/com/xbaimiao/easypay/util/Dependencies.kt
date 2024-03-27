@@ -6,19 +6,43 @@ import com.xbaimiao.easylib.util.DependencyList
 @DependencyList(
     [Dependency(
         url = "net.kyori:adventure-api:4.16.0",
-        clazz = "net.kyori.adventure.inventory.Book",
+        clazz = "net.kyori.adventure.Adventure",
         format = true
     ), Dependency(
         url = "net.kyori:adventure-key:4.16.0",
-        clazz = "net.kyori.adventure.inventory.Book",
+        clazz = "net.kyori.adventure.key.Key",
         format = true
     ), Dependency(
         url = "net.kyori:adventure-nbt:4.16.0",
-        clazz = "net.kyori.adventure.inventory.Book",
+        clazz = "net.kyori.adventure.nbt.Tokens",
         format = true
     ), Dependency(
         url = "net.kyori:adventure-text-minimessage:4.16.0",
         clazz = "net.kyori.adventure.text.minimessage.MiniMessage",
+        format = true
+    ), Dependency(
+        url = "net.kyori:adventure-text-serializer-gson:4.16.0",
+        clazz = "net.kyori.adventure.text.serializer.gson.GsonComponentSerializer",
+        format = true
+    ), Dependency(
+        url = "net.kyori:adventure-text-serializer-gson-legacy-impl:4.16.0",
+        clazz = "net.kyori.adventure.text.serializer.gson.legacyimpl.NBTLegacyHoverEventSerializer",
+        format = true
+    ), Dependency(
+        url = "net.kyori:adventure-text-serializer-bungeecord:4.16.0",
+        clazz = "net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer",
+        format = true
+    ), Dependency(
+        url = "net.kyori:adventure-text-serializer-json:4.16.0",
+        clazz = "net.kyori.adventure.text.serializer.json.JsonComponentSerializer",
+        format = true
+    ), Dependency(
+        url = "net.kyori:adventure-text-serializer-json-legacy-impl:4.16.0",
+        clazz = "net.kyori.adventure.text.serializer.json.legacyimpl.NBTLegacyHoverEventSerializer",
+        format = true
+    ), Dependency(
+        url = "net.kyori:adventure-text-serializer-legacy:4.16.0",
+        clazz = "net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer",
         format = true
     ), Dependency(
         url = "net.kyori:examination-api:1.3.0",
@@ -26,7 +50,7 @@ import com.xbaimiao.easylib.util.DependencyList
         format = true
     ), Dependency(
         url = "net.kyori:examination-string:1.3.0",
-        clazz = "net.kyori.examination.Examinable",
+        clazz = "net.kyori.examination.string.Strings",
         format = true
     ), Dependency(
         url = "net.kyori:option:1.0.0",
@@ -34,15 +58,15 @@ import com.xbaimiao.easylib.util.DependencyList
         format = true
     ), Dependency(
         url = "net.kyori:adventure-platform-api:4.3.2",
-        clazz = "net.kyori.adventure.platform.bukkit.BukkitAudiences",
+        clazz = "net.kyori.adventure.platform.AudienceProvider",
         format = true
     ), Dependency(
         url = "net.kyori:adventure-platform-facet:4.3.2",
-        clazz = "net.kyori.adventure.platform.bukkit.BukkitAudiences",
+        clazz = "net.kyori.adventure.platform.facet.Facet",
         format = true
     ), Dependency(
         url = "net.kyori:adventure-platform-viaversion:4.3.2",
-        clazz = "net.kyori.adventure.platform.bukkit.BukkitAudiences",
+        clazz = "net.kyori.adventure.platform.viaversion.ViaFacet",
         format = true
     ), Dependency(
         url = "net.kyori:adventure-platform-bukkit:4.3.2",

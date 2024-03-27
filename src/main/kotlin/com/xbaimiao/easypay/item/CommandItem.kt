@@ -4,6 +4,7 @@ import com.xbaimiao.easylib.bridge.player.parseECommand
 import com.xbaimiao.easylib.bridge.replacePlaceholder
 import com.xbaimiao.easypay.entity.Order
 import com.xbaimiao.easypay.entity.PayService
+import com.xbaimiao.easypay.scripting.GroovyScriptManager
 import com.xbaimiao.easypay.util.FunctionUtil
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -28,6 +29,7 @@ data class CommandItem(
         cmdList.replaceAll { it.replace("%item_name%", name) }
         cmdList.parseECommand(player).exec(Bukkit.getConsoleSender())
 
+        GroovyScriptManager.instance.orderReward(player, service, order)
         FunctionUtil.instance.parseActions(player, order, service, rewards)
         return cmdList.map {
             it.replace("%player_name%", player.name).replace("%item_name%", name).replacePlaceholder(player)

@@ -86,6 +86,8 @@ dependencies {
     compileOnly("com.stripe:stripe-java:24.21.0")
     compileOnly("com.paypal.sdk:checkout-sdk:2.0.0")
 
+    compileOnly("org.apache.groovy:groovy-all:4.0.17")
+
     implementation("com.github.kittinunf.fuel:fuel:3.0.0-alpha1")
 
     compileOnly("org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT")

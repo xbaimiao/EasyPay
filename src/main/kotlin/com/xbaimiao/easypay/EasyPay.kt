@@ -23,11 +23,13 @@ import com.xbaimiao.easypay.map.MapUtilProvider
 import com.xbaimiao.easypay.map.RealMap
 import com.xbaimiao.easypay.map.VirtualMap
 import com.xbaimiao.easypay.reward.RewardHandle
+import com.xbaimiao.easypay.scripting.GroovyScriptManager
 import com.xbaimiao.easypay.service.*
 import com.xbaimiao.easypay.util.FunctionUtil
 import com.xbaimiao.ktor.KtorPluginsBukkit
 import com.xbaimiao.ktor.KtorStat
 import org.bukkit.Bukkit
+import java.io.File
 
 @Suppress("unused")
 class EasyPay : EasyPlugin(), KtorStat {
@@ -64,6 +66,10 @@ class EasyPay : EasyPlugin(), KtorStat {
             loadDatabase()
             RewardHandle.loadConfiguration()
 
+            if (!File(dataFolder, "scripts/ExampleScript.groovy").exists()) {
+                saveResource("scripts/ExampleScript.groovy", false)
+            }
+
             val functionUtil = FunctionUtil()
             val functionManager = functionUtil.getFastExpression().functionManager
             functionManager.register(TitleFunction(), "标题")
@@ -94,6 +100,12 @@ class EasyPay : EasyPlugin(), KtorStat {
             )
             functionManager.register(CancelOrderFunction(), "取消订单", "取消", "c")
             functionManager.register(ChangePriceFunction(), "更改价格", "价格", "cost", "amount")
+
+            GroovyScriptManager(
+                workPath = File(dataFolder, "scripts"),
+                extension = "groovy",
+                config.getBoolean("groovy-script")
+            )
 
             rootCommand.register()
         }

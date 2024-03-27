@@ -22,6 +22,9 @@
 # 格式文档 https://github.com/ridencww/expression-evaluator
 no-evalex: false
 
+# 启用GroovyScript功能 [实验性]
+groovy-script: false
+
 alipay:
   api: 'https://openapi.alipay.com/gateway.do'
   appid: 'appid'
