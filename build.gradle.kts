@@ -1,7 +1,7 @@
 plugins {
     java
     id("com.github.johnrengelman.shadow") version ("8.1.1")
-    kotlin("jvm") version "1.7.10"
+    kotlin("jvm") version "1.9.20"
 }
 
 group = "com.xbaimiao.easypay"
@@ -43,16 +43,16 @@ subprojects {
 
     dependencies {
         compileOnly(kotlin("stdlib-jdk8"))
-        compileOnly("com.xbaimiao:easy-lib:3.5.7")
+        compileOnly("com.xbaimiao:easy-lib:3.6.4")
         compileOnly(fileTree("../libs"))
-        compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+        compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
         compileOnly("org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT")
     }
 
 }
 
 dependencies {
-    implementation("com.xbaimiao:easy-lib:3.6.2")
+    implementation("com.xbaimiao:easy-lib:3.6.4")
     implementation("de.tr7zw:item-nbt-api:2.12.2")
     implementation("com.zaxxer:HikariCP:4.0.3")
     implementation(kotlin("stdlib-jdk8"))
@@ -134,7 +134,7 @@ tasks {
         relocate("kotlin", "${project.group}.shadow.kotlin")
         relocate("kotlinx", "${project.group}.shadow.kotlinx")
         relocate("org.java_websocket", "${project.group}.shadow.websocket")
-        relocate("com.google.gson", "${project.group}.shadow.gson")
+        //relocate("com.google.gson", "${project.group}.shadow.gson")
         relocate("dev.rgbmc.walletconnector", "${project.group}.shadow.wechat")
         relocate("dev.rgbmc.expression", "${project.group}.shadow.expression")
         relocate("com.ezylang.evalex", "${project.group}.shadow.evalex3")

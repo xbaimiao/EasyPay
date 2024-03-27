@@ -120,6 +120,8 @@ class EasyPay : EasyPlugin(), KtorStat {
             }
             dlcWeChatService.walletConnector.close()
         }
+
+        Bukkit.getScheduler().cancelTasks(this) // Cancel all running task - prevent throw exception while server close
     }
 
     fun loadCustomConfig() {

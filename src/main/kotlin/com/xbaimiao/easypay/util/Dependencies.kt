@@ -29,7 +29,7 @@ import com.xbaimiao.easylib.util.DependencyList
         clazz = "net.kyori.adventure.text.serializer.gson.legacyimpl.NBTLegacyHoverEventSerializer",
         format = true
     ), Dependency(
-        url = "net.kyori:adventure-text-serializer-bungeecord:4.16.0",
+        url = "net.kyori:adventure-text-serializer-bungeecord:4.3.2",
         clazz = "net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer",
         format = true
     ), Dependency(
@@ -82,12 +82,18 @@ import com.xbaimiao.easylib.util.DependencyList
         format = true
     ), Dependency(
         url = "com.google.code.gson:gson:2.10.1",
-        clazz = "com.stripe.Stripe",
-        format = true
+        clazz = "i.just.not.Exist",
+        format = true,
+        relocationRules = [
+            "com.google.gson", "com.xbaimiao.easypay.shadow.gson"
+        ]
     ), Dependency(
         url = "com.stripe:stripe-java:24.21.0",
         clazz = "com.stripe.Stripe",
-        format = true
+        format = true,
+        relocationRules = [
+            "com.google.gson", "com.xbaimiao.easypay.shadow.gson"
+        ]
     )
     ]
 )
