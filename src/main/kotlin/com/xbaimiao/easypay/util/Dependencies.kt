@@ -7,8 +7,9 @@ import com.xbaimiao.easylib.util.DependencyList
     [Dependency(
         url = "net.kyori:adventure-api:4.16.0",
         clazz = "net.kyori.adventure.Adventure",
-        format = true
-    ), Dependency(
+        format = true,
+        fetchSubDependencies = true
+    )/*, Dependency(
         url = "net.kyori:adventure-key:4.16.0",
         clazz = "net.kyori.adventure.key.Key",
         format = true
@@ -16,11 +17,12 @@ import com.xbaimiao.easylib.util.DependencyList
         url = "net.kyori:adventure-nbt:4.16.0",
         clazz = "net.kyori.adventure.nbt.Tokens",
         format = true
-    ), Dependency(
+    )*/, Dependency(
         url = "net.kyori:adventure-text-minimessage:4.16.0",
         clazz = "net.kyori.adventure.text.minimessage.MiniMessage",
-        format = true
-    ), Dependency(
+        format = true,
+        fetchSubDependencies = true
+    )/*, Dependency(
         url = "net.kyori:adventure-text-serializer-gson:4.16.0",
         clazz = "net.kyori.adventure.text.serializer.gson.GsonComponentSerializer",
         format = true
@@ -60,7 +62,7 @@ import com.xbaimiao.easylib.util.DependencyList
         url = "net.kyori:adventure-platform-api:4.3.2",
         clazz = "net.kyori.adventure.platform.AudienceProvider",
         format = true
-    ), Dependency(
+    )*/, Dependency(
         url = "net.kyori:adventure-platform-facet:4.3.2",
         clazz = "net.kyori.adventure.platform.facet.Facet",
         format = true
@@ -71,12 +73,14 @@ import com.xbaimiao.easylib.util.DependencyList
     ), Dependency(
         url = "net.kyori:adventure-platform-bukkit:4.3.2",
         clazz = "net.kyori.adventure.platform.bukkit.BukkitAudiences",
-        format = true
+        format = true,
+        fetchSubDependencies = true
     ), Dependency(
         url = "com.paypal.sdk:checkout-sdk:2.0.0",
         clazz = "com.paypal.core.PayPalEnvironment",
-        format = true
-    ), Dependency(
+        format = true,
+        fetchSubDependencies = true
+    )/*, Dependency(
         url = "com.paypal:paypalhttp:2.0.0",
         clazz = "com.paypal.http.exceptions.HttpException",
         format = true
@@ -87,13 +91,14 @@ import com.xbaimiao.easylib.util.DependencyList
         relocationRules = [
             "com.google.gson", "com.xbaimiao.easypay.shadow.gson"
         ]
-    ), Dependency(
+    )*/, Dependency(
         url = "com.stripe:stripe-java:24.21.0",
         clazz = "com.stripe.Stripe",
         format = true,
         relocationRules = [
             "com.google.gson", "com.xbaimiao.easypay.shadow.gson"
-        ]
+        ],
+        fetchSubDependencies = true
     )
     ]
 )

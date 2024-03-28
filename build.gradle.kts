@@ -52,7 +52,7 @@ subprojects {
 }
 
 dependencies {
-    implementation("com.xbaimiao:easy-lib:3.6.4")
+    implementation("com.xbaimiao:easy-lib:3.6.5")
     implementation("de.tr7zw:item-nbt-api:2.12.2")
     implementation("com.zaxxer:HikariCP:4.0.3")
     implementation(kotlin("stdlib-jdk8"))
