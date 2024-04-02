@@ -25,6 +25,7 @@ import com.xbaimiao.easypay.map.VirtualMap
 import com.xbaimiao.easypay.reward.RewardHandle
 import com.xbaimiao.easypay.scripting.GroovyScriptManager
 import com.xbaimiao.easypay.service.*
+import com.xbaimiao.easypay.util.ConfigurationPatcher
 import com.xbaimiao.easypay.util.FunctionUtil
 import com.xbaimiao.ktor.KtorPluginsBukkit
 import com.xbaimiao.ktor.KtorStat
@@ -33,6 +34,7 @@ import java.io.File
 
 @Suppress("unused")
 class EasyPay : EasyPlugin(), KtorStat {
+
     override fun load() {
         de.tr7zw.changeme.nbtapi.utils.MinecraftVersion.disableUpdateCheck()
         de.tr7zw.changeme.nbtapi.utils.MinecraftVersion.disableBStats()
@@ -57,6 +59,9 @@ class EasyPay : EasyPlugin(), KtorStat {
                 stat()
             }
             saveDefaultConfig()
+
+            ConfigurationPatcher.patchConfiguration("config.yml", "config.yml")
+            ConfigurationPatcher.patchConfiguration("lang.yml", "lang.yml")
 
             loadCustomConfig()
             loadMap()

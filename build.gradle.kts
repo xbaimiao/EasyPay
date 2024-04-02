@@ -5,7 +5,9 @@ plugins {
 }
 
 group = "com.xbaimiao.easypay"
-version = "1.2.2-RC6"
+version = "1.2.3-ALPHA1"
+
+val easyLibVersion = "3.7.2"
 
 repositories {
     mavenCentral()
@@ -43,7 +45,7 @@ subprojects {
 
     dependencies {
         compileOnly(kotlin("stdlib-jdk8"))
-        compileOnly("com.xbaimiao:easy-lib:3.6.4")
+        compileOnly("com.xbaimiao:easy-lib:$easyLibVersion")
         compileOnly(fileTree("../libs"))
         compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
         compileOnly("org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT")
@@ -52,12 +54,12 @@ subprojects {
 }
 
 dependencies {
-    implementation("com.xbaimiao:easy-lib:3.6.5")
-    implementation("de.tr7zw:item-nbt-api:2.12.2")
+    implementation("com.xbaimiao:easy-lib:$easyLibVersion")
+    implementation("de.tr7zw:item-nbt-api:2.12.3")
     implementation("com.zaxxer:HikariCP:4.0.3")
     implementation(kotlin("stdlib-jdk8"))
     implementation(project(":project-api"))
-    implementation("com.alipay.sdk:alipay-sdk-java:4.39.2.ALL")
+    implementation("com.alipay.sdk:alipay-sdk-java:4.39.19.ALL")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     implementation("com.google.zxing:core:3.5.2")
     implementation("com.google.zxing:javase:3.5.2")
@@ -141,11 +143,11 @@ tasks {
         relocate("com.udojava.evalex", "${project.group}.shadow.evalex2")
         relocate("com.creativewidgetworks.expressionparser", "${project.group}.shadow.expeval")
         relocate("com.xbaimiao.ktor", "${project.group}.shadow.ktor")
-        relocate("javax.xml", "${project.group}.shadow.javax.xml")
+        //relocate("javax.xml", "${project.group}.shadow.javax.xml")
         relocate("okhttp3", "${project.group}.shadow.okhttp3")
         relocate("okio", "${project.group}.shadow.okio")
-        relocate("org.xml.sax", "${project.group}.shadow.org.xml.sax")
-        relocate("org.w3c.dom", "${project.group}.shadow.org.w3c.dom")
+        //relocate("org.xml.sax", "${project.group}.shadow.org.xml.sax")
+        //relocate("org.w3c.dom", "${project.group}.shadow.org.w3c.dom")
         relocate("org.bouncycastle", "${project.group}.shadow.org.bouncycastle")
         relocate("com.alipay.api", "${project.group}.shadow.com.alipay.api")
         relocate("com.google.zxing", "${project.group}.shadow.zxing")

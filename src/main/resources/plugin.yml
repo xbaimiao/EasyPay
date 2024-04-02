@@ -11,4 +11,4 @@ softdepend:
   - CMI
   - XConomy
   - ProtocolLib
-update-info: '修复数据库报错问题'
+update-info: '支持EasyGate-爱发电功能 缩减插件体积'
