@@ -43,15 +43,15 @@ object PlaceholderHook : PlaceholderExpansion() {
 
     /**
      * %easypay_count% 订单数量
-     * %easypay_count_{player}% 指定玩家订单数量
-     * %easypay_count_{player}_{service}% 指定玩家指定服务订单数量
-     * %easypay_price_{player}% 指定玩家订单数量金额
-     * %easypay_price_{player}_{service}% 指定玩家指定服务订单数量金额
-     * %easypay_top_name_{1-10}% 排行榜用户名
-     * %easypay_top_price_{1-10}% 排行榜金额
+     * %easypay_count:{player}% 指定玩家订单数量
+     * %easypay_count:{player}:{service}% 指定玩家指定服务订单数量
+     * %easypay_price:{player}% 指定玩家订单数量金额
+     * %easypay_price:{player}:{service}% 指定玩家指定服务订单数量金额
+     * %easypay_top:name:{1-10}% 排行榜用户名
+     * %easypay_top:price:{1-10}% 排行榜金额
      */
     override fun onUUIDRequest(uuid: UUID, params: String): String {
-        val paramsArgs = params.split("_")
+        val paramsArgs = params.split(":")
         val type = paramsArgs[0]
         return when (type.lowercase()) {
             "count" -> {

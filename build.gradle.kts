@@ -5,13 +5,21 @@ plugins {
 }
 
 group = "com.xbaimiao.easypay"
-version = "1.2.3-ALPHA1"
+version = "1.2.3-ALPHA2"
 
 val easyLibVersion = "3.7.2"
 
 repositories {
     mavenCentral()
     mavenLocal()
+    maven {
+        credentials {
+            username = project.findProperty("githubUsername").toString()
+            password = project.findProperty("githubPassword").toString()
+        }
+        name = "GithubPackages"
+        url = uri("https://maven.pkg.github.com/xbaimiao/EasyLib")
+    }
     // Use Proxied Repo
     maven("https://repo.fastmcmirror.org/content/repositories/xbaimiao/")
     maven {
@@ -36,6 +44,14 @@ subprojects {
 
     repositories{
         mavenCentral()
+        maven {
+            credentials {
+                username = project.findProperty("githubUsername").toString()
+                password = project.findProperty("githubPassword").toString()
+            }
+            name = "GithubPackages"
+            url = uri("https://maven.pkg.github.com/xbaimiao/EasyLib")
+        }
         // Use Proxied Repo
         maven("https://repo.fastmcmirror.org/content/repositories/xbaimiao/")
         maven("https://papermc.io/repo/repository/maven-public/")
@@ -120,7 +136,7 @@ tasks {
         dependencies {
 //            exclude(dependency("org.slf4j:"))
             exclude(dependency("org.jetbrains:annotations:"))
-            exclude(dependency("com.google.code.gson:gson:2.8.0"))
+            exclude(dependency("com.google.code.gson:gson:"))
 //            exclude(dependency("org.jetbrains.kotlin:"))
 //            exclude(dependency("org.jetbrains:"))
         }
@@ -136,7 +152,7 @@ tasks {
         relocate("kotlin", "${project.group}.shadow.kotlin")
         relocate("kotlinx", "${project.group}.shadow.kotlinx")
         relocate("org.java_websocket", "${project.group}.shadow.websocket")
-        //relocate("com.google.gson", "${project.group}.shadow.gson")
+        relocate("com.google.gson", "${project.group}.shadow.gson")
         relocate("dev.rgbmc.walletconnector", "${project.group}.shadow.wechat")
         relocate("dev.rgbmc.expression", "${project.group}.shadow.expression")
         relocate("com.ezylang.evalex", "${project.group}.shadow.evalex3")

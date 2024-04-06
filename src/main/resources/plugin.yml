@@ -11,4 +11,4 @@ softdepend:
   - CMI
   - XConomy
   - ProtocolLib
-update-info: '支持EasyGate-爱发电功能 缩减插件体积'
+update-info: 'PlaceholderAPI 变量 不再使用_分割 而是使用:分割'

@@ -2,12 +2,14 @@ package com.xbaimiao.easypay.item
 
 import com.xbaimiao.easylib.bridge.player.parseECommand
 import com.xbaimiao.easylib.bridge.replacePlaceholder
+import com.xbaimiao.easylib.util.plugin
 import com.xbaimiao.easypay.entity.Order
 import com.xbaimiao.easypay.entity.PayService
 import com.xbaimiao.easypay.scripting.GroovyScriptManager
 import com.xbaimiao.easypay.util.FunctionUtil
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
+import java.util.logging.Level
 
 /**
  * CommandItem
@@ -30,7 +32,11 @@ data class CommandItem(
         cmdList.parseECommand(player).exec(Bukkit.getConsoleSender())
 
         GroovyScriptManager.instance.orderReward(player, service, order)
-        FunctionUtil.instance.parseActions(player, order, service, rewards)
+        kotlin.runCatching {
+            FunctionUtil.instance.parseActions(player, order, service, rewards)
+        }.onFailure {
+            plugin.logger.log(Level.SEVERE, it.message, it)
+        }
         return cmdList.map {
             it.replace("%player_name%", player.name).replace("%item_name%", name).replacePlaceholder(player)
         }

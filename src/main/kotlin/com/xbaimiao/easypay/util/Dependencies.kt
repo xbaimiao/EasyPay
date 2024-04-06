@@ -96,7 +96,7 @@ import com.xbaimiao.easylib.util.DependencyList
         clazz = "com.stripe.Stripe",
         format = true,
         relocationRules = [
-            "com.google.gson", "com.xbaimiao.easypay.shadow.gson"
+            "!com.google.gson!", "com.xbaimiao.easypay.shadow.gson"
         ],
         fetchDependencies = true
     )
