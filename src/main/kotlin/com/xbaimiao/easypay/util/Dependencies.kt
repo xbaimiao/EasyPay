@@ -84,22 +84,8 @@ import com.xbaimiao.easylib.util.DependencyList
         url = "com.paypal:paypalhttp:2.0.0",
         clazz = "com.paypal.http.exceptions.HttpException",
         format = true
-    ), Dependency(
-        url = "com.google.code.gson:gson:2.10.1",
-        clazz = "i.just.not.Exist",
-        format = true,
-        relocationRules = [
-            "com.google.gson", "com.xbaimiao.easypay.shadow.gson"
-        ]
     )*/, Dependency(
-        url = "com.stripe:stripe-java:24.21.0",
-        clazz = "com.stripe.Stripe",
-        format = true,
-        relocationRules = [
-            "!com.google.gson!", "com.xbaimiao.easypay.shadow.gson"
-        ],
-        fetchDependencies = true
-    )
-    ]
+        url = "com.stripe:stripe-java:24.21.0", clazz = "com.stripe.Stripe", format = true, fetchDependencies = true
+    )]
 )
 object Dependencies

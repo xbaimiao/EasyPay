@@ -11,4 +11,8 @@ softdepend:
   - CMI
   - XConomy
   - ProtocolLib
-update-info: 'PlaceholderAPI 变量 不再使用_分割 而是使用:分割'
+update-info: '添加依赖缓存 优化加载时间'
+relocate:
+  - "kotlin!com.xbaimiao.easypay.shadow.kotlin"
+  - "kotlinx!com.xbaimiao.easypay.shadow.kotlinx"
+  - "com.google.gson!com.xbaimiao.easypay.shadow.gson"

@@ -5,9 +5,9 @@ plugins {
 }
 
 group = "com.xbaimiao.easypay"
-version = "1.2.3-ALPHA2"
+version = "1.2.3-ALPHA4"
 
-val easyLibVersion = "3.7.2"
+val easyLibVersion = "3.7.4"
 
 repositories {
     mavenCentral()
@@ -43,6 +43,7 @@ subprojects {
     }
 
     repositories{
+        mavenLocal()
         mavenCentral()
         maven {
             credentials {
@@ -63,7 +64,7 @@ subprojects {
         compileOnly(kotlin("stdlib-jdk8"))
         compileOnly("com.xbaimiao:easy-lib:$easyLibVersion")
         compileOnly(fileTree("../libs"))
-        compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
+        compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
         compileOnly("org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT")
     }
 
@@ -137,8 +138,8 @@ tasks {
 //            exclude(dependency("org.slf4j:"))
             exclude(dependency("org.jetbrains:annotations:"))
             exclude(dependency("com.google.code.gson:gson:"))
-//            exclude(dependency("org.jetbrains.kotlin:"))
-//            exclude(dependency("org.jetbrains:"))
+            exclude(dependency("org.jetbrains.kotlin:"))
+            exclude(dependency("org.jetbrains.kotlinx:"))
         }
 
         exclude("LICENSE")

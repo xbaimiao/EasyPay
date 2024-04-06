@@ -3,6 +3,8 @@ package com.xbaimiao.easypay
 import com.xbaimiao.easylib.EasyPlugin
 import com.xbaimiao.easylib.database.MysqlHikariDatabase
 import com.xbaimiao.easylib.database.SQLiteHikariDatabase
+import com.xbaimiao.easylib.loader.DependencyLoader
+import com.xbaimiao.easylib.loader.Loader
 import com.xbaimiao.easylib.skedule.launchCoroutine
 import com.xbaimiao.easylib.util.info
 import com.xbaimiao.easylib.util.submit
@@ -36,6 +38,13 @@ import java.io.File
 class EasyPay : EasyPlugin(), KtorStat {
 
     override fun load() {
+        // gson 需要优先加载
+        val repoUrl = "https://maven.aliyun.com/repository/public/"
+        val library = "com.google.code.gson:gson:2.10.1"
+        val url = Loader.dependencyToUrl(library, repoUrl)
+        val dependency = Loader.toDependenency(url, repoUrl, HashMap())
+        DependencyLoader.load(this, dependency)
+
         de.tr7zw.changeme.nbtapi.utils.MinecraftVersion.disableUpdateCheck()
         de.tr7zw.changeme.nbtapi.utils.MinecraftVersion.disableBStats()
         de.tr7zw.changeme.nbtapi.utils.MinecraftVersion.disablePackageWarning()
@@ -127,6 +136,10 @@ class EasyPay : EasyPlugin(), KtorStat {
         }
 
         Bukkit.getScheduler().cancelTasks(this) // Cancel all running task - prevent throw exception while server close
+    }
+
+    override fun cloudKotlin(): Boolean {
+        return true
     }
 
     fun loadCustomConfig() {
