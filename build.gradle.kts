@@ -5,9 +5,9 @@ plugins {
 }
 
 group = "com.xbaimiao.easypay"
-version = "1.2.3-ALPHA4"
+version = "1.2.3-ALPHA5"
 
-val easyLibVersion = "3.7.4"
+val easyLibVersion = "3.7.5"
 
 repositories {
     mavenCentral()
@@ -45,14 +45,15 @@ subprojects {
     repositories{
         mavenLocal()
         mavenCentral()
-        maven {
+        // 不使用私有仓库获取依赖
+        /*maven {
             credentials {
                 username = project.findProperty("githubUsername").toString()
                 password = project.findProperty("githubPassword").toString()
             }
             name = "GithubPackages"
             url = uri("https://maven.pkg.github.com/xbaimiao/EasyLib")
-        }
+        }*/
         // Use Proxied Repo
         maven("https://repo.fastmcmirror.org/content/repositories/xbaimiao/")
         maven("https://papermc.io/repo/repository/maven-public/")
@@ -174,6 +175,7 @@ tasks {
         //relocate("com.paypal", "${project.group}.shadow.paypal")
         //relocate("com.stripe", "${project.group}.shadow.stripe")
         relocate("fuel", "${project.group}.shadow.fuel")
+        relocate("com.cryptomorin.xseries", "${project.group}.shadow.xseries")
         minimize()
     }
 }

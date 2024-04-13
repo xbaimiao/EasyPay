@@ -138,10 +138,6 @@ class EasyPay : EasyPlugin(), KtorStat {
         Bukkit.getScheduler().cancelTasks(this) // Cancel all running task - prevent throw exception while server close
     }
 
-    override fun cloudKotlin(): Boolean {
-        return true
-    }
-
     fun loadCustomConfig() {
         val section = config.getConfigurationSection("builtin.CustomPriceItem")
         val customPriceItemConfig = CustomPriceItemConfig(

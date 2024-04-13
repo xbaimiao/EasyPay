@@ -14,6 +14,7 @@ import com.xbaimiao.easypay.util.ZxingUtil
 import dev.rgbmc.walletconnector.WalletConnector
 import org.bukkit.Bukkit
 import java.io.File
+import java.math.BigDecimal
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -84,16 +85,17 @@ class DLCWeChatService(
 
     override fun createOrder(player: String, item: Item): Order? {
         if (!connected) return null // Waiting Connected
-        var newPrice = item.price
+        var newPrice = BigDecimal(item.price.toString())
         val offlinePlayer = Bukkit.getOfflinePlayer(player)
-        if (orderMap.containsKey(newPrice) && orderMap[newPrice] != OrderStatus.UNKNOWN) {
+        val oldPrice = item.price
+        if (orderMap.containsKey(oldPrice) && orderMap[oldPrice] != OrderStatus.UNKNOWN) {
             if (plugin.config.getBoolean("wechat.dynamic-cost")) {
                 // Dynamic Cost
                 if (offlinePlayer.isOnline) {
                     offlinePlayer.player.sendLang("command-wechat-dynamic-cost")
                 }
-                while (orderMap.contains(newPrice)) {
-                    newPrice += 0.01
+                while (orderMap.contains(newPrice.toDouble())) {
+                    newPrice = newPrice.add(BigDecimal("0.01"))
                 }
             } else {
                 // Cancel Order
@@ -101,7 +103,8 @@ class DLCWeChatService(
             }
         }
         val tradeNo = generateOrderId()
-        val order = Order(tradeNo, item, qrcodeContent, this, newPrice)
+        val floatNewPrice = newPrice.toDouble()
+        val order = Order(tradeNo, item, qrcodeContent, this, floatNewPrice)
 
         if (offlinePlayer.isOnline) {
             debug("offline player online execute preCreate")
@@ -112,14 +115,14 @@ class DLCWeChatService(
 
         // Join?
         // 监听已浮动的价格
-        val status = walletConnector.createOrder(newPrice).join()
+        val status = walletConnector.createOrder(floatNewPrice).join()
         if (!status) {
             // Cancel Order [multi-servers]
             return null
         }
-        orderMap[newPrice] = OrderStatus.WAIT_SCAN
-        walletConnector.listenOrder(newPrice) {
-            orderMap.remove(newPrice)
+        orderMap[floatNewPrice] = OrderStatus.WAIT_SCAN
+        walletConnector.listenOrder(floatNewPrice) {
+            orderMap.remove(floatNewPrice)
         }
         return order
     }
