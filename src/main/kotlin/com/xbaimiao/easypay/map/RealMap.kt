@@ -6,7 +6,6 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerDropItemEvent
-import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.ItemStack
 import java.awt.image.BufferedImage
@@ -42,15 +41,6 @@ class RealMap(private val mainHand: Boolean, override val cancelOnDrop: Boolean)
             }
         }
         dropFuncMap.remove(event.player.name)?.forEach { it.invoke() }
-    }
-
-    @EventHandler
-    fun hand(event: PlayerItemHeldEvent) {
-        val player = event.player
-        if (player.inventory.getItem(event.previousSlot).tryRemove(true)) {
-            dropFuncMap.remove(player.name)?.forEach { it.invoke() }
-            player.inventory.setItem(event.previousSlot, null)
-        }
     }
 
     @EventHandler

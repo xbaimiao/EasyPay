@@ -11,7 +11,7 @@ softdepend:
   - CMI
   - XConomy
   - ProtocolLib
-update-info: '尝试修复DLC精度丢失的问题 更新依赖版本 先前更新了1.2.3-ALPHA5请立即更换此版本'
+update-info: '切换物品不再移除支付地图'
 kotlin-version: "1.9.20"
 relocate:
   - "kotlin!com.xbaimiao.easypay.shadow.kotlin"
