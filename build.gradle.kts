@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.xbaimiao.easypay"
-version = "1.2.3-ALPHA6"
+version = "1.2.3-ALPHA7"
 
 val easyLibVersion = "3.7.5"
 
@@ -73,7 +73,7 @@ subprojects {
 
 dependencies {
     implementation("com.xbaimiao:easy-lib:$easyLibVersion")
-    implementation("de.tr7zw:item-nbt-api:2.12.3")
+    implementation("de.tr7zw:item-nbt-api:2.12.4")
     implementation("com.zaxxer:HikariCP:4.0.3")
     implementation(kotlin("stdlib-jdk8"))
     implementation(project(":project-api"))
