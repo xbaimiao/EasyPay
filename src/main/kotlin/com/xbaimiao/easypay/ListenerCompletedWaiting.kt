@@ -24,6 +24,9 @@ object ListenerCompletedWaiting : Listener {
     }
 
     fun check(player: Player) {
+        if (!Database.isInit()) {
+            return
+        }
         launchCoroutine(SynchronizationContext.ASYNC) {
             if (!player.isOnline) {
                 return@launchCoroutine

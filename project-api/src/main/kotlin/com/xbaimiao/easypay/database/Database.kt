@@ -63,6 +63,10 @@ interface Database {
 
         private var INST: Database? = null
 
+        fun isInit(): Boolean {
+            return INST != null
+        }
+
         fun inst(): Database {
             return INST!!
         }

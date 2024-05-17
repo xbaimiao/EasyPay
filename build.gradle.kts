@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.xbaimiao.easypay"
-version = "1.2.3-ALPHA7"
+version = "1.2.3-ALPHA8"
 
 val easyLibVersion = "3.7.5"
 
