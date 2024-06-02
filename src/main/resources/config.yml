@@ -97,6 +97,8 @@ map:
   # 发包地图模式 (此功能为测试版 仅兼容最新的Minecraft版本 请勿随意开启)
   virtual: false
 book:
+  # 书本
+  provider: ""
   # 书本页面 MiniMessage格式
   # https://docs.advntr.dev/minimessage/format.html
   lines:

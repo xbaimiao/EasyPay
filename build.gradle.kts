@@ -5,9 +5,9 @@ plugins {
 }
 
 group = "com.xbaimiao.easypay"
-version = "1.2.3-ALPHA8"
+version = "1.2.3-ALPHA9"
 
-val easyLibVersion = "3.7.5"
+val easyLibVersion = "3.8.5"
 
 repositories {
     mavenCentral()
@@ -28,9 +28,6 @@ repositories {
     maven("https://papermc.io/repo/repository/maven-public/")
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
     maven("https://repo.codemc.org/repository/maven-public/")
-    maven {
-        url = uri("https://repo.lukasa.lt/repository/maven-public/")
-    }
     maven {
         url = uri("https://repo.dmulloy2.net/repository/public/")
     }
@@ -77,33 +74,33 @@ dependencies {
     implementation("com.zaxxer:HikariCP:4.0.3")
     implementation(kotlin("stdlib-jdk8"))
     implementation(project(":project-api"))
-    implementation("com.alipay.sdk:alipay-sdk-java:4.39.19.ALL")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-    implementation("com.google.zxing:core:3.5.2")
-    implementation("com.google.zxing:javase:3.5.2")
+    implementation("com.alipay.sdk:alipay-sdk-java:4.39.74.ALL")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
+    implementation("com.google.zxing:core:3.5.3")
+    implementation("com.google.zxing:javase:3.5.3")
     implementation("dev.rgbmc:WalletConnector:1.0.0-3656068")
     implementation("dev.rgbmc:FastExpression:1.0.0-a0aa2c1")
 
     // EvalEx 2 for Java 8-10
     implementation("com.udojava:EvalEx:2.7")
     // EvalEx 3 for Java 11+
-    implementation("com.ezylang:EvalEx:3.1.1")
+    implementation("com.ezylang:EvalEx:3.2.0")
     // Other resolution for if function
     implementation("com.creativewidgetworks:expression-evaluator:2.3.0")
 
     implementation("com.xbaimiao.ktor:ktor-plugins-bukkit:1.1.0")
     implementation("com.github.wechatpay-apiv3:wechatpay-java:0.2.12")
 
-    implementation("com.comphenix.packetwrapper:PacketWrapper:1.20-2.2.1") {
+    implementation("com.comphenix.packetwrapper:PacketWrapper:1.20.4-2.3.0") {
         exclude(module = "spigot-api")
     }
 
     compileOnly("com.comphenix.protocol:ProtocolLib:5.1.0")
-    compileOnly("net.kyori:adventure-api:4.16.0")
-    compileOnly("net.kyori:adventure-text-minimessage:4.16.0")
+    compileOnly("net.kyori:adventure-api:4.17.0")
+    compileOnly("net.kyori:adventure-text-minimessage:4.17.0")
     compileOnly("net.kyori:adventure-platform-bukkit:4.3.2")
 
-    compileOnly("com.stripe:stripe-java:24.21.0")
+    compileOnly("com.stripe:stripe-java:25.9.0")
     compileOnly("com.paypal.sdk:checkout-sdk:2.0.0")
 
     compileOnly("org.apache.groovy:groovy-all:4.0.17")
@@ -176,6 +173,7 @@ tasks {
         //relocate("com.stripe", "${project.group}.shadow.stripe")
         relocate("fuel", "${project.group}.shadow.fuel")
         relocate("com.cryptomorin.xseries", "${project.group}.shadow.xseries")
+        relocate("net.kyori.adventure", "${project.group}.shadow.adventure")
         minimize()
     }
 }
