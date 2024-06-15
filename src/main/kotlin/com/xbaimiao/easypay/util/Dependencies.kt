@@ -5,10 +5,14 @@ import com.xbaimiao.easylib.util.DependencyList
 
 @DependencyList(
     [Dependency(
-        url = "net.kyori:adventure-api:4.16.0",
+        url = "net.kyori:adventure-api:4.17.0",
         clazz = "net.kyori.adventure.Adventure",
         format = true,
-        fetchDependencies = true
+        fetchDependencies = true,
+        relocationRules = [
+            "net!.kyori!.adventure",
+            "com.xbaimiao.easypay.shadow.adventure"
+        ]
     )/*, Dependency(
         url = "net.kyori:adventure-key:4.16.0",
         clazz = "net.kyori.adventure.key.Key",
@@ -18,10 +22,14 @@ import com.xbaimiao.easylib.util.DependencyList
         clazz = "net.kyori.adventure.nbt.Tokens",
         format = true
     )*/, Dependency(
-        url = "net.kyori:adventure-text-minimessage:4.16.0",
+        url = "net.kyori:adventure-text-minimessage:4.17.0",
         clazz = "net.kyori.adventure.text.minimessage.MiniMessage",
         format = true,
-        fetchDependencies = true
+        fetchDependencies = true,
+        relocationRules = [
+            "net!.kyori!.adventure",
+            "com.xbaimiao.easypay.shadow.adventure"
+        ]
     )/*, Dependency(
         url = "net.kyori:adventure-text-serializer-gson:4.16.0",
         clazz = "net.kyori.adventure.text.serializer.gson.GsonComponentSerializer",
@@ -65,16 +73,28 @@ import com.xbaimiao.easylib.util.DependencyList
     )*/, Dependency(
         url = "net.kyori:adventure-platform-facet:4.3.2",
         clazz = "net.kyori.adventure.platform.facet.Facet",
-        format = true
+        format = true,
+        relocationRules = [
+            "net!.kyori!.adventure",
+            "com.xbaimiao.easypay.shadow.adventure"
+        ]
     ), Dependency(
         url = "net.kyori:adventure-platform-viaversion:4.3.2",
         clazz = "net.kyori.adventure.platform.viaversion.ViaFacet",
-        format = true
+        format = true,
+        relocationRules = [
+            "net!.kyori!.adventure",
+            "com.xbaimiao.easypay.shadow.adventure"
+        ]
     ), Dependency(
         url = "net.kyori:adventure-platform-bukkit:4.3.2",
         clazz = "net.kyori.adventure.platform.bukkit.BukkitAudiences",
         format = true,
-        fetchDependencies = true
+        fetchDependencies = true,
+        relocationRules = [
+            "net!.kyori!.adventure",
+            "com.xbaimiao.easypay.shadow.adventure"
+        ]
     ), Dependency(
         url = "com.paypal.sdk:checkout-sdk:2.0.0",
         clazz = "com.paypal.core.PayPalEnvironment",
@@ -85,7 +105,10 @@ import com.xbaimiao.easylib.util.DependencyList
         clazz = "com.paypal.http.exceptions.HttpException",
         format = true
     )*/, Dependency(
-        url = "com.stripe:stripe-java:24.21.0", clazz = "com.stripe.Stripe", format = true, fetchDependencies = true
+        url = "com.stripe:stripe-java:25.9.0",
+        clazz = "com.stripe.Stripe",
+        format = true,
+        fetchDependencies = true
     )]
 )
 object Dependencies
