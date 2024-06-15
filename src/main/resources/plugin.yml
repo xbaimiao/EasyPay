@@ -11,7 +11,7 @@ softdepend:
   - CMI
   - XConomy
   - ProtocolLib
-update-info: '修复数据库报错问题'
+update-info: '支持1.21'
 kotlin-version: "1.9.20"
 relocate:
   - "kotlin!com.xbaimiao.easypay.shadow.kotlin"
