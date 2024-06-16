@@ -105,7 +105,7 @@ import com.xbaimiao.easylib.util.DependencyList
         clazz = "com.paypal.http.exceptions.HttpException",
         format = true
     )*/, Dependency(
-        url = "com.stripe:stripe-java:25.9.0",
+        url = "com.stripe:stripe-java:25.12.0",
         clazz = "com.stripe.Stripe",
         format = true,
         fetchDependencies = true

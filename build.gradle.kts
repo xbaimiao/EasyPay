@@ -100,7 +100,7 @@ dependencies {
     compileOnly("net.kyori:adventure-text-minimessage:4.17.0")
     compileOnly("net.kyori:adventure-platform-bukkit:4.3.2")
 
-    compileOnly("com.stripe:stripe-java:25.9.0")
+    compileOnly("com.stripe:stripe-java:25.12.0")
     compileOnly("com.paypal.sdk:checkout-sdk:2.0.0")
 
     compileOnly("org.apache.groovy:groovy-all:4.0.17")
