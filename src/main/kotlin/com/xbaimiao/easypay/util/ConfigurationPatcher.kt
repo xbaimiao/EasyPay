@@ -34,6 +34,8 @@ object ConfigurationPatcher {
                 targetConfig.set(key, patchConfig[key])
                 patchComments(patchConfig, targetConfig, key)
                 changed = true
+            } else {
+                patchDiffComments(patchConfig, targetConfig, key)
             }
         }
         if (changed) targetConfig.save(targetFile)
@@ -46,8 +48,29 @@ object ConfigurationPatcher {
             val setCommentsMethod =
                 ConfigurationSection::class.java.getDeclaredMethod("setComments", String::class.java, List::class.java)
 
-            val list = getCommentsMethod.invoke(patchConfig, key) as List<*>
-            setCommentsMethod.invoke(targetConfig, key, list)
+            val list = getCommentsMethod.invoke(patchConfig, key) as List<*>?
+            setCommentsMethod.invoke(targetConfig, key, list ?: emptyList<String>())
+        } catch (ignore: NoSuchMethodException) {
+            return
+        }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun patchDiffComments(patchConfig: YamlConfiguration, targetConfig: YamlConfiguration, key: String) {
+        try {
+            val getCommentsMethod =
+                ConfigurationSection::class.java.getDeclaredMethod("getComments", String::class.java)
+            val setCommentsMethod =
+                ConfigurationSection::class.java.getDeclaredMethod("setComments", String::class.java, List::class.java)
+
+            val list = getCommentsMethod.invoke(patchConfig, key) as List<String>?
+            val oldList = getCommentsMethod.invoke(targetConfig, key) as List<String>?
+
+            if (list != null && oldList != null) {
+                val comments = list.listToString()
+                val oldComments = list.listToString()
+                if (comments != oldComments) setCommentsMethod.invoke(targetConfig, key, list)
+            }
         } catch (ignore: NoSuchMethodException) {
             return
         }

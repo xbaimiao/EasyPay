@@ -13,3 +13,13 @@ fun Long.formatTime(): String {
 
     return formattedDateTime
 }
+
+fun List<String>.listToString(): String {
+    val list = this
+    val string = buildString {
+        list.forEach {
+            append(it)
+        }
+    }
+    return string
+}
