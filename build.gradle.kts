@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.xbaimiao.easypay"
-version = "1.2.3-ALPHA10"
+version = "1.2.4-CANARY_1"
 
 val easyLibVersion = "3.8.5"
 
@@ -74,7 +74,7 @@ dependencies {
     implementation("com.zaxxer:HikariCP:4.0.3")
     implementation(kotlin("stdlib-jdk8"))
     implementation(project(":project-api"))
-    implementation("com.alipay.sdk:alipay-sdk-java:4.39.74.ALL")
+    implementation("com.alipay.sdk:alipay-sdk-java:4.39.104.ALL")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
     implementation("com.google.zxing:core:3.5.3")
     implementation("com.google.zxing:javase:3.5.3")
@@ -109,6 +109,8 @@ dependencies {
 
     compileOnly("org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT")
     //implementation("com.google.code.gson:gson:2.10.1")
+    compileOnly("com.github.retrooper.packetevents:spigot:2.3.0")
+    compileOnly("io.netty:netty-buffer:4.1.111.Final")
 }
 
 tasks {

@@ -22,8 +22,8 @@ import com.xbaimiao.easypay.item.CommandItem
 import com.xbaimiao.easypay.item.CustomConfiguration
 import com.xbaimiao.easypay.item.CustomPriceItemConfig
 import com.xbaimiao.easypay.map.MapUtilProvider
+import com.xbaimiao.easypay.map.PacketProvider
 import com.xbaimiao.easypay.map.RealMap
-import com.xbaimiao.easypay.map.VirtualMap
 import com.xbaimiao.easypay.reward.RewardHandle
 import com.xbaimiao.easypay.scripting.GroovyScriptManager
 import com.xbaimiao.easypay.service.*
@@ -158,11 +158,13 @@ class EasyPay : EasyPlugin(), KtorStat {
         val cancelOnDrop = config.getBoolean("map.cancel-on-drop")
         val virtualMode = config.getBoolean("map.virtual")
         val mainHand = config.getString("map.hand") == "MAIN"
-        val mapUtil = if (virtualMode && checkProtocolLib()) {
+        val mapUtil = if (virtualMode/* && checkProtocolLib()*/) {
             info("EasyPay正在使用发包地图模式")
             info("发包地图仅支持最新的Minecraft版本")
             info("如您在较旧的服务器版本上使用发包地图遇到问题 请关闭此功能 提出兼容请求将不会被处理")
-            VirtualMap(mainHand, cancelOnDrop)
+            val provider = config.getString("map.packet-provider")
+            info("使用的发包服务: $provider")
+            PacketProvider.valueOf(provider).getMapUtil(mainHand, cancelOnDrop)
         } else RealMap(mainHand, cancelOnDrop)
         MapUtilProvider.setMapUtil(mapUtil)
     }

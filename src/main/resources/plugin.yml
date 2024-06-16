@@ -11,6 +11,7 @@ softdepend:
   - CMI
   - XConomy
   - ProtocolLib
+  - PacketEvents
 update-info: '合并提交'
 kotlin-version: "1.9.20"
 relocate:

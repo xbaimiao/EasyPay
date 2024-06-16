@@ -96,6 +96,8 @@ map:
   cancel-on-drop: false
   # 发包地图模式 (此功能为测试版 仅兼容最新的Minecraft版本 请勿随意开启)
   virtual: false
+  # 发包服务提供者 (ProtocolLib/PacketEvents)
+  packet-provider: ProtocolLib
 book:
   # 书本
   provider: ""
