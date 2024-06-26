@@ -42,7 +42,7 @@ subprojects {
             url = uri("https://maven.pkg.github.com/xbaimiao/EasyLib")
         }
         maven("https://papermc.io/repo/repository/maven-public/")
-        maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
+        maven("https://hub.spigotmc.org/nexus/repository/snapshots/")
         maven("https://repo.codemc.org/repository/maven-public/")
     }
 
@@ -51,14 +51,13 @@ subprojects {
         compileOnly("com.xbaimiao:easy-lib:3.5.7")
         compileOnly(fileTree("../libs"))
         compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-        compileOnly("org.spigotmc:spigot-api:1.7.10-R0.1-SNAPSHOT")
+        compileOnly("org.spigotmc:spigot-api:1.8-R0.1-20150227.053453-191")
     }
 
 }
 
 dependencies {
     implementation("com.xbaimiao:easy-lib:3.5.7")
-    implementation("de.tr7zw:item-nbt-api:2.12.2")
     implementation(kotlin("stdlib-jdk8"))
     implementation(project(":project-api"))
     implementation("com.alipay.sdk:alipay-sdk-java:4.38.72.ALL")
@@ -69,9 +68,10 @@ dependencies {
     implementation("com.xbaimiao.ktor:ktor-plugins-bukkit:1.1.0")
     implementation("com.github.wechatpay-apiv3:wechatpay-java:0.2.12")
     implementation("com.google.guava:guava:21.0")
+    implementation("com.zaxxer:HikariCP:4.0.3")
 
     compileOnly(fileTree("libs"))
-    compileOnly("org.spigotmc:spigot-api:1.7.10-R0.1-SNAPSHOT")
+    compileOnly("org.spigotmc:spigot-api:1.8-R0.1-20150227.053453-191")
     //implementation("com.google.code.gson:gson:2.10.1")
 }
 
@@ -109,7 +109,6 @@ tasks {
 
         relocate("com.xbaimiao.easylib", "${project.group}.shadow.easylib")
         relocate("com.zaxxer.hikari", "${project.group}.shadow.hikari")
-        relocate("com.j256.ormlite", "${project.group}.shadow.ormlite")
         relocate("kotlin", "${project.group}.shadow.kotlin")
         relocate("kotlinx", "${project.group}.shadow.kotlinx")
         relocate("org.java_websocket", "${project.group}.shadow.websocket")
