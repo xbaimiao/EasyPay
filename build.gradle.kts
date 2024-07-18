@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.xbaimiao.easypay"
-version = "1.2.5"
+version = "1.2.5-PATCH1"
 
 val easyLibVersion = "3.8.5"
 val nbtApiVersion by project.properties
@@ -71,6 +71,7 @@ subprojects {
 
 dependencies {
     implementation("com.xbaimiao:easy-lib:$easyLibVersion")
+    implementation("com.xbaimiao.ktor:ktor-plugins-bukkit:1.1.0")
     implementation("de.tr7zw:item-nbt-api:$nbtApiVersion")
     implementation("com.zaxxer:HikariCP:4.0.3")
     implementation(kotlin("stdlib-jdk8"))
@@ -109,7 +110,7 @@ dependencies {
 
     compileOnly("org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT")
     //implementation("com.google.code.gson:gson:2.10.1")
-    compileOnly("com.github.retrooper.packetevents:spigot:2.3.0")
+    compileOnly("com.github.retrooper:packetevents-spigot:2.4.0")
     compileOnly("io.netty:netty-buffer:4.1.111.Final")
 }
 

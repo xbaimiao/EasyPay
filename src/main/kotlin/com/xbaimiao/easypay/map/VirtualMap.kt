@@ -13,12 +13,12 @@ import com.comphenix.protocol.wrappers.EnumWrappers
 import com.xbaimiao.easylib.EasyPlugin
 import com.xbaimiao.easylib.util.buildMap
 import com.xbaimiao.easylib.util.registerListener
+import com.xbaimiao.easypay.map.MapHelper.getMapId
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.event.player.PlayerQuitEvent
-import org.bukkit.inventory.meta.MapMeta
 import java.awt.image.BufferedImage
 
 class VirtualMap(private val mainHand: Boolean, override val cancelOnDrop: Boolean) : MapUtil, Listener {
@@ -69,10 +69,7 @@ class VirtualMap(private val mainHand: Boolean, override val cancelOnDrop: Boole
         // map
         val map = buildMap(bufferedImage, 125, 128)
         val mapItem = map.mapItem
-        val mapMeta = mapItem.itemMeta!! as MapMeta
-        val mapIdMethod = mapMeta.javaClass.getMethod("getMapId")
-        mapIdMethod.isAccessible = true
-        val mapId = mapIdMethod.invoke(mapMeta) as Int
+        val mapId = map.getMapId()
         val mapView = map.mapView
         val render = mapView.javaClass.getDeclaredMethod("render", player.javaClass).invoke(mapView, player)
         val buffer = render.javaClass.getDeclaredField("buffer")[render] as ByteArray

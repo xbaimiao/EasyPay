@@ -4,23 +4,21 @@ import com.github.retrooper.packetevents.PacketEvents
 import com.github.retrooper.packetevents.event.PacketListenerAbstract
 import com.github.retrooper.packetevents.event.PacketListenerPriority
 import com.github.retrooper.packetevents.event.PacketReceiveEvent
-import com.github.retrooper.packetevents.manager.server.ServerVersion
-import com.github.retrooper.packetevents.netty.buffer.ByteBufHelper
 import com.github.retrooper.packetevents.protocol.packettype.PacketType
 import com.github.retrooper.packetevents.protocol.player.DiggingAction
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerDigging
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerMapData
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerMapData.MapDecoration
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSetSlot
 import com.xbaimiao.easylib.util.buildMap
 import com.xbaimiao.easylib.util.registerListener
+import com.xbaimiao.easypay.map.MapHelper.getMapId
 import io.github.retrooper.packetevents.util.SpigotConversionUtil
-import io.netty.buffer.ByteBuf
-import io.netty.buffer.Unpooled
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.event.player.PlayerQuitEvent
-import org.bukkit.inventory.meta.MapMeta
 import java.awt.image.BufferedImage
 
 
@@ -65,7 +63,7 @@ class PacketEventsVirtualMap(private val mainHand: Boolean, override val cancelO
         dropFuncMap.remove(player.name)?.forEach { it.invoke() }
     }
 
-    private fun createBuffer(mapId: Int, pixels: ByteArray): ByteBuf {
+    /*private fun createBuffer(mapId: Int, pixels: ByteArray): ByteBuf {
         val buffer: ByteBuf = Unpooled.buffer()
         val version = packetEvents.serverManager.version
         ByteBufHelper.writeVarInt(buffer, PacketType.Play.Server.MAP_DATA.getId(version.toClientVersion())) //packed id
@@ -96,21 +94,19 @@ class PacketEventsVirtualMap(private val mainHand: Boolean, override val cancelO
         ) //byte array's length, so here 16384 (128x128, since the offsets are 0)
         ByteBufHelper.writeBytes(buffer, pixels) //write the byte array (map's pixels)
         return buffer
-    }
+    }*/
 
     override fun sendMap(player: Player, bufferedImage: BufferedImage, onDrop: () -> Unit) {
         dropFuncMap.computeIfAbsent(player.name) { mutableSetOf() }.add(onDrop)
         // map
         val map = buildMap(bufferedImage, 125, 128)
         val mapItem = map.mapItem
-        val mapMeta = mapItem.itemMeta!! as MapMeta
-        val mapIdMethod = mapMeta.javaClass.getMethod("getMapId")
-        mapIdMethod.isAccessible = true
-        val mapId = mapIdMethod.invoke(mapMeta) as Int
         val mapView = map.mapView
         val render = mapView.javaClass.getDeclaredMethod("render", player.javaClass).invoke(mapView, player)
         val buffer = render.javaClass.getDeclaredField("buffer")[render] as ByteArray
-        val mapBuffer = createBuffer(mapId, buffer)
+        val mapId = map.getMapId()
+        val mapPacket =
+            WrapperPlayServerMapData(mapId, 0, false, false, listOf<MapDecoration>(), 128, 128, 0, 0, buffer)
         // fake item
         val itemWrapper = WrapperPlayServerSetSlot(
             0,
@@ -120,6 +116,6 @@ class PacketEventsVirtualMap(private val mainHand: Boolean, override val cancelO
         )
 
         packetEvents.playerManager.sendPacket(player, itemWrapper)
-        packetEvents.playerManager.sendPacket(player, mapBuffer)
+        packetEvents.playerManager.sendPacket(player, mapPacket)
     }
 }
