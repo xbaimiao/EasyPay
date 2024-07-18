@@ -5,9 +5,10 @@ plugins {
 }
 
 group = "com.xbaimiao.easypay"
-version = "1.2.4-CANARY_2"
+version = "1.2.5"
 
 val easyLibVersion = "3.8.5"
+val nbtApiVersion by project.properties
 
 repositories {
     mavenCentral()
@@ -70,7 +71,7 @@ subprojects {
 
 dependencies {
     implementation("com.xbaimiao:easy-lib:$easyLibVersion")
-    implementation("de.tr7zw:item-nbt-api:2.13.0")
+    implementation("de.tr7zw:item-nbt-api:$nbtApiVersion")
     implementation("com.zaxxer:HikariCP:4.0.3")
     implementation(kotlin("stdlib-jdk8"))
     implementation(project(":project-api"))
@@ -88,7 +89,6 @@ dependencies {
     // Other resolution for if function
     implementation("com.creativewidgetworks:expression-evaluator:2.3.0")
 
-    implementation("com.xbaimiao.ktor:ktor-plugins-bukkit:1.1.0")
     implementation("com.github.wechatpay-apiv3:wechatpay-java:0.2.12")
 
     implementation("com.comphenix.packetwrapper:PacketWrapper:1.20.4-2.3.0") {

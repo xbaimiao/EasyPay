@@ -29,13 +29,11 @@ import com.xbaimiao.easypay.scripting.GroovyScriptManager
 import com.xbaimiao.easypay.service.*
 import com.xbaimiao.easypay.util.ConfigurationPatcher
 import com.xbaimiao.easypay.util.FunctionUtil
-import com.xbaimiao.ktor.KtorPluginsBukkit
-import com.xbaimiao.ktor.KtorStat
 import org.bukkit.Bukkit
 import java.io.File
 
 @Suppress("unused")
-class EasyPay : EasyPlugin(), KtorStat {
+class EasyPay : EasyPlugin() {
 
     override fun load() {
         // gson 需要优先加载
@@ -52,21 +50,6 @@ class EasyPay : EasyPlugin(), KtorStat {
 
     override fun enable() {
         launchCoroutine {
-            // 初始化统计
-            KtorPluginsBukkit.init(this@EasyPay, this@EasyPay)
-            // userId 是用户Id 如果获取的时候报错 代表没有注入用户ID
-            val userId = runCatching { userId }.getOrNull()
-            if (userId != null) {
-                info("$userId 感谢您的支持!")
-//                val has = async {
-//                    hasPlugin("EasyPay")
-//                }
-//                if (!has) {
-//                    error("$userId 未从您的购买列表 未找到EasyPay插件 无法使用")
-//                }
-                // 统计服务器在线的方法
-                stat()
-            }
             saveDefaultConfig()
 
             ConfigurationPatcher.patchConfiguration("config.yml", "config.yml")

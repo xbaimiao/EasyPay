@@ -12,7 +12,7 @@ softdepend:
   - XConomy
   - ProtocolLib
   - PacketEvents
-update-info: '移除验证系统'
+update-info: '尝试之前1.21版本'
 kotlin-version: "1.9.20"
 relocate:
   - "kotlin!com.xbaimiao.easypay.shadow.kotlin"
