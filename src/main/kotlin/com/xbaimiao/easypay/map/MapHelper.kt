@@ -6,10 +6,12 @@ import org.bukkit.inventory.meta.MapMeta
 object MapHelper {
     fun MapItem.getMapId(): Int {
         val mapView = this.mapView
+        mapView.isVirtual
         try {
-            val idMethod = mapView.javaClass.getDeclaredMethod("getId", Int::class.java)
+            val idMethod = mapView.javaClass.getDeclaredMethod("getId")
             return idMethod.invoke(mapView) as Int
         } catch (e: Exception) {
+            e.printStackTrace(System.err)
             val mapItem = this.mapItem
             val mapMeta = mapItem.itemMeta!! as MapMeta
             val mapIdMethod = mapMeta.javaClass.getMethod("getMapId")

@@ -5,9 +5,9 @@ plugins {
 }
 
 group = "com.xbaimiao.easypay"
-version = "1.2.5-PATCH1"
+version = "1.2.5-PATCH3"
 
-val easyLibVersion = "3.8.5"
+val easyLibVersion = "3.8.7"
 val nbtApiVersion by project.properties
 
 repositories {
@@ -71,7 +71,7 @@ subprojects {
 
 dependencies {
     implementation("com.xbaimiao:easy-lib:$easyLibVersion")
-    implementation("com.xbaimiao.ktor:ktor-plugins-bukkit:1.1.0")
+    implementation("com.xbaimiao.ktor:ktor-plugins-bukkit:1.1.1")
     implementation("de.tr7zw:item-nbt-api:$nbtApiVersion")
     implementation("com.zaxxer:HikariCP:4.0.3")
     implementation(kotlin("stdlib-jdk8"))
