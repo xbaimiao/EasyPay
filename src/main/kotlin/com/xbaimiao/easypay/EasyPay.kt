@@ -140,7 +140,7 @@ class EasyPay : EasyPlugin(), KtorStat {
     }
 
     fun loadCustomConfig() {
-        val section = config.getConfigurationSection("builtin.CustomPriceItem")
+        val section = config.getConfigurationSection("builtin.CustomPriceItem")!!
         val customPriceItemConfig = CustomPriceItemConfig(
             section.getInt("min"),
             section.getInt("max"),
@@ -149,7 +149,7 @@ class EasyPay : EasyPlugin(), KtorStat {
             section.getStringList("pre-actions"),
             section.getStringList("rewards"),
             section.getStringList("commands"),
-            section.getString("name")
+            section.getString("name")!!
         )
         ItemProvider.registerCustomItem(customPriceItemConfig)
         CustomConfiguration.setCustomPriceItemConfig(customPriceItemConfig)
@@ -163,7 +163,7 @@ class EasyPay : EasyPlugin(), KtorStat {
             info("EasyPay正在使用发包地图模式")
             info("发包地图仅支持最新的Minecraft版本")
             info("如您在较旧的服务器版本上使用发包地图遇到问题 请关闭此功能 提出兼容请求将不会被处理")
-            val provider = config.getString("map.packet-provider")
+            val provider = config.getString("map.packet-provider")!!
             info("使用的发包服务: $provider")
             PacketProvider.valueOf(provider).getMapUtil(mainHand, cancelOnDrop)
         } else RealMap(mainHand, cancelOnDrop)
@@ -178,7 +178,7 @@ class EasyPay : EasyPlugin(), KtorStat {
     private fun checkProtocolLib(): Boolean {
         if (Bukkit.getPluginManager().isPluginEnabled("ProtocolLib")) {
             val version = Bukkit.getPluginManager()
-                .getPlugin("ProtocolLib").description.version
+                .getPlugin("ProtocolLib")!!.description.version
                 .split("-")[0].replace(".", "").toInt()
             return version > 510
         }
@@ -187,7 +187,7 @@ class EasyPay : EasyPlugin(), KtorStat {
 
     fun loadDatabase() {
         val hikariDatabase = if (config.getBoolean("database.mysql.enable")) {
-            MysqlHikariDatabase(config.getConfigurationSection("database.mysql"))
+            MysqlHikariDatabase(config.getConfigurationSection("database.mysql")!!)
         } else {
             SQLiteHikariDatabase("database.db")
         }
@@ -205,12 +205,12 @@ class EasyPay : EasyPlugin(), KtorStat {
         } else {
             PayServiceProvider.registerService(
                 AlipayService(
-                    config.getString("alipay.appid"),
-                    config.getString("alipay.private-key"),
-                    config.getString("alipay.public-key"),
-                    config.getString("alipay.api"),
-                    config.getString("alipay.notify-url"),
-                    config.getString("alipay.store-id")
+                    config.getString("alipay.appid")!!,
+                    config.getString("alipay.private-key")!!,
+                    config.getString("alipay.public-key")!!,
+                    config.getString("alipay.api")!!,
+                    config.getString("alipay.notify-url")!!,
+                    config.getString("alipay.store-id")!!
                 )
             )
         }
@@ -220,7 +220,7 @@ class EasyPay : EasyPlugin(), KtorStat {
         } else {
             PayServiceProvider.registerService(
                 DLCWeChatService(
-                    config.getString("wechat.server"), config.getString("wechat.qrcode")
+                    config.getString("wechat.server")!!, config.getString("wechat.qrcode")!!
                 )
             )
         }
@@ -229,7 +229,7 @@ class EasyPay : EasyPlugin(), KtorStat {
             warn("未配置微信支付官方Service 跳过加载")
         } else {
             PayServiceProvider.registerService(
-                OfficialWeChatService(config.getConfigurationSection("wechat-official"))
+                OfficialWeChatService(config.getConfigurationSection("wechat-official")!!)
             )
         }
 
@@ -237,10 +237,10 @@ class EasyPay : EasyPlugin(), KtorStat {
             info("正在配置PayPal支付服务")
             PayServiceProvider.registerService(
                 PayPalService(
-                    config.getString("paypal.environment"),
-                    config.getString("paypal.client-id"),
-                    config.getString("paypal.client-secret"),
-                    config.getString("paypal.currency")
+                    config.getString("paypal.environment")!!,
+                    config.getString("paypal.client-id")!!,
+                    config.getString("paypal.client-secret")!!,
+                    config.getString("paypal.currency")!!
                 )
             )
         }
@@ -249,9 +249,9 @@ class EasyPay : EasyPlugin(), KtorStat {
             info("正在配置Stripe支付服务")
             PayServiceProvider.registerService(
                 StripeService(
-                    config.getString("stripe.api-key"),
-                    config.getString("stripe.currency"),
-                    config.getString("stripe.success-url", "https://www.baidu.com/")
+                    config.getString("stripe.api-key")!!,
+                    config.getString("stripe.currency")!!,
+                    config.getString("stripe.success-url", "https://www.baidu.com/")!!
                 )
             )
         }
@@ -260,12 +260,13 @@ class EasyPay : EasyPlugin(), KtorStat {
             info("正在配置EasyGate支付服务")
             PayServiceProvider.registerService(
                 EasyGateService(
-                    config.getString("easy-gate.client-id"),
-                    config.getString("easy-gate.client-secret"),
+                    config.getString("easy-gate.client-id")!!,
+                    config.getString("easy-gate.client-secret")!!,
                     config.getInt("easy-gate.wait-time", 300)
                 )
             )
         }
+        PayServiceProvider.registerService(DevService)
     }
 
     fun loadItems() {

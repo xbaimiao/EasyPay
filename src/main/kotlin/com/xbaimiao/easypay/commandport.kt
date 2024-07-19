@@ -4,6 +4,7 @@ import com.xbaimiao.easylib.bridge.economy.EconomyManager
 import com.xbaimiao.easylib.chat.Lang
 import com.xbaimiao.easylib.chat.Lang.sendLang
 import com.xbaimiao.easylib.command.ArgNode
+import com.xbaimiao.easylib.command.CommandCodec
 import com.xbaimiao.easylib.command.command
 import com.xbaimiao.easylib.command.debugCommand
 import com.xbaimiao.easylib.skedule.SchedulerController
@@ -24,6 +25,7 @@ import com.xbaimiao.easypay.item.CustomConfiguration
 import com.xbaimiao.easypay.map.MapUtilProvider
 import com.xbaimiao.easypay.reward.RewardHandle
 import com.xbaimiao.easypay.reward.RewardHandle.rewardsArgNode
+import com.xbaimiao.easypay.service.DevService
 import com.xbaimiao.easypay.util.ZxingUtil
 import com.xbaimiao.easypay.util.formatTime
 import org.bukkit.command.CommandSender
@@ -287,6 +289,30 @@ private val check = command<CommandSender>("check") {
     }
 }
 
+private val devDone = command<CommandSender>("done") {
+    description = "完成一个devService 的订单支付"
+    val orderId = requiredArg(DevService.waitOrders, object : CommandCodec<Order> {
+        override fun encode(data: Order): String {
+            return data.orderId
+        }
+
+        override fun name(): String {
+            return "订单号"
+        }
+    })
+    exec {
+        val order = orderId.value() ?: return@exec error("没有这个 请先使用DevService创建")
+        DevService.doneOrders.add(order.orderId)
+        sender.sendMessage("ok")
+    }
+}
+
+private val dev = command<CommandSender>("dev") {
+    description = "开发者调试命令"
+    permission = "dev"
+    sub(devDone)
+}
+
 val rootCommand = command<CommandSender>("easypay") {
     description = "主要命令"
     permission = "easypay.command"
@@ -297,4 +323,5 @@ val rootCommand = command<CommandSender>("easypay") {
     sub(reward)
     sub(check)
     sub(debugCommand)
+    sub(dev)
 }

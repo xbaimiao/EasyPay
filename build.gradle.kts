@@ -7,7 +7,7 @@ plugins {
 group = "com.xbaimiao.easypay"
 version = "1.2.5-PATCH3"
 
-val easyLibVersion = "3.8.7"
+val easyLibVersion = "3.8.9"
 val nbtApiVersion by project.properties
 
 repositories {
@@ -108,7 +108,7 @@ dependencies {
 
     implementation("com.github.kittinunf.fuel:fuel:3.0.0-alpha1")
 
-    compileOnly("org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT")
+    compileOnly("org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT")
     //implementation("com.google.code.gson:gson:2.10.1")
     compileOnly("com.github.retrooper:packetevents-spigot:2.4.0")
     compileOnly("io.netty:netty-buffer:4.1.111.Final")

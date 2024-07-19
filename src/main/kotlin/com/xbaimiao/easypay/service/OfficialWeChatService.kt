@@ -75,7 +75,7 @@ class OfficialWeChatService(
 
         if (offlinePlayer.isOnline) {
             debug("offline player online execute preCreate")
-            if (!item.preCreate(offlinePlayer.player, this, order)) {
+            if (!item.preCreate(offlinePlayer.player!!, this, order)) {
                 return null
             }
         }

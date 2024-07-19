@@ -92,7 +92,7 @@ class DLCWeChatService(
             if (plugin.config.getBoolean("wechat.dynamic-cost")) {
                 // Dynamic Cost
                 if (offlinePlayer.isOnline) {
-                    offlinePlayer.player.sendLang("command-wechat-dynamic-cost")
+                    offlinePlayer.player?.sendLang("command-wechat-dynamic-cost")
                 }
                 while (orderMap.contains(newPrice.toDouble())) {
                     newPrice = newPrice.add(BigDecimal("0.01"))
@@ -108,7 +108,7 @@ class DLCWeChatService(
 
         if (offlinePlayer.isOnline) {
             debug("offline player online execute preCreate")
-            if (!item.preCreate(offlinePlayer.player, this, order)) {
+            if (!item.preCreate(offlinePlayer.player!!, this, order)) {
                 return null
             }
         }

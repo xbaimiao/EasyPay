@@ -8,6 +8,8 @@ import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.MapMeta
+import org.bukkit.map.MapView
 import java.awt.image.BufferedImage
 
 /**
@@ -48,7 +50,7 @@ class RealMap(private val mainHand: Boolean, override val cancelOnDrop: Boolean)
         val player = event.player
         if (player.inventory.itemInMainHand.tryRemove(true)) {
             dropFuncMap.remove(player.name)?.forEach { it.invoke() }
-            player.inventory.itemInMainHand = null
+            player.inventory.setItemInMainHand(null)
         }
     }
 
@@ -98,7 +100,7 @@ class RealMap(private val mainHand: Boolean, override val cancelOnDrop: Boolean)
             if (player.inventory.itemInMainHand.isNotAir()) {
                 itemStack = player.inventory.itemInMainHand.clone()
             }
-            player.inventory.itemInMainHand = mapItem
+            player.inventory.setItemInMainHand(mapItem)
             if (itemStack != null) {
                 player.giveItem(itemStack)
             }
@@ -107,7 +109,7 @@ class RealMap(private val mainHand: Boolean, override val cancelOnDrop: Boolean)
             if (player.inventory.itemInOffHand.isNotAir()) {
                 itemStack = player.inventory.itemInOffHand.clone()
             }
-            player.inventory.itemInOffHand = mapItem
+            player.inventory.setItemInOffHand(mapItem)
             if (itemStack != null) {
                 player.giveItem(itemStack)
             }
