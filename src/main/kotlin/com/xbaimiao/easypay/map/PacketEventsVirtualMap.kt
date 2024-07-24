@@ -26,6 +26,7 @@ class PacketEventsVirtualMap(private val mainHand: Boolean, override val cancelO
 
     private val packetEvents = PacketEvents.getAPI()
     private val dropFuncMap = mutableMapOf<String, MutableCollection<() -> Unit>>()
+    //var buffer: ByteArray? = null
 
     init {
         registerListener(this)
@@ -42,6 +43,18 @@ class PacketEventsVirtualMap(private val mainHand: Boolean, override val cancelO
                     }
                 }
             }
+
+            /*override fun onPacketSend(event: PacketSendEvent) {
+                if (event.packetType == PacketType.Play.Server.MAP_DATA) {
+                    if (buffer == null) return
+                    val wrapper = WrapperPlayServerMapData(event)
+                    if (wrapper.rows == 128 && wrapper.columns == 128) {
+                        wrapper.data = buffer
+                        event.isCancelled = true
+                        event.user.sendPacket(wrapper)
+                    }
+                }
+            }*/
         })
     }
 
@@ -99,7 +112,7 @@ class PacketEventsVirtualMap(private val mainHand: Boolean, override val cancelO
     override fun sendMap(player: Player, bufferedImage: BufferedImage, onDrop: () -> Unit) {
         dropFuncMap.computeIfAbsent(player.name) { mutableSetOf() }.add(onDrop)
         // map
-        val map = buildMap(bufferedImage, 125, 128)
+        val map = buildMap(bufferedImage, 128, 128)
         val mapItem = map.mapItem
         val mapView = map.mapView
         val render = mapView.javaClass.getDeclaredMethod("render", player.javaClass).invoke(mapView, player)
@@ -117,5 +130,6 @@ class PacketEventsVirtualMap(private val mainHand: Boolean, override val cancelO
 
         packetEvents.playerManager.sendPacket(player, itemWrapper)
         packetEvents.playerManager.sendPacket(player, mapPacket)
+        //this.buffer = buffer
     }
 }

@@ -2,9 +2,9 @@ package com.xbaimiao.easypay.map
 
 import org.bukkit.Bukkit
 
-enum class PacketProvider(val plugin: String, val provider: Class<out MapUtil>) {
+enum class PacketProvider(private val plugin: String, private val provider: Class<out MapUtil>) {
     ProtocolLib("ProtocolLib", VirtualMap::class.java),
-    PacketEvents("PacketEvents", PacketEventsVirtualMap::class.java);
+    PacketEvents("packetevents", PacketEventsVirtualMap::class.java);
 
     fun getMapUtil(mainHand: Boolean, cancelOnDrop: Boolean): MapUtil {
         if (!Bukkit.getPluginManager()
