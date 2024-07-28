@@ -12,7 +12,7 @@ softdepend:
   - XConomy
   - ProtocolLib
   - PacketEvents
-update-info: '修复VirtualMap模式无法显示地图内容的问题'
+update-info: '修复MapUtil在旧版本MC报错的问题#2'
 kotlin-version: "1.9.20"
 relocate:
   - "kotlin!com.xbaimiao.easypay.shadow.kotlin"

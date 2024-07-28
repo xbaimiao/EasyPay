@@ -5,9 +5,9 @@ plugins {
 }
 
 group = "com.xbaimiao.easypay"
-version = "1.2.6"
+version = "1.2.6-HOTFIX3"
 
-val easyLibVersion = "3.9.2"
+val easyLibVersion = "3.9.6"
 val nbtApiVersion by project.properties
 
 repositories {
