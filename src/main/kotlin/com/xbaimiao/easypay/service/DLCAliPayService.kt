@@ -12,7 +12,6 @@ import com.xbaimiao.easypay.entity.Order
 import com.xbaimiao.easypay.entity.OrderStatus
 import com.xbaimiao.easypay.util.ZxingUtil
 import dev.rgbmc.alipayconnector.AliPayConnector
-import dev.rgbmc.walletconnector.WalletConnector
 import org.bukkit.Bukkit
 import java.io.File
 import java.math.BigDecimal
@@ -34,20 +33,20 @@ class DLCAliPayService(
     private var connected: Boolean = false
 
     init {
-        WalletConnector.setDisconnectCallback {
+        AliPayConnector.setDisconnectCallback {
             connected = false
             counter++
             if (counter >= plugin.config.getInt("alipay-dlc.max-retry")) {
-                WalletConnector.setReconnect(false)
+                AliPayConnector.setReconnect(false)
                 warn("EasyPay支付宝DLC 已超过最大重连次数 请重载EasyPay后再次尝试链接")
             }
         }
-        WalletConnector.setConnectedCallback {
+        AliPayConnector.setConnectedCallback {
             info("已连接上EasyPay支付宝DLC")
             counter = 0
             connected = true
         }
-        WalletConnector.setReconnect(true)
+        AliPayConnector.setReconnect(true)
         aliPayConnector.connect(server)
     }
 

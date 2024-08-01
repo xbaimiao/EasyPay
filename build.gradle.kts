@@ -156,6 +156,7 @@ tasks {
         relocate("kotlinx", "${project.group}.shadow.kotlinx")
         relocate("org.java_websocket", "${project.group}.shadow.websocket")
         relocate("com.google.gson", "${project.group}.shadow.gson")
+        relocate("dev.rgbmc.alipayconnector", "${project.group}.shadow.alipay_dlc")
         relocate("dev.rgbmc.walletconnector", "${project.group}.shadow.wechat")
         relocate("dev.rgbmc.expression", "${project.group}.shadow.expression")
         relocate("com.ezylang.evalex", "${project.group}.shadow.evalex3")
