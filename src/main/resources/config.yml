@@ -58,6 +58,19 @@ wechat:
   wait-time: 60
   # 重连次数 (超过次数无法连接将停止尝试 直到重载插件)
   max-retry: 5
+alipay-dlc:
+  # 启用支付宝DLC功能
+  enable: false
+  # 支付宝DLC通信服务器地址
+  server: "127.0.0.1:42268"
+  # 支付宝收款二维码内容
+  qrcode: ""
+  # 是否在订单被锁定时启用价格浮动(增加价格直到能够付款-最小加价单位0.01)
+  dynamic-cost: false
+  # 订单等待时长 (单位: 秒) 超时取消订单
+  wait-time: 60
+  # 重连次数 (超过次数无法连接将停止尝试 直到重载插件)
+  max-retry: 5
 paypal:
   # 启用PayPal功能
   enable: false

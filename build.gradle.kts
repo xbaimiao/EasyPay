@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.xbaimiao.easypay"
-version = "1.2.6-HOTFIX3"
+version = "1.2.7-CANARY"
 
 val easyLibVersion = "3.9.6"
 val nbtApiVersion by project.properties
@@ -80,7 +80,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
     implementation("com.google.zxing:core:3.5.3")
     implementation("com.google.zxing:javase:3.5.3")
-    implementation("dev.rgbmc:WalletConnector:1.0.0-3656068")
+    implementation("dev.rgbmc:WalletConnector:1.0.0-259dfb2")
+    implementation("dev.rgbmc:AliPayConnector:1.0.0-18ef856")
     implementation("dev.rgbmc:FastExpression:1.0.0-a0aa2c1")
 
     // EvalEx 2 for Java 8-10

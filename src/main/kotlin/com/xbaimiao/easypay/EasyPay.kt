@@ -136,6 +136,15 @@ class EasyPay : EasyPlugin(), KtorStat {
             dlcWeChatService.walletConnector.close()
         }
 
+        val dlcAliPayService = PayServiceProvider.getService(DLCAliPayService::class.java)
+        if (dlcAliPayService != null) {
+            info("正在断开与AliPayMonitor的连接")
+            for (orderEntry in DLCAliPayService.orderMap) {
+                dlcAliPayService.aliPayConnector.orderTimeout(orderEntry.key)
+            }
+            dlcAliPayService.aliPayConnector.close()
+        }
+
         Bukkit.getScheduler().cancelTasks(this) // Cancel all running task - prevent throw exception while server close
     }
 
@@ -221,6 +230,16 @@ class EasyPay : EasyPlugin(), KtorStat {
             PayServiceProvider.registerService(
                 DLCWeChatService(
                     config.getString("wechat.server")!!, config.getString("wechat.qrcode")!!
+                )
+            )
+        }
+
+        if (!config.getBoolean("alipay-dlc.enable")) {
+            warn("未配置支付宝DLC支付服务 跳过加载内容")
+        } else {
+            PayServiceProvider.registerService(
+                DLCAliPayService(
+                    config.getString("alipay-dlc.server")!!, config.getString("alipay-dlc.qrcode")!!
                 )
             )
         }
