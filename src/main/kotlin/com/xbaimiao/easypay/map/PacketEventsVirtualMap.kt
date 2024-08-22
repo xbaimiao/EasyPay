@@ -12,6 +12,7 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerMa
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSetSlot
 import com.xbaimiao.easylib.util.buildMap
 import com.xbaimiao.easylib.util.registerListener
+import com.xbaimiao.easylib.util.submit
 import com.xbaimiao.easypay.map.MapHelper.getMapId
 import io.github.retrooper.packetevents.util.SpigotConversionUtil
 import org.bukkit.entity.Player
@@ -38,8 +39,10 @@ class PacketEventsVirtualMap(private val mainHand: Boolean, override val cancelO
                     val wrapper = WrapperPlayClientPlayerDigging(event)
                     val player = event.player as Player
                     if (wrapper.action == DiggingAction.DROP_ITEM) {
-                        player.updateInventory()
                         dropFuncMap.remove(player.name)?.forEach { it.invoke() }
+                        submit {
+                            player.updateInventory()
+                        }
                     }
                 }
             }
