@@ -3,6 +3,7 @@
 # %easypay_count:{player}:{service}% 指定玩家指定服务订单数量
 # %easypay_price:{player}% 指定玩家订单数量金额
 # %easypay_price:{player}:{service}% 指定玩家指定服务订单数量金额
+# 注 {player} 替换为 self 即可查看自己的
 # %easypay_top:name:{1-10}% 排行榜用户名
 # %easypay_top:price:{1-10}% 排行榜金额
 # 注意 为节约性能 以上PAPI变量 有15秒的刷新缓存时间

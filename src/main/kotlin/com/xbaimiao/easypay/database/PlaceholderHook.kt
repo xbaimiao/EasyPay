@@ -4,6 +4,7 @@ import com.google.common.cache.CacheBuilder
 import com.xbaimiao.easylib.bridge.PlaceholderExpansion
 import com.xbaimiao.easylib.util.EPlaceholderExpansion
 import com.xbaimiao.easylib.util.plugin
+import org.bukkit.Bukkit
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -41,6 +42,13 @@ object PlaceholderHook : PlaceholderExpansion() {
         .expireAfterWrite(15, TimeUnit.SECONDS)
         .build<String, String>()
 
+    private fun String.trySelf(uuid: UUID): String {
+        if (this.equals("self", true)) {
+            return Bukkit.getPlayer(uuid)?.name ?: this
+        }
+        return this
+    }
+
     /**
      * %easypay_count% 订单数量
      * %easypay_count:{player}% 指定玩家订单数量
@@ -62,13 +70,13 @@ object PlaceholderHook : PlaceholderExpansion() {
                     }
 
                     2 -> {
-                        val player = paramsArgs[1]
+                        val player = paramsArgs[1].trySelf(uuid)
                         countCache.getIfPresent(player)?.let { return it }
                         Database.inst().getAllOrder(player).size.toString().also { countCache.put(player, it) }
                     }
 
                     3 -> {
-                        val player = paramsArgs[1]
+                        val player = paramsArgs[1].trySelf(uuid)
                         val service = paramsArgs[2]
                         countCache.getIfPresent("$player-$service")?.let { return it }
                         Database.inst().getAllOrder(player).filter { it.service == service }.size.toString().also {
@@ -83,7 +91,7 @@ object PlaceholderHook : PlaceholderExpansion() {
             "price" -> {
                 when (paramsArgs.size) {
                     2 -> {
-                        val player = paramsArgs[1]
+                        val player = paramsArgs[1].trySelf(uuid)
                         priceCache.getIfPresent(player)?.let { return it }
                         Database.inst().getAllOrder(player)
                             .sumOf { it.price }.toString()
@@ -91,7 +99,7 @@ object PlaceholderHook : PlaceholderExpansion() {
                     }
 
                     3 -> {
-                        val player = paramsArgs[1]
+                        val player = paramsArgs[1].trySelf(uuid)
                         val service = paramsArgs[2]
                         priceCache.getIfPresent("$player-$service")?.let { return it }
                         Database.inst().getAllOrder(player)
