@@ -5,9 +5,9 @@ plugins {
 }
 
 group = "com.xbaimiao.easypay"
-version = "1.2.9-CANARY"
+version = "1.3.0-SNAPSHOT"
 
-val easyLibVersion = "3.9.6"
+val easyLibVersion = "4.0.7"
 val nbtApiVersion by project.properties
 
 repositories {
