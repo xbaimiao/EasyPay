@@ -13,16 +13,9 @@ val nbtApiVersion by project.properties
 repositories {
     mavenCentral()
     mavenLocal()
-    maven {
-        credentials {
-            username = project.findProperty("githubUsername").toString()
-            password = project.findProperty("githubPassword").toString()
-        }
-        name = "GithubPackages"
-        url = uri("https://maven.pkg.github.com/xbaimiao/EasyLib")
-    }
     // Use Proxied Repo
     maven("https://repo.fastmcmirror.org/content/repositories/xbaimiao/")
+    maven("https://maven.xbaimiao.com/repository/maven-public/")
     maven {
         url = uri("https://repo.fastmcmirror.org/content/repositories/releases/")
     }
