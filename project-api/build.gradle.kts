@@ -10,6 +10,7 @@ plugins {
 repositories {
     mavenLocal()
     mavenCentral()
+    maven("https://maven.xbaimiao.com/repository/maven-public/")
 }
 
 tasks.register("sourcesJar", Jar::class.java) {
