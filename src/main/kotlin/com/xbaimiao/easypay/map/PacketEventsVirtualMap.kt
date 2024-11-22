@@ -15,6 +15,7 @@ import com.xbaimiao.easylib.util.registerListener
 import com.xbaimiao.easylib.util.submit
 import com.xbaimiao.easypay.map.MapHelper.getMapId
 import io.github.retrooper.packetevents.util.SpigotConversionUtil
+import kotlinx.coroutines.Runnable
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -26,7 +27,7 @@ import java.awt.image.BufferedImage
 class PacketEventsVirtualMap(private val mainHand: Boolean, override val cancelOnDrop: Boolean) : MapUtil, Listener {
 
     private val packetEvents = PacketEvents.getAPI()
-    private val dropFuncMap = mutableMapOf<String, MutableCollection<() -> Unit>>()
+    private val dropFuncMap = mutableMapOf<String, MutableCollection<Runnable>>()
     //var buffer: ByteArray? = null
 
     init {
@@ -39,7 +40,7 @@ class PacketEventsVirtualMap(private val mainHand: Boolean, override val cancelO
                     val wrapper = WrapperPlayClientPlayerDigging(event)
                     val player = event.player as Player
                     if (wrapper.action == DiggingAction.DROP_ITEM) {
-                        dropFuncMap.remove(player.name)?.forEach { it.invoke() }
+                        dropFuncMap.remove(player.name)?.forEach { it.run() }
                         submit {
                             player.updateInventory()
                         }
@@ -69,14 +70,14 @@ class PacketEventsVirtualMap(private val mainHand: Boolean, override val cancelO
     fun onSlotChange(event: PlayerItemHeldEvent) {
         val player = event.player
         player.updateInventory()
-        dropFuncMap.remove(player.name)?.forEach { it.invoke() }
+        dropFuncMap.remove(player.name)?.forEach { it.run() }
     }
 
     @EventHandler
     fun onQuit(event: PlayerQuitEvent) {
         val player = event.player
         player.updateInventory()
-        dropFuncMap.remove(player.name)?.forEach { it.invoke() }
+        dropFuncMap.remove(player.name)?.forEach { it.run()}
     }
 
     /*private fun createBuffer(mapId: Int, pixels: ByteArray): ByteBuf {
@@ -112,7 +113,7 @@ class PacketEventsVirtualMap(private val mainHand: Boolean, override val cancelO
         return buffer
     }*/
 
-    override fun sendMap(player: Player, bufferedImage: BufferedImage, onDrop: () -> Unit) {
+    override fun sendMap(player: Player, bufferedImage: BufferedImage, onDrop: Runnable) {
         dropFuncMap.computeIfAbsent(player.name) { mutableSetOf() }.add(onDrop)
         // map
         val map = buildMap(bufferedImage, 128, 128)

@@ -12,7 +12,7 @@ softdepend:
   - XConomy
   - ProtocolLib
   - PacketEvents
-update-info: '更新NBTAPI依赖 支持1.21'
+update-info: '封装API'
 kotlin-version: "1.9.20"
 relocate:
   - "kotlin!com.xbaimiao.easypay.shadow.kotlin"

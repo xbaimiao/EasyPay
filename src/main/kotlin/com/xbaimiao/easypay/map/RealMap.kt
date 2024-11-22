@@ -2,6 +2,7 @@ package com.xbaimiao.easypay.map
 
 import com.xbaimiao.easylib.util.*
 import de.tr7zw.changeme.nbtapi.NBTItem
+import kotlinx.coroutines.Runnable
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -20,7 +21,7 @@ import java.awt.image.BufferedImage
  */
 class RealMap(private val mainHand: Boolean, override val cancelOnDrop: Boolean) : MapUtil, Listener {
 
-    private val dropFuncMap = mutableMapOf<String, MutableCollection<() -> Unit>>()
+    private val dropFuncMap = mutableMapOf<String, MutableCollection<java.lang.Runnable>>()
 
     init {
         registerListener(this)
@@ -42,14 +43,14 @@ class RealMap(private val mainHand: Boolean, override val cancelOnDrop: Boolean)
                 event.itemDrop.remove()
             }
         }
-        dropFuncMap.remove(event.player.name)?.forEach { it.invoke() }
+        dropFuncMap.remove(event.player.name)?.forEach { it.run() }
     }
 
     @EventHandler
     fun quit(event: PlayerQuitEvent) {
         val player = event.player
         if (player.inventory.itemInMainHand.tryRemove(true)) {
-            dropFuncMap.remove(player.name)?.forEach { it.invoke() }
+            dropFuncMap.remove(player.name)?.forEach { it.run() }
             player.inventory.setItemInMainHand(null)
         }
     }
@@ -86,7 +87,7 @@ class RealMap(private val mainHand: Boolean, override val cancelOnDrop: Boolean)
         }
     }
 
-    override fun sendMap(player: Player, bufferedImage: BufferedImage, onDrop: () -> Unit) {
+    override fun sendMap(player: Player, bufferedImage: BufferedImage, onDrop: Runnable) {
         dropFuncMap.computeIfAbsent(player.name) { mutableSetOf() }.add(onDrop)
         val mapItem = buildMap(bufferedImage, 128, 128).mapItem
 

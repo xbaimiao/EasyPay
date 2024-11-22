@@ -24,7 +24,7 @@ import java.awt.image.BufferedImage
 class VirtualMap(private val mainHand: Boolean, override val cancelOnDrop: Boolean) : MapUtil, Listener {
 
     private val protocolManager: ProtocolManager = ProtocolLibrary.getProtocolManager()
-    private val dropFuncMap = mutableMapOf<String, MutableCollection<() -> Unit>>()
+    private val dropFuncMap = mutableMapOf<String, MutableCollection<Runnable>>()
 
     init {
         registerListener(this)
@@ -38,7 +38,7 @@ class VirtualMap(private val mainHand: Boolean, override val cancelOnDrop: Boole
                     val wrapper = WrapperPlayClientBlockDig(event.packet)
                     if (wrapper.action == EnumWrappers.PlayerDigType.DROP_ITEM) {
                         event.player.updateInventory()
-                        dropFuncMap.remove(event.player.name)?.forEach { it.invoke() }
+                        dropFuncMap.remove(event.player.name)?.forEach { it.run() }
                     }
                 }
             }
@@ -54,17 +54,17 @@ class VirtualMap(private val mainHand: Boolean, override val cancelOnDrop: Boole
     fun onSlotChange(event: PlayerItemHeldEvent) {
         val player = event.player
         player.updateInventory()
-        dropFuncMap.remove(player.name)?.forEach { it.invoke() }
+        dropFuncMap.remove(player.name)?.forEach { it.run() }
     }
 
     @EventHandler
     fun onQuit(event: PlayerQuitEvent) {
         val player = event.player
         player.updateInventory()
-        dropFuncMap.remove(player.name)?.forEach { it.invoke() }
+        dropFuncMap.remove(player.name)?.forEach { it.run() }
     }
 
-    override fun sendMap(player: Player, bufferedImage: BufferedImage, onDrop: () -> Unit) {
+    override fun sendMap(player: Player, bufferedImage: BufferedImage, onDrop: kotlinx.coroutines.Runnable) {
         dropFuncMap.computeIfAbsent(player.name) { mutableSetOf() }.add(onDrop)
         // map
         val map = buildMap(bufferedImage, 125, 128)
