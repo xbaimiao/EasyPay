@@ -1,6 +1,8 @@
 package com.xbaimiao.easypay.service
 
+import com.wechat.pay.java.core.RSAAutoCertificateConfig
 import com.wechat.pay.java.core.RSAConfig
+import com.wechat.pay.java.core.RSAPublicKeyConfig
 import com.wechat.pay.java.service.payments.model.Transaction
 import com.wechat.pay.java.service.payments.nativepay.NativePayService
 import com.wechat.pay.java.service.payments.nativepay.model.Amount
@@ -16,6 +18,7 @@ import org.bukkit.Bukkit
 import org.bukkit.configuration.ConfigurationSection
 import java.io.File
 
+
 /**
  * OfficialWeChatService
  *
@@ -25,28 +28,61 @@ import java.io.File
 class OfficialWeChatService(
     private val mchid: String,
     private val appId: String,
+    merchantSerialNumber: String,
     privateKeyPath: String,
-    wechatPayCertificatePath: String,
-    merchantSerialNumber: String
+    wechatPayCertificatePath: String?,
+    apiV3Key: String?,
+    publicKeyPath: String?,
+    publicKeyId: String?
 ) : DefaultPayService {
 
     constructor(config: ConfigurationSection) : this(
         config.getString("mchid")!!,
         config.getString("appid")!!,
+        config.getString("merchantSerialNumber")!!,
         plugin.dataFolder.path + File.separator + config.getString("privateKeyPath")!!,
-        plugin.dataFolder.path + File.separator + config.getString("wechatPayCertificatePath")!!,
-        config.getString("merchantSerialNumber")!!
+        config.getString("wechatPayCertificatePath")?.let { plugin.dataFolder.path + File.separator + it },
+        //since 1.3.4
+        config.getString("apiV3Key"),
+        config.getString("publicKeyPath")?.let { plugin.dataFolder.path + File.separator + it },
+        config.getString("publicKeyId")
     )
 
     private val service: NativePayService by lazy {
-        // 初始化商户配置
-        val config = RSAConfig.Builder().merchantId(mchid)
-            .privateKeyFromPath(privateKeyPath)
-            .merchantSerialNumber(merchantSerialNumber)
-            .wechatPayCertificatesFromPath(wechatPayCertificatePath)
-            .build()
+        val config = when {
+            //如果存在 微信支付平台证书 兼容老版本
+            wechatPayCertificatePath != null -> {
+                RSAConfig.Builder().merchantId(mchid)
+                    .privateKeyFromPath(privateKeyPath)
+                    .merchantSerialNumber(merchantSerialNumber)
+                    .wechatPayCertificatesFromPath(wechatPayCertificatePath)
+                    .build()
+            }
 
-        // 初始化服务
+            //如果存在 apiV3Key 和公钥地址 使用新版
+            apiV3Key != null && publicKeyPath != null -> {
+                RSAPublicKeyConfig.Builder()
+                    .merchantId(mchid)
+                    .privateKeyFromPath(privateKeyPath)
+                    .merchantSerialNumber(merchantSerialNumber)
+                    .apiV3Key(apiV3Key)
+                    .publicKeyFromPath(publicKeyPath)
+                    .publicKeyId(publicKeyId)
+                    .build()
+            }
+            //此情况适合有 apiV3Key 但是没有申请过 微信支付平台证书 这样做无需手动申请微信支付平台证书了
+            apiV3Key != null -> {
+                RSAAutoCertificateConfig.Builder()
+                    .merchantId(mchid)
+                    .privateKeyFromPath(privateKeyPath)
+                    .merchantSerialNumber(merchantSerialNumber)
+                    .apiV3Key(apiV3Key)
+                    .build()
+            }
+
+            else -> throw IllegalArgumentException("Invalid configuration: either wechatPayCertificatePath or apiV3Key must be provided")
+        }
+
         NativePayService.Builder().config(config).build()
     }
 

@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.xbaimiao.easypay"
-version = "1.3.3-SNAPSHOT"
+version = "1.3.4-SNAPSHOT"
 
 val easyLibVersion = "4.0.8"
 val nbtApiVersion by project.properties
@@ -84,7 +84,7 @@ dependencies {
     // Other resolution for if function
     implementation("com.creativewidgetworks:expression-evaluator:2.3.0")
 
-    implementation("com.github.wechatpay-apiv3:wechatpay-java:0.2.12")
+    implementation("com.github.wechatpay-apiv3:wechatpay-java:0.2.15")
 
     implementation("com.comphenix.packetwrapper:PacketWrapper:1.20.4-2.3.0") {
         exclude(module = "spigot-api")

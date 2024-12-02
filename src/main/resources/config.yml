@@ -44,8 +44,13 @@ wechat-official:
   merchantSerialNumber: 'merchantSerialNumber'
   # 私有证书
   privateKeyPath: 'pem/apiclient_key.pem'
-  # 微信支付平台证书
-  wechatPayCertificatePath: 'pem/weixing.pem'
+  # 微信支付v3秘钥(32大小字母加数字)
+  apiV3Key: 'apiV3Key'
+  # 因微信官方的改版，在2024/11/01日之后申请的微信支付用户才需要填写一下配置,否则请留空
+  # 公钥证书序列号
+  publicKeyId: ''
+  # 公钥证书
+  publicKeyPath: ''
 wechat:
   # 启用微信DLC功能
   enable: false
