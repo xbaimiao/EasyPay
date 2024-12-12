@@ -7,9 +7,8 @@ enum class PacketProvider(private val plugin: String, private val provider: Clas
     PacketEvents("packetevents", PacketEventsVirtualMap::class.java);
 
     fun getMapUtil(mainHand: Boolean, cancelOnDrop: Boolean): MapUtil {
-        if (!Bukkit.getPluginManager()
-                .isPluginEnabled(plugin)
-        ) throw IllegalStateException("Packet provider not loaded: $plugin")
+        if (Bukkit.getPluginManager().getPlugin(plugin) == null)
+            throw IllegalStateException("Packet provider not loaded: $plugin")
         return provider
             .getDeclaredConstructor(Boolean::class.java, Boolean::class.java)
             .newInstance(mainHand, cancelOnDrop)

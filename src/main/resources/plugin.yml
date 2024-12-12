@@ -12,6 +12,7 @@ softdepend:
   - XConomy
   - ProtocolLib
   - PacketEvents
+  - packetevents
 update-info: '封装API'
 kotlin-version: "1.9.20"
 relocate:
