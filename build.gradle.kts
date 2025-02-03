@@ -5,22 +5,19 @@ plugins {
 }
 
 group = "com.xbaimiao.easypay"
-version = "1.3.4-SNAPSHOT"
+version = "1.3.5-SNAPSHOT"
 
-val easyLibVersion = "4.2.2"
+val easyLibVersion = "4.4.2"
 val nbtApiVersion by project.properties
 
 repositories {
     mavenCentral()
     mavenLocal()
-    // Use Proxied Repo
     maven("https://repo.fastmcmirror.org/content/repositories/xbaimiao/")
     maven("https://maven.xbaimiao.com/repository/maven-public/")
     maven {
         url = uri("https://repo.fastmcmirror.org/content/repositories/releases/")
     }
-    maven("https://papermc.io/repo/repository/maven-public/")
-    maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
     maven("https://repo.codemc.org/repository/maven-public/")
     maven {
         url = uri("https://repo.dmulloy2.net/repository/public/")
@@ -36,18 +33,7 @@ subprojects {
     repositories{
         mavenLocal()
         mavenCentral()
-        // 不使用私有仓库获取依赖
-        /*maven {
-            credentials {
-                username = project.findProperty("githubUsername").toString()
-                password = project.findProperty("githubPassword").toString()
-            }
-            name = "GithubPackages"
-            url = uri("https://maven.pkg.github.com/xbaimiao/EasyLib")
-        }*/
-        // Use Proxied Repo
         maven("https://repo.fastmcmirror.org/content/repositories/xbaimiao/")
-        maven("https://papermc.io/repo/repository/maven-public/")
         maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
         maven("https://repo.codemc.org/repository/maven-public/")
     }

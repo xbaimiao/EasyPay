@@ -58,14 +58,6 @@ class EasyPay : EasyPlugin(), KtorStat {
             val userId = runCatching { userId }.getOrNull()
             if (userId != null) {
                 info("$userId 感谢您的支持!")
-                val has = async {
-                    hasPlugin("EasyPay")
-                }
-                if (!has) {
-                    error("$userId 未从您的购买列表 未找到EasyPay插件 无法使用")
-                }
-                // 统计服务器在线的方法
-                stat()
             }
 
             saveDefaultConfig()

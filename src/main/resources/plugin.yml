@@ -13,7 +13,7 @@ softdepend:
   - ProtocolLib
   - PacketEvents
   - packetevents
-update-info: '封装API'
+update-info: '移除插件验证'
 kotlin-version: "1.9.20"
 relocate:
   - "kotlin!com.xbaimiao.easypay.shadow.kotlin"
