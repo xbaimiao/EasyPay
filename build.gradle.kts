@@ -5,15 +5,14 @@ plugins {
 }
 
 group = "com.xbaimiao.easypay"
-version = "1.3.5-SNAPSHOT"
+version = "1.3.6-SNAPSHOT"
 
-val easyLibVersion = "4.4.2"
+val easyLibVersion = "4.5.9"
 val nbtApiVersion by project.properties
 
 repositories {
     mavenCentral()
     mavenLocal()
-    maven("https://repo.fastmcmirror.org/content/repositories/xbaimiao/")
     maven("https://maven.xbaimiao.com/repository/maven-public/")
     maven {
         url = uri("https://repo.fastmcmirror.org/content/repositories/releases/")
@@ -33,7 +32,7 @@ subprojects {
     repositories{
         mavenLocal()
         mavenCentral()
-        maven("https://repo.fastmcmirror.org/content/repositories/xbaimiao/")
+        maven("https://maven.xbaimiao.com/repository/maven-public/")
         maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
         maven("https://repo.codemc.org/repository/maven-public/")
     }

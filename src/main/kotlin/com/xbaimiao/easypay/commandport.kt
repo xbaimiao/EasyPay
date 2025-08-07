@@ -190,7 +190,7 @@ private val custom = command<CommandSender>("custom") {
                         sender.sendLang("command-service-null", valueToString(serviceArg))
                         return@exec
                     }
-                    val price = valueOf(numberArg)
+                    val price = valueOf(numberArg) ?: return@exec error("请输入一个有效的数字")
                     for (player in players) {
                         handle(
                             player,
@@ -252,7 +252,7 @@ private val rewardAdd = command<CommandSender>("add") {
         offlinePlayers { p ->
             exec {
                 val player = valueOf(p)
-                val num = valueOf(it)
+                val num = valueOf(it) ?: return@exec error("请输入一个有效的数字")
                 Database.inst().addRewardPrice(player, num)
                 sender.sendLang("reward-add-success", player, num)
             }
