@@ -11,11 +11,18 @@ val easyLibVersion = "4.0.8"
 val nbtApiVersion by project.properties
 
 repositories {
-    mavenCentral()
     mavenLocal()
+    mavenCentral()
     // Use Proxied Repo
-    maven("https://repo.fastmcmirror.org/content/repositories/xbaimiao/")
-    maven("https://maven.xbaimiao.com/repository/maven-public/")
+    //maven("https://repo.fastmcmirror.org/content/repositories/xbaimiao/")
+    maven {
+        url = uri("http://nexus.germmc.com/repository/maven-public/")
+        isAllowInsecureProtocol = true // 允许使用 HTTP 协议
+        credentials {
+            username = project.property("nexus_public_user").toString()
+            password = project.property("nexus_public_pwd").toString()
+        }
+    }
     maven {
         url = uri("https://repo.fastmcmirror.org/content/repositories/releases/")
     }
@@ -33,9 +40,17 @@ subprojects {
         plugin("kotlin")
     }
 
-    repositories{
+    repositories {
         mavenLocal()
         mavenCentral()
+        maven {
+            url = uri("http://nexus.germmc.com/repository/maven-public/")
+            isAllowInsecureProtocol = true // 必须显式允许不安全协议
+            credentials {
+                username = project.property("nexus_user").toString()
+                password = project.property("nexus_pwd").toString()
+            }
+        }
         // 不使用私有仓库获取依赖
         /*maven {
             credentials {
@@ -46,7 +61,7 @@ subprojects {
             url = uri("https://maven.pkg.github.com/xbaimiao/EasyLib")
         }*/
         // Use Proxied Repo
-        maven("https://repo.fastmcmirror.org/content/repositories/xbaimiao/")
+//        maven("https://repo.fastmcmirror.org/content/repositories/xbaimiao/")
         maven("https://papermc.io/repo/repository/maven-public/")
         maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
         maven("https://repo.codemc.org/repository/maven-public/")
@@ -90,6 +105,7 @@ dependencies {
         exclude(module = "spigot-api")
     }
 
+    compileOnly("com.germmc:BukkitBoot:LATEST")
     compileOnly("com.comphenix.protocol:ProtocolLib:5.1.0")
     compileOnly("net.kyori:adventure-api:4.17.0")
     compileOnly("net.kyori:adventure-text-minimessage:4.17.0")
@@ -141,7 +157,7 @@ tasks {
         exclude("META-INF/*.SF")
         archiveClassifier.set("")
 
-        relocate("com.xbaimiao.easylib", "${project.group}.shadow.easylib")
+//        relocate("com.xbaimiao.easylib", "${project.group}.shadow.easylib")
         relocate("com.zaxxer.hikari", "${project.group}.shadow.hikari")
         relocate("com.j256.ormlite", "${project.group}.shadow.ormlite")
         relocate("de.tr7zw", "${project.group}.shadow.itemnbtapi")

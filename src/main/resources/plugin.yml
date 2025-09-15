@@ -12,6 +12,8 @@ softdepend:
   - XConomy
   - ProtocolLib
   - PacketEvents
+depend:
+  - BukkitBoot
 update-info: '封装API'
 kotlin-version: "1.9.20"
 relocate:

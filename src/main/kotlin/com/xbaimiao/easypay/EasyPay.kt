@@ -14,6 +14,7 @@ import com.xbaimiao.easypay.api.ItemProvider
 import com.xbaimiao.easypay.api.ItemSack
 import com.xbaimiao.easypay.book.BookUtilProvider
 import com.xbaimiao.easypay.book.DefaultBook
+import com.xbaimiao.easypay.database.BukkitBootDatabase
 import com.xbaimiao.easypay.database.Database
 import com.xbaimiao.easypay.database.DefaultDatabase
 import com.xbaimiao.easypay.entity.PayServiceProvider
@@ -200,7 +201,12 @@ class EasyPay : EasyPlugin(), KtorStat {
         } else {
             SQLiteHikariDatabase("database.db")
         }
-        Database.setInst(DefaultDatabase(hikariDatabase))
+        if (Bukkit.getPluginManager().getPlugin("BukkitBoot") != null) {
+            Database.setInst(BukkitBootDatabase())
+            info("已使用BukkitBoot的数据库连接")
+        } else {
+            Database.setInst(DefaultDatabase(hikariDatabase))
+        }
         info("数据库加载成功 使用${hikariDatabase.javaClass.simpleName} 进行数据库操作")
         submit(async = true) {
             Database.inst().updateAllWebOrderTimeout()
