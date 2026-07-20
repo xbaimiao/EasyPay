@@ -86,7 +86,6 @@ dependencies {
     implementation("com.alipay.sdk:alipay-sdk-java:4.39.104.ALL")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
     implementation("com.google.zxing:core:3.5.3")
-    implementation("com.google.zxing:javase:3.5.3")
     implementation("com.github.wechatpay-apiv3:wechatpay-java:0.2.12")
     implementation("com.xbaimiao.baipay:baipay-sdk:2.0.0")
 
