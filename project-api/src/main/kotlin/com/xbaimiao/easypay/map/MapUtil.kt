@@ -1,6 +1,5 @@
 package com.xbaimiao.easypay.map
 
-import kotlinx.coroutines.Runnable
 import org.bukkit.entity.Player
 import java.awt.image.BufferedImage
 
@@ -13,17 +12,17 @@ import java.awt.image.BufferedImage
 interface MapUtil {
 
     /**
-     * 是否在丢弃地图/关闭ui的时候关闭订单
+     * 是否在关闭虚拟地图时取消订单
      */
     val cancelOnDrop: Boolean
 
     /**
-     * 请实现清除地图/关闭ui
+     * 清除玩家正在查看的虚拟地图
      */
     fun clearAllMap(player: Player)
 
     /**
-     * 给玩家发送一个 地图物品/或打开ui，当玩家 丢弃/关闭 时执行 onDrop
+     * 向玩家显示虚拟地图，玩家关闭时执行 onDrop
      * @param player 玩家
      * @param bufferedImage 图片
      * @param onDrop 丢弃时执行

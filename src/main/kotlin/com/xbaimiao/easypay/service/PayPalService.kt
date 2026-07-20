@@ -76,8 +76,4 @@ class PayPalService(
         return OrderStatus.WAIT_PAY
     }
 
-    override fun isInteractive(): Boolean {
-        return true
-    }
-
 }

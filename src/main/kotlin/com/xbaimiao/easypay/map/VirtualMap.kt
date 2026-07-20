@@ -1,90 +1,90 @@
 package com.xbaimiao.easypay.map
 
-import com.comphenix.packetwrapper.wrappers.play.clientbound.WrapperPlayServerMap
-import com.comphenix.packetwrapper.wrappers.play.clientbound.WrapperPlayServerSetSlot
-import com.comphenix.packetwrapper.wrappers.play.serverbound.WrapperPlayClientBlockDig
-import com.comphenix.protocol.PacketType
-import com.comphenix.protocol.ProtocolLibrary
-import com.comphenix.protocol.ProtocolManager
-import com.comphenix.protocol.events.ListenerPriority
-import com.comphenix.protocol.events.PacketAdapter
-import com.comphenix.protocol.events.PacketEvent
-import com.comphenix.protocol.wrappers.EnumWrappers
-import com.xbaimiao.easylib.EasyPlugin
 import com.xbaimiao.easylib.util.buildMap
 import com.xbaimiao.easylib.util.registerListener
-import com.xbaimiao.easypay.map.MapHelper.getMapId
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.event.player.PlayerQuitEvent
+import org.bukkit.event.player.PlayerSwapHandItemsEvent
+import org.bukkit.inventory.EquipmentSlot
 import java.awt.image.BufferedImage
+import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
 
-class VirtualMap(private val mainHand: Boolean, override val cancelOnDrop: Boolean) : MapUtil, Listener {
+object VirtualMap : MapUtil, Listener {
 
-    private val protocolManager: ProtocolManager = ProtocolLibrary.getProtocolManager()
-    private val dropFuncMap = mutableMapOf<String, MutableCollection<Runnable>>()
+    private val closeCallbacks = ConcurrentHashMap<UUID, MutableSet<Runnable>>()
+    @Volatile
+    private var mainHand = true
+
+    @Volatile
+    override var cancelOnDrop = false
+        private set
 
     init {
         registerListener(this)
-        protocolManager.addPacketListener(object : PacketAdapter(
-            EasyPlugin.getPlugin(),
-            ListenerPriority.LOW,
-            PacketType.Play.Client.BLOCK_DIG
-        ) {
-            override fun onPacketReceiving(event: PacketEvent) {
-                if (event.packetType == PacketType.Play.Client.BLOCK_DIG) {
-                    val wrapper = WrapperPlayClientBlockDig(event.packet)
-                    if (wrapper.action == EnumWrappers.PlayerDigType.DROP_ITEM) {
-                        event.player.updateInventory()
-                        dropFuncMap.remove(event.player.name)?.forEach { it.run() }
-                    }
-                }
-            }
+    }
 
-        })
+    fun configure(mainHand: Boolean, cancelOnDrop: Boolean) {
+        this.mainHand = mainHand
+        this.cancelOnDrop = cancelOnDrop
     }
 
     override fun clearAllMap(player: Player) {
+        closeCallbacks.remove(player.uniqueId)
         player.updateInventory()
     }
 
-    @EventHandler
+    fun clearAllMaps() {
+        val players = closeCallbacks.keys.mapNotNull(Bukkit::getPlayer)
+        closeCallbacks.clear()
+        players.forEach(Player::updateInventory)
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    fun onDrop(event: PlayerDropItemEvent) {
+        if (!closeCallbacks.containsKey(event.player.uniqueId)) return
+        event.isCancelled = true
+        closeFromPlayer(event.player)
+    }
+
+    @EventHandler(ignoreCancelled = true)
     fun onSlotChange(event: PlayerItemHeldEvent) {
-        val player = event.player
-        player.updateInventory()
-        dropFuncMap.remove(player.name)?.forEach { it.run() }
+        if (!closeCallbacks.containsKey(event.player.uniqueId)) return
+        closeFromPlayer(event.player)
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    fun onSwapHand(event: PlayerSwapHandItemsEvent) {
+        if (!closeCallbacks.containsKey(event.player.uniqueId)) return
+        event.isCancelled = true
+        closeFromPlayer(event.player)
     }
 
     @EventHandler
     fun onQuit(event: PlayerQuitEvent) {
-        val player = event.player
-        player.updateInventory()
-        dropFuncMap.remove(player.name)?.forEach { it.run() }
+        closeFromPlayer(event.player, restoreInventory = false)
     }
 
-    override fun sendMap(player: Player, bufferedImage: BufferedImage, onDrop: kotlinx.coroutines.Runnable) {
-        dropFuncMap.computeIfAbsent(player.name) { mutableSetOf() }.add(onDrop)
-        // map
-        val map = buildMap(bufferedImage, 125, 128)
-        val mapItem = map.mapItem
-        val mapId = map.getMapId()
-        val mapView = map.mapView
-        val render = mapView.javaClass.getDeclaredMethod("render", player.javaClass).invoke(mapView, player)
-        val buffer = render.javaClass.getDeclaredField("buffer")[render] as ByteArray
-        val mapWrapper = WrapperPlayServerMap()
-        mapWrapper.mapId = mapId
-        mapWrapper.decorations = arrayListOf()
-        mapWrapper.colorPatch = WrapperPlayServerMap.WrappedMapPatch(0, 0, 128, 128, buffer)
-        // fake item
-        val itemWrapper = WrapperPlayServerSetSlot()
-        itemWrapper.containerId = 0
-        itemWrapper.stateId = 1
-        itemWrapper.slot = if (mainHand) player.inventory.heldItemSlot + 36 else 45
-        itemWrapper.itemStack = mapItem
-        // send packets
-        itemWrapper.sendPacket(player)
-        mapWrapper.sendPacket(player)
+    override fun sendMap(player: Player, bufferedImage: BufferedImage, onDrop: Runnable) {
+        closeCallbacks.computeIfAbsent(player.uniqueId) { ConcurrentHashMap.newKeySet() }.add(onDrop)
+
+        val map = buildMap(bufferedImage, 128, 128)
+        val equipmentSlot = if (mainHand) EquipmentSlot.HAND else EquipmentSlot.OFF_HAND
+
+        player.sendEquipmentChange(player, equipmentSlot, map.mapItem)
+        player.sendMap(map.mapView)
+    }
+
+    private fun closeFromPlayer(player: Player, restoreInventory: Boolean = true) {
+        val callbacks = closeCallbacks.remove(player.uniqueId) ?: return
+        if (restoreInventory) {
+            player.updateInventory()
+        }
+        callbacks.forEach { it.run() }
     }
 }

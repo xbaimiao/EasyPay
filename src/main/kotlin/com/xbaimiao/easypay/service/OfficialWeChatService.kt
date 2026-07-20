@@ -83,10 +83,6 @@ class OfficialWeChatService(
         return order
     }
 
-    override fun isInteractive(): Boolean {
-        return false
-    }
-
     override fun queryOrder(order: Order): OrderStatus {
         val request = QueryOrderByOutTradeNoRequest()
         request.outTradeNo = order.orderId

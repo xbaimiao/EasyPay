@@ -46,11 +46,4 @@ object DevService : DefaultPayService {
         return OrderStatus.WAIT_PAY
     }
 
-    /**
-     * 可交互的 (即可以在网页上付款 而不需要扫描)
-     */
-    override fun isInteractive(): Boolean {
-        return false
-    }
-
 }

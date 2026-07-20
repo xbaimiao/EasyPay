@@ -4,7 +4,7 @@ import java.net.URI
 plugins {
     java
     `maven-publish`
-    kotlin("jvm") version "1.9.20"
+    kotlin("jvm")
 }
 
 repositories {
@@ -17,18 +17,6 @@ tasks.register("sourcesJar", Jar::class.java) {
     this.group = "build"
     archiveClassifier.set("sources")
     from(sourceSets["main"].allSource)
-}
-
-tasks {
-    compileJava {
-        options.encoding = "UTF-8"
-        options.release = 8
-    }
-    compileKotlin {
-        kotlinOptions {
-            jvmTarget = "1.8"
-        }
-    }
 }
 
 publishing {

@@ -99,7 +99,4 @@ class EasyGateService(
         }
     }
 
-    override fun isInteractive(): Boolean {
-        return true
-    }
 }

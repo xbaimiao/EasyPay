@@ -77,7 +77,4 @@ class StripeService(
         return OrderStatus.WAIT_SCAN
     }
 
-    override fun isInteractive(): Boolean {
-        return true
-    }
 }

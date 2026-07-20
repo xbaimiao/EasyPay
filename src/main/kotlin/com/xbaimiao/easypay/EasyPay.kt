@@ -12,27 +12,20 @@ import com.xbaimiao.easylib.util.warn
 import com.xbaimiao.easypay.api.Item
 import com.xbaimiao.easypay.api.ItemProvider
 import com.xbaimiao.easypay.api.ItemSack
-import com.xbaimiao.easypay.book.BookUtilProvider
-import com.xbaimiao.easypay.book.DefaultBook
 import com.xbaimiao.easypay.database.Database
 import com.xbaimiao.easypay.database.DefaultDatabase
 import com.xbaimiao.easypay.entity.PayServiceProvider
-import com.xbaimiao.easypay.functions.*
 import com.xbaimiao.easypay.item.CommandItem
 import com.xbaimiao.easypay.item.CustomConfiguration
 import com.xbaimiao.easypay.item.CustomPriceItemConfig
 import com.xbaimiao.easypay.map.MapUtilProvider
-import com.xbaimiao.easypay.map.PacketProvider
-import com.xbaimiao.easypay.map.RealMap
+import com.xbaimiao.easypay.map.VirtualMap
 import com.xbaimiao.easypay.reward.RewardHandle
-import com.xbaimiao.easypay.scripting.GroovyScriptManager
 import com.xbaimiao.easypay.service.*
 import com.xbaimiao.easypay.util.ConfigurationPatcher
-import com.xbaimiao.easypay.util.FunctionUtil
 import com.xbaimiao.ktor.KtorPluginsBukkit
 import com.xbaimiao.ktor.KtorStat
 import org.bukkit.Bukkit
-import java.io.File
 
 @Suppress("unused")
 class EasyPay : EasyPlugin(), KtorStat {
@@ -45,9 +38,6 @@ class EasyPay : EasyPlugin(), KtorStat {
         val dependency = Loader.toDependenency(url, repoUrl, HashMap())
         DependencyLoader.load(this, dependency)
 
-        de.tr7zw.changeme.nbtapi.utils.MinecraftVersion.disableUpdateCheck()
-        de.tr7zw.changeme.nbtapi.utils.MinecraftVersion.disableBStats()
-        de.tr7zw.changeme.nbtapi.utils.MinecraftVersion.disablePackageWarning()
     }
 
     override fun enable() {
@@ -67,58 +57,18 @@ class EasyPay : EasyPlugin(), KtorStat {
 
             loadCustomConfig()
             loadMap()
-            loadBook()
             loadServices()
             loadItems()
             loadDatabase()
             RewardHandle.loadConfiguration()
-
-            if (!File(dataFolder, "scripts/ExampleScript.groovy").exists()) {
-                saveResource("scripts/ExampleScript.groovy", false)
-            }
-
-            val functionUtil = FunctionUtil()
-            val functionManager = functionUtil.getFastExpression().functionManager
-            functionManager.register(TitleFunction(), "标题")
-            functionManager.register(MessageFunction(), "消息", "msg")
-
-            when {
-                config.getBoolean("no-evalex") -> {
-                    info("已启用无EvalEx函数替代方案 将使用expression-evaluator替代EvalEx对if函数进行解析")
-                    functionManager.register(ExpEvalConditionFunction(), "条件", "如果")
-                }
-                // EvalEx 兼容 - Java11往下使用EvalEx2进行条件解析, Java11+使用EvalEx3
-                System.getProperty("java.version").split(".")[0].toInt() >= 11 -> {
-                    info("已检测到插件在 Java11+ 环境中运行 条件函数将使用EvalEx3模式")
-                    functionManager.register(ConditionFunction(), "条件", "如果")
-                }
-
-                else -> {
-                    info("已检测到插件在 Java8-10 环境中运行 条件函数将使用EvalEx2模式 (与EvalEx3函数不兼容)")
-                    functionManager.register(EvalEx2ConditionFunction(), "条件", "如果")
-                }
-            }
-
-            functionManager.register(ReturnFunction(), "返回", "取消", "结束")
-            functionManager.register(HasPermissionFunction(), "perm", "权限", "permission")
-            functionManager.register(ExecuteFunction(), "执行命令", "执行", "cmd", "exec", "command")
-            functionManager.register(
-                PlayerExecuteFunction(), "玩家命令", "玩家执行", "cmdPlayer", "commandPlayer", "execPlayer", "player"
-            )
-            functionManager.register(CancelOrderFunction(), "取消订单", "取消", "c")
-            functionManager.register(ChangePriceFunction(), "更改价格", "价格", "cost", "amount")
-
-            GroovyScriptManager(
-                workPath = File(dataFolder, "scripts"),
-                extension = "groovy",
-                config.getBoolean("groovy-script")
-            )
 
             rootCommand.register()
         }
     }
 
     override fun disable() {
+        VirtualMap.clearAllMaps()
+
         val dlcWeChatService = PayServiceProvider.getService(DLCWeChatService::class.java)
         if (dlcWeChatService != null) {
             info("正在断开与WalletMonitor的连接")
@@ -146,9 +96,6 @@ class EasyPay : EasyPlugin(), KtorStat {
             section.getInt("min"),
             section.getInt("max"),
             section.getInt("ratio"),
-            section.getStringList("actions"),
-            section.getStringList("pre-actions"),
-            section.getStringList("rewards"),
             section.getStringList("commands"),
             section.getString("name")!!
         )
@@ -158,32 +105,9 @@ class EasyPay : EasyPlugin(), KtorStat {
 
     fun loadMap() {
         val cancelOnDrop = config.getBoolean("map.cancel-on-drop")
-        val virtualMode = config.getBoolean("map.virtual")
         val mainHand = config.getString("map.hand") == "MAIN"
-        val mapUtil = if (virtualMode/* && checkProtocolLib()*/) {
-            info("EasyPay正在使用发包地图模式")
-            info("发包地图仅支持最新的Minecraft版本")
-            info("如您在较旧的服务器版本上使用发包地图遇到问题 请关闭此功能 提出兼容请求将不会被处理")
-            val provider = config.getString("map.packet-provider")!!
-            info("使用的发包服务: $provider")
-            PacketProvider.valueOf(provider).getMapUtil(mainHand, cancelOnDrop)
-        } else RealMap(mainHand, cancelOnDrop)
-        MapUtilProvider.setMapUtil(mapUtil)
-    }
-
-    fun loadBook() {
-        val lines = config.getStringList("book.lines")
-        BookUtilProvider.setBookUtil(DefaultBook(lines))
-    }
-
-    private fun checkProtocolLib(): Boolean {
-        if (Bukkit.getPluginManager().isPluginEnabled("ProtocolLib")) {
-            val version = Bukkit.getPluginManager()
-                .getPlugin("ProtocolLib")!!.description.version
-                .split("-")[0].replace(".", "").toInt()
-            return version > 510
-        }
-        return false
+        VirtualMap.configure(mainHand, cancelOnDrop)
+        MapUtilProvider.setMapUtil(VirtualMap)
     }
 
     fun loadDatabase() {
@@ -289,10 +213,7 @@ class EasyPay : EasyPlugin(), KtorStat {
                 when (type) {
                     "CommandItem" -> {
                         val commands = section.getStringList("$name.commands")
-                        val actions = section.getStringList("$name.actions")
-                        val preActions = section.getStringList("$name.pre-actions")
-                        val rewards = section.getStringList("$name.rewards")
-                        ItemProvider.register(CommandItem(price, name, commands, actions, preActions, rewards))
+                        ItemProvider.register(CommandItem(price, name, commands))
                     }
 
                     "ItemSack" -> {

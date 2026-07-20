@@ -2,15 +2,11 @@ package com.xbaimiao.easypay.item
 
 import com.xbaimiao.easylib.bridge.player.parseECommand
 import com.xbaimiao.easylib.bridge.replacePlaceholder
-import com.xbaimiao.easylib.util.plugin
 import com.xbaimiao.easypay.api.CustomItemCreate
 import com.xbaimiao.easypay.entity.Order
 import com.xbaimiao.easypay.entity.PayService
-import com.xbaimiao.easypay.scripting.GroovyScriptManager
-import com.xbaimiao.easypay.util.FunctionUtil
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
-import java.util.logging.Level
 import kotlin.math.roundToInt
 
 /**
@@ -34,22 +30,13 @@ object CustomConfiguration {
 }
 
 data class CustomPriceItem(
-    private val actions: List<String>,
-    private val preActions: List<String>,
-    private val rewards: List<String>,
     private val commands: List<String>,
     override val price: Double,
     override val name: String
-) : AbstractItem(actions, preActions) {
+) : AbstractItem() {
 
     override fun sendTo(player: Player, service: PayService, order: Order): Collection<String> {
         commands.parseECommand(player).exec(Bukkit.getConsoleSender())
-        GroovyScriptManager.instance.orderReward(player, service, order)
-        kotlin.runCatching {
-            FunctionUtil.instance.parseActions(player, order, service, rewards)
-        }.onFailure {
-            plugin.logger.log(Level.SEVERE, it.message, it)
-        }
         return commands.map { it.replace("%player_name%", player.name).replacePlaceholder(player) }
     }
 
@@ -59,9 +46,6 @@ data class CustomPriceItemConfig(
     val min: Int,
     val max: Int,
     val ratio: Int,
-    val actions: List<String>,
-    val preActions: List<String>,
-    val rewards: List<String>,
     val commands: List<String>,
     override val name: String
 ) : CustomItemCreate {
@@ -76,9 +60,6 @@ data class CustomPriceItemConfig(
 
     override fun createItem(price: Double): CustomPriceItem {
         return CustomPriceItem(
-            replaceList(price, name, actions),
-            replaceList(price, name, preActions),
-            replaceList(price, name, rewards),
             replaceList(price, name, commands),
             price,
             name

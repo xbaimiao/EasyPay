@@ -101,8 +101,4 @@ class AlipayService(
         }
     }
 
-    override fun isInteractive(): Boolean {
-        return false
-    }
-
 }
