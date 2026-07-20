@@ -1,5 +1,7 @@
 package com.xbaimiao.easypay
 
+import com.xbaimiao.baipay.sdk.BaiPayClient
+import com.xbaimiao.baipay.sdk.model.PaymentChannel
 import com.xbaimiao.easylib.EasyPlugin
 import com.xbaimiao.easylib.database.MysqlHikariDatabase
 import com.xbaimiao.easylib.database.SQLiteHikariDatabase
@@ -33,7 +35,7 @@ class EasyPay : EasyPlugin(), KtorStat {
     override fun load() {
         // gson 需要优先加载
         val repoUrl = "https://maven.aliyun.com/repository/public/"
-        val library = "com.google.code.gson:gson:2.10.1"
+        val library = "com.google.code.gson:gson:2.11.0"
         val url = Loader.dependencyToUrl(library, repoUrl)
         val dependency = Loader.toDependenency(url, repoUrl, HashMap())
         DependencyLoader.load(this, dependency)
@@ -200,6 +202,36 @@ class EasyPay : EasyPlugin(), KtorStat {
                     config.getInt("easy-gate.wait-time", 300)
                 )
             )
+        }
+
+        if (config.getBoolean("baipay.enable")) {
+            val baseUrl = config.getString("baipay.base-url").orEmpty().trim()
+            val appId = config.getString("baipay.app-id").orEmpty().trim()
+            val keyId = config.getString("baipay.key-id").orEmpty().trim()
+            val apiSecret = config.getString("baipay.api-secret").orEmpty().trim()
+            if (baseUrl.isEmpty() || appId.isEmpty() || keyId.isEmpty() || apiSecret.isEmpty()) {
+                warn("BaiPay配置不完整 跳过加载")
+            } else {
+                val client = BaiPayClient(baseUrl, appId, keyId, apiSecret)
+                val returnUrl = config.getString("baipay.return-url").orEmpty().trim().ifEmpty { null }
+                val waitTime = config.getInt("baipay.wait-time", 900).coerceAtLeast(1)
+                var registered = false
+                if (config.getBoolean("baipay.channels.wechat", true)) {
+                    PayServiceProvider.registerService(
+                        BaiPayService(client, PaymentChannel.WECHAT, returnUrl, waitTime)
+                    )
+                    registered = true
+                }
+                if (config.getBoolean("baipay.channels.alipay", true)) {
+                    PayServiceProvider.registerService(
+                        BaiPayService(client, PaymentChannel.ALIPAY, returnUrl, waitTime)
+                    )
+                    registered = true
+                }
+                if (!registered) {
+                    warn("BaiPay未启用任何支付渠道 跳过加载")
+                }
+            }
         }
         PayServiceProvider.registerService(DevService)
     }

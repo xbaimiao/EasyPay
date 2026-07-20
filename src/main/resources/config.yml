@@ -9,6 +9,7 @@
 # 注意 为节约性能 以上PAPI变量 有15秒的刷新缓存时间
 
 # 内置 service "wechat-official" 为微信官方 "wechat" 为微信dlc（监听消息的） alipay 为支付宝官方
+# BaiPay 服务名为 "baipay-wechat" 和 "baipay-alipay"
 
 alipay:
   api: 'https://openapi.alipay.com/gateway.do'
@@ -113,6 +114,24 @@ easy-gate:
   client-secret: ""
   # 订单超时时长 (单位: 秒) 最长900秒
   wait-time: 600
+baipay:
+  # 是否启用BaiPay统一收款网关
+  enable: false
+  # BaiPay网关地址
+  base-url: "https://pay.example.com"
+  # 在BaiPay管理端创建应用和API Key后获得以下凭据
+  app-id: ""
+  key-id: ""
+  api-secret: ""
+  # 支付完成后的HTTPS跳转地址，不需要时留空
+  return-url: ""
+  # 订单等待时长 (单位: 秒)
+  wait-time: 900
+  channels:
+    # 是否注册BaiPay微信支付服务 baipay-wechat
+    wechat: true
+    # 是否注册BaiPay支付宝服务 baipay-alipay
+    alipay: true
 map:
   # 地图放置位置 MAIN 为主手 OFF 为副手
   hand: 'MAIN'

@@ -1,6 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
-
 val ktVersion: String by project
 val easylibVersion: String by project
 val paperVersion: String by project
@@ -37,6 +34,7 @@ easylib {
     relocate("dev.rgbmc.alipayconnector", "${project.group}.shadow.alipay_dlc", false)
     relocate("dev.rgbmc.walletconnector", "${project.group}.shadow.wechat", false)
     relocate("com.xbaimiao.ktor", "${project.group}.shadow.ktor", false)
+    relocate("com.xbaimiao.baipay", "${project.group}.shadow.baipay", false)
     relocate("okhttp3", "${project.group}.shadow.okhttp3", false)
     relocate("okio", "${project.group}.shadow.okio", false)
     relocate("org.bouncycastle", "${project.group}.shadow.org.bouncycastle", false)
@@ -52,6 +50,12 @@ repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://repo.fastmcmirror.org/content/repositories/releases/")
+    maven("https://maven.xbaimiao.com/repository/maven-private/") {
+        credentials {
+            username = providers.gradleProperty("BaiUser").orNull ?: System.getenv("BAI_MAVEN_USER")
+            password = providers.gradleProperty("BaiPassword").orNull ?: System.getenv("BAI_MAVEN_PASSWORD")
+        }
+    }
 }
 
 subprojects {
@@ -75,10 +79,6 @@ subprojects {
 
     tasks.withType<JavaCompile>().configureEach {
         options.encoding = "UTF-8"
-        options.release = 8
-    }
-    tasks.withType<KotlinJvmCompile>().configureEach {
-        compilerOptions.jvmTarget.set(JvmTarget.JVM_1_8)
     }
 }
 
@@ -94,6 +94,7 @@ dependencies {
     implementation("dev.rgbmc:WalletConnector:1.0.0-259dfb2")
     implementation("dev.rgbmc:AliPayConnector:1.0.0-18ef856")
     implementation("com.github.wechatpay-apiv3:wechatpay-java:0.2.12")
+    implementation("com.xbaimiao.baipay:baipay-sdk:2.0.0")
 
     compileOnly("com.stripe:stripe-java:25.12.0")
     compileOnly("com.paypal.sdk:checkout-sdk:2.0.0")
@@ -109,10 +110,6 @@ tasks {
     }
     compileJava {
         options.encoding = "UTF-8"
-        options.release = 8
-    }
-    withType<KotlinJvmCompile>().configureEach {
-        compilerOptions.jvmTarget.set(JvmTarget.JVM_1_8)
     }
     processResources {
         outputs.upToDateWhen { false }
