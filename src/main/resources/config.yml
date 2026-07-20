@@ -83,7 +83,7 @@ map:
   # 地图放置位置 MAIN 为主手 OFF 为副手
   hand: 'MAIN'
   # 是否在地图丢弃时取消订单
-  cancel-on-drop: false
+  cancel-on-drop: true
 database:
   mysql:
     # 是否启用mysql 不启用使用sqlite
@@ -114,13 +114,13 @@ items:
   测试命令商品:
     type: 'CommandItem'
     # 价格
-    price: 0.01
+    price: 1.0
     commands:
       - 'say %player_name% 您购买成功了 %item_name%'
   测试命令商品二:
     type: 'CommandItem'
     # 价格
-    price: 0.02
+    price: 2.0
     commands:
       - 'say %player_name% 您购买成功了 %item_name%'
   # ItemSack 必须写在它引用的普通商品后面，否则加载时找不到商品
