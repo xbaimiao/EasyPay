@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "com.xbaimiao.easypay"
-version = "1.3.6-SNAPSHOT"
+version = "1.3.7-SNAPSHOT"
 
 easylib {
     env {

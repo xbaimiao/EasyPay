@@ -117,3 +117,17 @@ items:
     price: 0.01
     commands:
       - 'say %player_name% 您购买成功了 %item_name%'
+  测试命令商品二:
+    type: 'CommandItem'
+    # 价格
+    price: 0.02
+    commands:
+      - 'say %player_name% 您购买成功了 %item_name%'
+  # ItemSack 必须写在它引用的普通商品后面，否则加载时找不到商品
+  # 商品包价格会自动累加，当前示例价格为 0.01 + 0.02 = 0.03
+  # 商品包名称会自动拼接，当前示例名称为 "测试命令商品, 测试命令商品二"
+  测试商品包:
+    type: 'ItemSack'
+    items:
+      - '测试命令商品'
+      - '测试命令商品二'
