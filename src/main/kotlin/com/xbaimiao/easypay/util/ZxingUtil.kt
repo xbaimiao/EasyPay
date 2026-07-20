@@ -22,20 +22,20 @@ object ZxingUtil {
     fun generate(content: String, width: Int = 128, height: Int = 128): BufferedImage {
         val encodeHints: MutableMap<EncodeHintType, Any> = EnumMap(EncodeHintType::class.java)
         encodeHints[EncodeHintType.CHARACTER_SET] = "UTF-8"
-        encodeHints[EncodeHintType.MARGIN] = 0
-        val matrix = QRCodeWriter().encode(content, BarcodeFormat.QR_CODE, 0, 0, encodeHints)
-        return renderFullSize(matrix, width, height)
+        encodeHints[EncodeHintType.MARGIN] = 1
+        val matrix = QRCodeWriter().encode(content, BarcodeFormat.QR_CODE, width, height, encodeHints)
+        return renderMatrix(matrix, width, height)
     }
 
     fun generate(text: String, logoFile: File, width: Int = 128, height: Int = 128): BufferedImage {
         val encodeHints: MutableMap<EncodeHintType, Any> = EnumMap(EncodeHintType::class.java)
         encodeHints[EncodeHintType.CHARACTER_SET] = "UTF-8"
-        encodeHints[EncodeHintType.MARGIN] = 0
+        encodeHints[EncodeHintType.MARGIN] = 1
         encodeHints[EncodeHintType.ERROR_CORRECTION] = ErrorCorrectionLevel.H
 
         val writer = QRCodeWriter()
-        val matrix = writer.encode(text, BarcodeFormat.QR_CODE, 0, 0, encodeHints)
-        val qrImage = renderFullSize(matrix, width, height)
+        val matrix = writer.encode(text, BarcodeFormat.QR_CODE, width, height, encodeHints)
+        val qrImage = renderMatrix(matrix, width, height)
         val ogImage = ImageIO.read(logoFile)
 
         val logoImage = BufferedImage(LOGO_SIZE, LOGO_SIZE, BufferedImage.TYPE_INT_ARGB).also {
@@ -65,7 +65,7 @@ object ZxingUtil {
         return combined
     }
 
-    private fun renderFullSize(matrix: BitMatrix, width: Int, height: Int): BufferedImage {
+    private fun renderMatrix(matrix: BitMatrix, width: Int, height: Int): BufferedImage {
         val image = BufferedImage(width, height, BufferedImage.TYPE_BYTE_BINARY)
         val rowPixels = IntArray(width)
         for (y in 0 until height) {
