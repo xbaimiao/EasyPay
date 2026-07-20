@@ -8,10 +8,12 @@
 # %easypay_top:price:{1-10}% 排行榜金额
 # 注意 为节约性能 以上PAPI变量 有15秒的刷新缓存时间
 
-# 内置 service "wechat-official" 为微信官方 "wechat" 为微信dlc（监听消息的） alipay 为支付宝官方
+# 内置 service "wechat-official" 为微信官方，"alipay" 为支付宝官方
 # BaiPay 服务名为 "baipay-wechat" 和 "baipay-alipay"
 
 alipay:
+  # 是否启用支付宝官方支付
+  enable: false
   api: 'https://openapi.alipay.com/gateway.do'
   appid: 'appid'
   private-key: 'private-key'
@@ -33,6 +35,8 @@ alipay:
       # 店员识别id 随便填
       store-id: 'easy_pay'
 wechat-official:
+  # 是否启用微信官方支付
+  enable: false
   # 微信appid
   appid: "wx5exxxxxxxxx"
   # 商户号
@@ -57,63 +61,6 @@ wechat-official:
       privateKeyPath: 'pem/apiclient_key.pem'
       # 微信支付平台证书
       wechatPayCertificatePath: 'pem/weixing.pem'
-wechat:
-  # 启用微信DLC功能
-  enable: false
-  # 微信DLC通信服务器地址
-  server: "127.0.0.1:42267"
-  # 微信收款二维码内容
-  qrcode: ""
-  # 是否在订单被锁定时启用价格浮动(增加价格直到能够付款-最小加价单位0.01)
-  dynamic-cost: false
-  # 订单等待时长 (单位: 秒) 超时取消订单
-  wait-time: 60
-  # 重连次数 (超过次数无法连接将停止尝试 直到重载插件)
-  max-retry: 5
-alipay-dlc:
-  # 启用支付宝DLC功能
-  enable: false
-  # 支付宝DLC通信服务器地址
-  server: "127.0.0.1:42268"
-  # 支付宝收款二维码内容
-  qrcode: ""
-  # 是否在订单被锁定时启用价格浮动(增加价格直到能够付款-最小加价单位0.01)
-  dynamic-cost: false
-  # 订单等待时长 (单位: 秒) 超时取消订单
-  wait-time: 60
-  # 重连次数 (超过次数无法连接将停止尝试 直到重载插件)
-  max-retry: 5
-paypal:
-  # 启用PayPal功能
-  enable: false
-  # 环境 (SANDBOX/PRODUCTION)
-  # 生产环境上使用请设置为PRODUCTION
-  environment: SANDBOX
-  # PayPal提供的Client ID
-  client-id: "CLIENT_ID"
-  # PayPal提供的Client Secret
-  client-secret: "CLIENT_SECRET"
-  # 收款货币 (CNY/USD/HKD等 更多请查阅PayPal restful api文档)
-  currency: "HKD"
-stripe:
-  # 启用Stripe功能
-  enable: false
-  # Stripe提供的ApiKey私钥
-  api-key: "PRIVATE_API_KEY"
-  # 收款货币 (CNY/USD/HKD等 更多请查阅Stripe开发文档)
-  # https://docs.stripe.com/currencies?presentment-currency=MX#presentment-currencies
-  currency: "HKD"
-  # 支付成功跳转地址
-  success-url: "https://www.baidu.com/"
-easy-gate:
-  # 启用EasyGate功能
-  enable: false
-  # EasyGate的Client-ID
-  client-id: ""
-  # EasyGate的Client-Secret
-  client-secret: ""
-  # 订单超时时长 (单位: 秒) 最长900秒
-  wait-time: 600
 baipay:
   # 是否启用BaiPay统一收款网关
   enable: false

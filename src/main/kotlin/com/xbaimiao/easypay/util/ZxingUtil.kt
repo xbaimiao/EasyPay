@@ -97,36 +97,4 @@ object ZxingUtil {
         fileObj
     }
 
-    val paypalLogo by lazy {
-        val fileObj = File(plugin.dataFolder, "icon${File.separator}paypal.png")
-        if (!fileObj.exists()) {
-            if (!fileObj.parentFile.exists()) {
-                fileObj.parentFile.mkdirs()
-            }
-            plugin.saveResource("icon/paypal.png", false)
-        }
-        fileObj
-    }
-
-    val stripeLogo by lazy {
-        val fileObj = File(plugin.dataFolder, "icon${File.separator}stripe.png")
-        if (!fileObj.exists()) {
-            if (!fileObj.parentFile.exists()) {
-                fileObj.parentFile.mkdirs()
-            }
-            plugin.saveResource("icon/stripe.png", false)
-        }
-        fileObj
-    }
-
-    val easyGateLogo by lazy {
-        val fileObj = File(plugin.dataFolder, "icon${File.separator}easygate.png")
-        if (!fileObj.exists()) {
-            if (!fileObj.parentFile.exists()) {
-                fileObj.parentFile.mkdirs()
-            }
-            plugin.saveResource("icon/easygate.png", false)
-        }
-        fileObj
-    }
 }

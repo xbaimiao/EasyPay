@@ -29,10 +29,7 @@ easylib {
     relocate("com.j256.ormlite", "${project.group}.shadow.ormlite", false)
     relocate("kotlin", "${project.group}.shadow.kotlin", true)
     relocate("kotlinx", "${project.group}.shadow.kotlinx", true)
-    relocate("org.java_websocket", "${project.group}.shadow.websocket", false)
     relocate("com.google.gson", "${project.group}.shadow.gson", true)
-    relocate("dev.rgbmc.alipayconnector", "${project.group}.shadow.alipay_dlc", false)
-    relocate("dev.rgbmc.walletconnector", "${project.group}.shadow.wechat", false)
     relocate("com.xbaimiao.ktor", "${project.group}.shadow.ktor", false)
     relocate("com.xbaimiao.baipay", "${project.group}.shadow.baipay", false)
     relocate("okhttp3", "${project.group}.shadow.okhttp3", false)
@@ -42,7 +39,6 @@ easylib {
     relocate("com.google.zxing", "${project.group}.shadow.zxing", false)
     relocate("_COROUTINE", "${project.group}.shadow.COROUTINE", false)
     relocate("com.wechat.pay.java", "${project.group}.shadow.wechat.pay", false)
-    relocate("fuel", "${project.group}.shadow.fuel", false)
 }
 
 repositories {
@@ -91,15 +87,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
     implementation("com.google.zxing:core:3.5.3")
     implementation("com.google.zxing:javase:3.5.3")
-    implementation("dev.rgbmc:WalletConnector:1.0.0-259dfb2")
-    implementation("dev.rgbmc:AliPayConnector:1.0.0-18ef856")
     implementation("com.github.wechatpay-apiv3:wechatpay-java:0.2.12")
     implementation("com.xbaimiao.baipay:baipay-sdk:2.0.0")
-
-    compileOnly("com.stripe:stripe-java:25.12.0")
-    compileOnly("com.paypal.sdk:checkout-sdk:2.0.0")
-
-    implementation("com.github.kittinunf.fuel:fuel:3.0.0-alpha1")
 
     compileOnly("io.papermc.paper:paper-api:$paperVersion")
 }

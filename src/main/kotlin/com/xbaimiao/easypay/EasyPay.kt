@@ -71,24 +71,6 @@ class EasyPay : EasyPlugin(), KtorStat {
     override fun disable() {
         VirtualMap.clearAllMaps()
 
-        val dlcWeChatService = PayServiceProvider.getService(DLCWeChatService::class.java)
-        if (dlcWeChatService != null) {
-            info("正在断开与WalletMonitor的连接")
-            for (orderEntry in DLCWeChatService.orderMap) {
-                dlcWeChatService.walletConnector.orderTimeout(orderEntry.key)
-            }
-            dlcWeChatService.walletConnector.close()
-        }
-
-        val dlcAliPayService = PayServiceProvider.getService(DLCAliPayService::class.java)
-        if (dlcAliPayService != null) {
-            info("正在断开与AliPayMonitor的连接")
-            for (orderEntry in DLCAliPayService.orderMap) {
-                dlcAliPayService.aliPayConnector.orderTimeout(orderEntry.key)
-            }
-            dlcAliPayService.aliPayConnector.close()
-        }
-
         Bukkit.getScheduler().cancelTasks(this) // Cancel all running task - prevent throw exception while server close
     }
 
@@ -127,8 +109,8 @@ class EasyPay : EasyPlugin(), KtorStat {
 
     fun loadServices() {
         PayServiceProvider.clear()
-        if (config.getString("alipay.appid") == "appid") {
-            warn("未配置支付宝Service 跳过加载")
+        if (!config.getBoolean("alipay.enable")) {
+            warn("支付宝官方支付未启用 跳过加载")
         } else {
             PayServiceProvider.registerService(
                 AlipayService(
@@ -142,65 +124,11 @@ class EasyPay : EasyPlugin(), KtorStat {
             )
         }
 
-        if (!config.getBoolean("wechat.enable")) {
-            warn("未配置微信支付服务(DLC,监听消息) 跳过加载内容")
-        } else {
-            PayServiceProvider.registerService(
-                DLCWeChatService(
-                    config.getString("wechat.server")!!, config.getString("wechat.qrcode")!!
-                )
-            )
-        }
-
-        if (!config.getBoolean("alipay-dlc.enable")) {
-            warn("未配置支付宝DLC支付服务 跳过加载内容")
-        } else {
-            PayServiceProvider.registerService(
-                DLCAliPayService(
-                    config.getString("alipay-dlc.server")!!, config.getString("alipay-dlc.qrcode")!!
-                )
-            )
-        }
-
-        if (config.getString("wechat-official.appid") == "wx5exxxxxxxxx") {
-            warn("未配置微信支付官方Service 跳过加载")
+        if (!config.getBoolean("wechat-official.enable")) {
+            warn("微信官方支付未启用 跳过加载")
         } else {
             PayServiceProvider.registerService(
                 OfficialWeChatService(config.getConfigurationSection("wechat-official")!!)
-            )
-        }
-
-        if (config.getBoolean("paypal.enable")) {
-            info("正在配置PayPal支付服务")
-            PayServiceProvider.registerService(
-                PayPalService(
-                    config.getString("paypal.environment")!!,
-                    config.getString("paypal.client-id")!!,
-                    config.getString("paypal.client-secret")!!,
-                    config.getString("paypal.currency")!!
-                )
-            )
-        }
-
-        if (config.getBoolean("stripe.enable")) {
-            info("正在配置Stripe支付服务")
-            PayServiceProvider.registerService(
-                StripeService(
-                    config.getString("stripe.api-key")!!,
-                    config.getString("stripe.currency")!!,
-                    config.getString("stripe.success-url", "https://www.baidu.com/")!!
-                )
-            )
-        }
-
-        if (config.getBoolean("easy-gate.enable")) {
-            info("正在配置EasyGate支付服务")
-            PayServiceProvider.registerService(
-                EasyGateService(
-                    config.getString("easy-gate.client-id")!!,
-                    config.getString("easy-gate.client-secret")!!,
-                    config.getInt("easy-gate.wait-time", 300)
-                )
             )
         }
 
